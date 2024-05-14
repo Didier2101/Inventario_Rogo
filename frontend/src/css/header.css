@@ -1,0 +1,81 @@
+.encabezado-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--secondary);
+  padding: 10px 8px;
+  background-color: var(--white);
+  position: sticky;
+  top: 0;
+}
+.encabezado-header .iconos-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.encabezado-header .iconos-izquierda .icono-menu {
+  color: var(--secondary);
+  font-size: 2rem;
+  transition: color 0.2s ease-in;
+}
+.encabezado-header .iconos-izquierda .icono-usuario {
+  color: var(--secondary);
+  font-size: 2.4rem;
+  transition: color 0.2s ease-in;
+}
+.encabezado-header .icono-menu:hover {
+  color: var(--text);
+}
+.enlace-salir {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 5px;
+  /* background-color: var(--tertiary); */
+  text-decoration: none;
+  transition: background 0.2s ease-in;
+
+  .texto-salir {
+    font-size: 1.2rem;
+    color: var(text);
+  }
+  .icon-salir {
+    font-size: 1.5rem;
+  }
+}
+.iconos-derecha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.encabezado-header .iconos-derecha .icono {
+  font-size: 1.6rem;
+  color: var(--secondary);
+  transition: color 0.2s ease-in;
+}
+.encabezado-header .iconos-derecha .icono:hover {
+  color: var(--text);
+}
+.enlace-salir:hover {
+  background-color: var(--tertiary);
+}
+.contenedor-icono-alerta {
+  position: relative;
+}
+.alerta-correo,
+.alerta-notificaciones {
+  position: absolute;
+  top: -5px; /* Ajusta la posición vertical */
+  right: -5px; /* Ajusta la posición horizontal */
+  background-color: red; /* Color de fondo de la alerta */
+  color: var(--white); /* Color del texto de la alerta */
+  border-radius: 50%; /* Forma de círculo */
+  width: 10px; /* Ancho */
+  height: 10px; /* Altura */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

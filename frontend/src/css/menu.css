@@ -1,0 +1,73 @@
+.section-menu {
+  width: auto;
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+  /* border-left: 1px solid #ccc;  */
+  border-right: 1px solid var(--border);
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    gap: 4px;
+
+    .navlink-menu {
+      position: relative;
+      padding: 10px 0;
+      text-decoration: none;
+      text-align: center;
+      transition: background-color 0.3s, box-shadow 0.3s, border-radius 0.3s,
+        color 0.3s;
+    }
+    .navlink-menu:hover {
+      background-color: var(--accent);
+      border-radius: 4px;
+    }
+
+    .icon-menu {
+      color: var(--secondary);
+      font-size: 2rem;
+      margin: 0;
+    }
+    .text {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+  }
+}
+.section-menu {
+  overflow-y: scroll;
+}
+.section-menu::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Estilos para el enlace activo */
+.navlink-menu.active {
+  background-color: #e7f0ed;
+  /* box-shadow: inset 0px 0px 10px 4px rgba(0, 0, 0, 0.1); */
+  border-radius: 5px;
+}
+.navlink-menu.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px; /* Ancho de la barra */
+  height: 100%;
+  border-radius: 5px 0 0 5px;
+  background-color: var(--text);
+}
+
+/* Estilos para el enlace de salir */
+.navlink-salir {
+  background-color: var(--secondary);
+  text-align: center;
+}
