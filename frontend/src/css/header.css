@@ -1,13 +1,15 @@
 .encabezado-header {
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   border-bottom: 1px solid var(--secondary);
   padding: 10px 8px;
   background-color: var(--white);
   position: sticky;
   top: 0;
+}
+.encabezado-header .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .encabezado-header .iconos-izquierda {
   display: flex;

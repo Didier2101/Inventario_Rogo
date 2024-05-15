@@ -1,113 +1,47 @@
-.section-empleados {
-  background-color: antiquewhite;
+.section-item {
   padding: 10px;
 }
 
 .box {
   background-color: white;
+  padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  .title-tabla {
-    font-size: 1.1rem;
-    margin: 14px 0px;
-    color: var(--950);
-  }
-  .container-buscar {
-    border: 1px solid var(--100);
-    display: flex;
-    width: 300px;
-    padding: 2px 6px;
-    align-items: center;
-    border-radius: 4px;
-
-    input {
-      height: 30px;
-      color: var(--800);
-    }
-    input::placeholder {
-      color: var(--800);
-    }
-    .icon-buscar {
-      color: var(--800);
-    }
-  }
+}
+.box .title-tabla {
+  font-size: 1.3rem;
+  color: var(--text);
 }
 
-.container-tabla {
-  box-sizing: border-box;
-  padding: 0px 10px;
+.lista-items {
   width: 100%;
-  max-height: 88vh;
-
-  overflow-y: auto;
-  position: relative;
 }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--color-blanco);
-}
-.thead {
-  font-size: 0.8rem;
-  position: sticky;
-  top: 0;
-  text-align: left;
-}
-
-th {
-  padding: 6px 6px;
-}
-
-.th-acciones {
-  text-align: center;
-  width: 80px;
-}
-table .tr {
-  transition: transform 0.3s ease-in-out;
-  border-bottom: 1px solid var(--50);
-}
-table .tr:hover {
-  transform: scale(1.01);
-  background-color: var(--100);
-  border: none;
-}
-
-table td {
-  text-align: left;
-  padding: 2px 6px;
-  font-size: 0.7rem;
-  margin: 4px 0;
-}
-
-.acciones {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2px;
-  width: 80px;
-}
-.acciones .icon-acciones-info,
-.acciones .icon-acciones-edit,
-.acciones .icon-acciones-delete {
-  font-size: 1.1rem;
-}
-.acciones .icon-acciones-info:hover,
-.acciones .icon-acciones-edit:hover,
-.acciones .icon-acciones-delete:hover {
+.lista-items .fila {
   cursor: pointer;
-  transform: scale(1.2);
-  transition: transform 0.3s ease-in-out;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 6px;
+  border-radius: 5px;
+  margin-bottom: 0px;
+  transition: all 1s ease-in-out;
+}
+.lista-items .fila:hover {
+  background-color: var(--primary);
+  transform: scale(1.01);
+}
+.lista-items .fila .celda {
+  font-size: 1.2rem;
 }
 
-.encabezado {
-  background-color: var(--800);
-  color: var(--color-blanco);
-}
-.button-empleado {
-  background-color: red;
-  color: var(900);
-  border: 1 solid var(--color-blanco);
+@media (max-width: 768px) {
+  .lista-items .fila {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    background-color: var(--primary);
+    margin-bottom: 6px;
+  }
 }

@@ -15,6 +15,10 @@ body {
   font-size: 68.5%;
   background-color: var(--white);
 }
+.max-width {
+  max-width: 1100px;
+  margin: 0 auto;
+}
 
 img {
   width: 100%;
