@@ -5,7 +5,36 @@
   gap: 30px;
   padding: 0px 10px;
 }
-
+.witches {
+  width: 100%;
+  background-color: var(--decimo);
+  border-radius: 10px;
+}
+.witches .witches-list {
+  list-style: none;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 20px;
+}
+.witches .witches-list .witches-item {
+  font-size: 1.3rem;
+  color: var(--tercero);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+.witches .witches-list .witches-item span {
+  background-color: var(--tercero);
+  border-radius: 6px;
+  padding: 2px 6px;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primer);
+}
 .caja-section {
   width: 100%;
   background-color: var(--primer);
@@ -93,18 +122,69 @@
 
 @media (max-width: 768px) {
   .lista-items {
-    width: 80%;
+    width: 100%;
     margin: 0 auto;
   }
   .lista-items .fila {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 0px;
+    /* grid-template-rows: 100px 100px; */
+
     background-color: var(--primer);
     margin-bottom: 6px;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  .lista-items .fila .one {
+    display: none;
+  }
+  .lista-items .fila .two {
+    grid-column: 1 / 1;
+    grid-row: 2;
+  }
+  .lista-items .fila .three {
+    grid-column: 1 / 1;
+    grid-row: 1;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--segundo);
+  }
+  .lista-items .fila .four {
+    grid-column: 1 / 2;
+    grid-row: 4;
+  }
+  .lista-items .fila .five {
+    grid-column: 2 / 2;
+    grid-row: 3;
+    text-align: end;
+  }
+  .lista-items .fila .six {
+    grid-column: 1 / 1;
+    grid-row: 3;
+    background: none;
+  }
+  .lista-items .fila .seven {
+    grid-column: 2 / 2;
+    grid-row: 2;
+    text-align: end;
+  }
+  .lista-items .fila .eight {
+    grid-column: 2 / 2;
+    text-align: end;
+    grid-row: 5;
+    background: none;
+    color: var(--quinto);
+  }
+  .lista-items .fila .nine {
+    grid-column: 1 / 1;
+    grid-row: 5;
+  }
+  .lista-items .fila .ten {
+    grid-column: 2 / 2;
+    grid-row: 1;
+    text-align: end;
   }
   .lista-items .fila .celda {
     margin: 0;
@@ -113,6 +193,6 @@
   .acciones .sub-menu {
     display: flex;
 
-    right: -100px;
+    right: 30px;
   }
 }

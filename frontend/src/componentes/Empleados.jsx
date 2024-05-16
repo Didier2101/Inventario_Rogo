@@ -61,31 +61,42 @@ const Empleados = () => {
           margin="0"
           text="Nuevo" />
       </section>
+      <section className="witches max-width">
+        <ul className="witches-list">
+          <li className="witches-item">Todos
+            <span className="cantidad-empleados">{empleados.length}</span>
+          </li>
+          {/* <li className="witches-item">Activos
+            <span>14</span></li>
+          <li className="witches-item">Pendientes
+            <span>6</span></li> */}
+        </ul>
+      </section>
 
 
       <section className="lista-items max-width">
         {empleados.map((empleado, index) => (
           <div className="fila" key={index}>
-            <div className="celda index"><strong> {index + 1}</strong></div>
+            <div className="celda index one"><strong> {index + 1}</strong></div>
 
 
 
-            <div className="celda">
+            <div className="celda two">
               <strong>{empleado.cedula}</strong>
             </div>
-            <div className="celda">
+            <div className="celda three">
               {empleado.nombres}
             </div>
-            <div className="celda">{empleado.correo}</div>
-            <div className="celda">{empleado.telefono}</div>
-            <div className="celda direccion">
+            <div className="celda four">{empleado.correo}</div>
+            <div className="celda five">{empleado.telefono}</div>
+            <div className="celda direccion six">
               {empleado.direccion}
             </div>
 
-            <div className="celda">{empleado.cargo}</div>
-            <div className="celda salario">{empleado.salario}</div>
-            <div className="celda"><strong>{formatearFecha(empleado.fecha_ingreso)}</strong></div>
-            <div className="celda acciones">
+            <div className="celda seven">{empleado.cargo}</div>
+            <div className="celda salario eight">{empleado.salario}</div>
+            <div className="celda nine"><strong>{formatearFecha(empleado.fecha_ingreso)}</strong></div>
+            <div className="celda acciones ten">
               <IconButton aria-label="delete" size="small " onClick={() => toggleSubMenu(index)}>
                 <MoreVertIcon fontSize="medium" />
               </IconButton>
@@ -101,7 +112,7 @@ const Empleados = () => {
                     {/* <span>Editar</span> */}
                   </IconButton>
 
-                  <IconButton aria-label="delete" style={{ color: "var(--tercero)" }}>
+                  <IconButton aria-label="delete" style={{ color: "var(--tercero)" }} >
                     <InfoIcon size="medium" />
                     {/* <span>Detalles</span> */}
                   </IconButton>
