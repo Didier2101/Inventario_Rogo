@@ -1,47 +1,118 @@
 .section-item {
-  padding: 10px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 0px 10px;
 }
 
-.box {
-  background-color: white;
-  padding: 10px 0;
+.caja-section {
+  width: 100%;
+  background-color: var(--primer);
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
 }
-.box .title-tabla {
-  font-size: 1.3rem;
-  color: var(--text);
+.caja-section .title-tabla {
+  font-size: 2rem;
+  color: var(--tercero);
 }
 
 .lista-items {
+  background-color: var(--primer);
+  display: table;
   width: 100%;
+  /* border-collapse: collapse; */
 }
-.lista-items .fila {
+
+.fila {
+  display: table-row;
+}
+.fila:hover {
+  background-color: var(--noveno);
+}
+
+.celda {
+  display: table-cell;
+  padding: 20px 0px;
+  color: var(--tercero);
+  font-size: 1.1rem;
+}
+.index {
+  background-color: var(--noveno);
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+
+.acciones {
+  display: inline-block;
+  padding: 1px;
+  font-size: 1rem;
+  font-weight: bold;
+
   cursor: pointer;
-  background-color: white;
+  padding: 6px;
+  position: relative;
+}
+
+.acciones .sub-menu {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 6px;
-  border-radius: 5px;
-  margin-bottom: 0px;
-  transition: all 1s ease-in-out;
+  position: absolute;
+  padding: 2px;
+  border-radius: 6px;
+  top: 3px;
+  right: 40px;
+  background-color: var(--primer);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
-.lista-items .fila:hover {
-  background-color: var(--primary);
-  transform: scale(1.01);
+
+.acciones .sub-menu span {
+  font-size: 1rem;
 }
-.lista-items .fila .celda {
-  font-size: 1.2rem;
+.direccion {
+  background-color: var(--noveno);
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.salario {
+  background-color: var(--sexto);
+  display: inline-block;
+  padding: 3px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 6px;
 }
 
 @media (max-width: 768px) {
+  .lista-items {
+    width: 80%;
+    margin: 0 auto;
+  }
   .lista-items .fila {
     display: flex;
     flex-direction: column;
     align-items: start;
-    background-color: var(--primary);
+    background-color: var(--primer);
     margin-bottom: 6px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  .lista-items .fila .celda {
+    margin: 0;
+    padding: 4px 0px;
+  }
+  .acciones .sub-menu {
+    display: flex;
+
+    right: -100px;
   }
 }

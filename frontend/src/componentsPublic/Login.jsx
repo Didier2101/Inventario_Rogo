@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 
 
-import LogoCompañia from '../../public/BUG WEB BLANCO.png'
+import LogoCompañia from '../../public/logo.png'
 import ButtonComponent from '../otrosComponentes/ButtonComponent';
 
 
@@ -43,7 +43,7 @@ function Login() {
 
                         <ButtonComponent
                             onClick={Ingresar}
-                            color="var(--secondary)"
+                            color="var(--segundo)"
                             width="100%"
                             height="50px"
                             fontSize="1.5rem"
@@ -52,7 +52,7 @@ function Login() {
 
                     </form>
                     <NavLink
-                        style={{ marginBottom: '10px', fontSize: '1.2rem', color: 'var(--text)' }}
+                        style={{ marginBottom: '10px', fontSize: '1.2rem', color: 'var(--tercero)' }}
                         to="/forgot-password"
                     >¿Olvidaste tu contraseña?</NavLink>
                 </section>

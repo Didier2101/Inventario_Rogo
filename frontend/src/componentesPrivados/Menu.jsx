@@ -11,6 +11,7 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 
 
@@ -18,7 +19,7 @@ const Menu = ({ visible }) => {
 
 
     return (
-        <section className={visible ? 'show-menu' : 'hide-menu section-menu'}>
+        <section className={visible ? 'show-menu section-menu' : 'hide-menu '}>
 
             <ul>
                 <NavLink to="/inicio" className="navlink-menu">
@@ -66,6 +67,10 @@ const Menu = ({ visible }) => {
                     <p className="text">Facturas</p>
                 </NavLink>
 
+                <NavLink to="/" className="enlace-salir">
+                    <ExitToAppIcon className="icono-salir" />
+                    <p className="text-salir">salir</p>
+                </NavLink>
             </ul>
 
 

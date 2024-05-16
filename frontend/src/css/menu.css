@@ -1,6 +1,6 @@
 .section-menu {
   width: auto;
-  background-color: var(--white);
+  background-color: var(--primero);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -8,8 +8,8 @@
   position: sticky;
   top: 0;
   box-sizing: border-box;
-  /* border-left: 1px solid #ccc;  */
-  border-right: 1px solid var(--border);
+
+  border-right: 1px dashed var(--sexto);
 
   ul {
     display: flex;
@@ -26,18 +26,18 @@
         color 0.3s;
     }
     .navlink-menu:hover {
-      background-color: var(--accent);
+      background-color: var(--noveno);
       border-radius: 4px;
     }
 
     .icon-menu {
-      color: var(--secondary);
+      color: var(--tercero);
       font-size: 2rem;
       margin: 0;
     }
     .text {
       font-weight: 700;
-      color: var(--text);
+      color: var(--tercero);
       font-size: 0.9rem;
     }
   }
@@ -51,23 +51,30 @@
 
 /* Estilos para el enlace activo */
 .navlink-menu.active {
-  background-color: #e7f0ed;
-  /* box-shadow: inset 0px 0px 10px 4px rgba(0, 0, 0, 0.1); */
+  background-color: var(--noveno);
   border-radius: 5px;
 }
-.navlink-menu.active::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 3px; /* Ancho de la barra */
-  height: 100%;
-  border-radius: 5px 0 0 5px;
-  background-color: var(--text);
+.navlink-menu.active .text,
+.navlink-menu.active .icon-menu {
+  color: var(--segundo);
 }
 
 /* Estilos para el enlace de salir */
-.navlink-salir {
-  background-color: var(--secondary);
-  text-align: center;
+.enlace-salir {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 10px;
+  padding: 6px 10px;
+  background-color: var(--tercero);
+  color: var(--primer);
+  text-decoration: none;
+  gap: 6px;
+}
+.enlace-salir .text-salir {
+  font-size: 1.1rem;
+}
+.enlace-salir:hover {
+  background-color: var(--segundo);
 }

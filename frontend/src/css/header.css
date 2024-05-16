@@ -1,10 +1,11 @@
 .encabezado-header {
   width: 100%;
-  border-bottom: 1px solid var(--secondary);
   padding: 10px 8px;
-  background-color: var(--white);
+  background-color: rgba(255, 255, 255, 0.685);
   position: sticky;
   top: 0;
+  z-index: 10;
+  backdrop-filter: blur(5px);
 }
 .encabezado-header .header {
   display: flex;
@@ -17,37 +18,20 @@
   gap: 10px;
 }
 .encabezado-header .iconos-izquierda .icono-menu {
-  color: var(--secondary);
+  color: var(--tercero);
   font-size: 2rem;
   transition: color 0.2s ease-in;
 }
+.encabezado-header .iconos-izquierda .icono-menu:hover,
+.encabezado-header .iconos-derecha .icono:hover {
+  color: var(--segundo);
+}
 .encabezado-header .iconos-izquierda .icono-usuario {
-  color: var(--secondary);
+  color: var(--tercero);
   font-size: 2.4rem;
   transition: color 0.2s ease-in;
 }
-.encabezado-header .icono-menu:hover {
-  color: var(--text);
-}
-.enlace-salir {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  padding: 6px;
-  border-radius: 5px;
-  /* background-color: var(--tertiary); */
-  text-decoration: none;
-  transition: background 0.2s ease-in;
 
-  .texto-salir {
-    font-size: 1.2rem;
-    color: var(text);
-  }
-  .icon-salir {
-    font-size: 1.5rem;
-  }
-}
 .iconos-derecha {
   display: flex;
   align-items: center;
@@ -55,15 +39,10 @@
 }
 .encabezado-header .iconos-derecha .icono {
   font-size: 1.6rem;
-  color: var(--secondary);
+  color: var(--tercero);
   transition: color 0.2s ease-in;
 }
-.encabezado-header .iconos-derecha .icono:hover {
-  color: var(--text);
-}
-.enlace-salir:hover {
-  background-color: var(--tertiary);
-}
+
 .contenedor-icono-alerta {
   position: relative;
 }
@@ -72,12 +51,13 @@
   position: absolute;
   top: -5px; /* Ajusta la posición vertical */
   right: -5px; /* Ajusta la posición horizontal */
-  background-color: red; /* Color de fondo de la alerta */
-  color: var(--white); /* Color del texto de la alerta */
+  background-color: var(--quinto); /* Color de fondo de la alerta */
   border-radius: 50%; /* Forma de círculo */
-  width: 10px; /* Ancho */
-  height: 10px; /* Altura */
+  width: 12px; /* Ancho */
+  height: 12px; /* Altura */
   display: flex;
   align-items: center;
   justify-content: center;
+
+  color: var(--tercero);
 }

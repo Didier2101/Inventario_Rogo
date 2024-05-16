@@ -13,7 +13,7 @@ const NotFound = () => {
 
             <NavLink to="/" style={{ textDecoration: 'none', width: '300px' }}>
                 <ButtonComponent
-                    color="var( --secondary)"
+                    color="var( --segundo)"
                     width="100%"
                     height="50px"
                     fontSize="1.5rem"

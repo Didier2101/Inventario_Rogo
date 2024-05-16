@@ -4,7 +4,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import EmailIcon from '@mui/icons-material/Email';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+
 
 
 const Header = ({ onMenuButtonClick }) => {
@@ -27,10 +27,7 @@ const Header = ({ onMenuButtonClick }) => {
                         <NotificationsActiveIcon className='icono-notificaciones icono' />
                     </div>
 
-                    <NavLink to="/" className="enlace-salir">
-                        <p className="texto-salir">Salir</p>
-                        <ExitToAppIcon className="icono-salir" />
-                    </NavLink>
+
                 </div>
             </header>
         </div>

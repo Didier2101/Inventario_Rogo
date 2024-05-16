@@ -12,11 +12,11 @@
 html,
 body {
   font-family: "Roboto", sans-serif;
-  font-size: 68.5%;
+  font-size: 80.5%;
   background-color: var(--white);
 }
 .max-width {
-  max-width: 1100px;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
@@ -35,12 +35,12 @@ img {
 }
 
 .show-menu {
-  display: none;
+  display: block;
 }
 
 /* Estilos para ocultar el menú */
 .hide-menu {
-  display: block;
+  display: none;
 }
 
 /* Para WebKit (Chrome, Safari, Opera) */

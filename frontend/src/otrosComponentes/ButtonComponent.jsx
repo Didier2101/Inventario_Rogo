@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 
+
 const ButtonComponent = ({ color, width, text, fontSize, height, margin, onClick }) => {
     return (
         <Button
@@ -9,7 +10,7 @@ const ButtonComponent = ({ color, width, text, fontSize, height, margin, onClick
                 width: width,
                 height: height,
                 fontSize: fontSize,
-                marginTop: margin
+                marginTop: margin,
 
             }}
             onClick={onClick}

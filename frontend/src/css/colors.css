@@ -1,12 +1,12 @@
 :root {
-  --primary: #d6f1e8; /* Color de resaltado al pasar el ratón */
-  --secondary: #99cfc0; /* Color más oscuro */
-  --tertiary: #e4faf3; /* Color más claro */
-  --accent: #d6e8f1; /* Color complementario */
-  --white: #fff; /* Blanco */
-  --background: #ddd; /* Fondo */
-  --text: #000000b4; /* Texto */
-  --border: #ccc; /* Borde */
+  --primer: #ffffff; /* Color de resaltado al pasar el ratón */
+  --segundo: #00a76f; /* Color más oscuro */
+  --tercero: #454f5b; /* Color más claro */
+  --quinto: #f37a5d; /* Color más claro */
+  --sexto: #41c993; /* Color más claro */
+  --septimo: #f4ce44; /* Color más claro */
+  --octavo: #41dbf6; /* Color más claro */
+  --noveno: #f4f6f8; /* Color más claro */
 }
 
 .roboto-thin {

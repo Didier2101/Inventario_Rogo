@@ -18,22 +18,21 @@
 .berify {
   height: 100%;
   border-radius: 10px;
-  background-color: var(--azul-marino);
+  background-color: var(--primer);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   text-align: center;
-  color: white;
 
   h1 {
     margin-bottom: 10px;
-    color: var(--text);
+    color: var(--tercero);
     font-size: 2.5rem;
   }
   p {
     margin-bottom: 10px;
-    color: var(--text);
+    color: var(--tercero);
     font-size: 1.5rem;
   }
 }
@@ -51,10 +50,10 @@
   h2 {
     font-size: 2.5rem;
     margin: 10px 0;
-    color: var(--text);
+    color: var(--tercero);
   }
   p {
-    color: var(--text);
+    color: var(--tercero);
 
     font-size: 1.5rem;
   }
@@ -71,7 +70,7 @@
 }
 .label {
   display: flex;
-  color: var(--text);
+  color: var(--tercero);
   font-size: 1.3rem;
 }
 .label input[type="checkbox"] {
