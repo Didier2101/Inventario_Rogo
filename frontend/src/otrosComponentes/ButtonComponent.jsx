@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 
 
-const ButtonComponent = ({ color, width, text, fontSize, height, margin, onClick }) => {
+const ButtonComponent = ({ type = 'button', color, width, text, fontSize, height, margin, onClick }) => {
     return (
         <Button
             variant="contained"
@@ -14,6 +14,7 @@ const ButtonComponent = ({ color, width, text, fontSize, height, margin, onClick
 
             }}
             onClick={onClick}
+            type={type}
         >
             {text}
         </Button>

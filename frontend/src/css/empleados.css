@@ -16,10 +16,9 @@
   display: flex;
   align-items: center;
   justify-content: start;
-  gap: 20px;
 }
 .witches .witches-list .witches-item {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   color: var(--tercero);
   font-weight: bold;
   display: flex;
@@ -34,6 +33,7 @@
   align-items: center;
   justify-content: center;
   color: var(--primer);
+  font-size: 1rem;
 }
 .caja-section {
   width: 100%;
@@ -195,4 +195,36 @@
 
     right: 30px;
   }
+}
+.grid-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.grid-form .contain-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.grid-form .contain-usuario {
+  display: flex;
+  width: 50%;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.grid-form .title-form {
+  font-size: 1.6rem;
+  color: var(--tercero);
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+.grid-form .contain-btns {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+@media (min-width: 768px) {
 }
