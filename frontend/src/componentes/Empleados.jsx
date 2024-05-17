@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import axios from 'axios';
 
 
@@ -29,6 +30,18 @@ const Empleados = () => {
 
     fetchEmpleados();
   }, []);
+
+  const mostrarEmpleadoPorId = async (empleadoId) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/empleados/${empleadoId}`);
+      const empleado = response.data;
+      console.log("Información del empleado por Id:", empleado);
+    } catch (error) {
+      console.error("Error al obtener empleado por ID:", error);
+    }
+  };
+
+
 
   const toggleSubMenu = (index) => {
     setShowSubMenuIndex(index === showSubMenuIndex ? null : index);
@@ -103,7 +116,9 @@ const Empleados = () => {
 
               {showSubMenuIndex === index && (
                 <div className="sub-menu">
-                  <IconButton aria-label="delete" style={{ color: "var(--quinto)" }}>
+                  <IconButton aria-label="delete" style={{ color: "var(--quinto)" }}
+                  // onClick={() => eliminarEmpleado(empleado.id)}
+                  >
                     <DeleteIcon size="medium" />
                     {/* <span>Eliminar</span> */}
                   </IconButton>
@@ -112,7 +127,7 @@ const Empleados = () => {
                     {/* <span>Editar</span> */}
                   </IconButton>
 
-                  <IconButton aria-label="delete" style={{ color: "var(--tercero)" }} >
+                  <IconButton aria-label="delete" style={{ color: "var(--tercero)" }} onClick={() => mostrarEmpleadoPorId(empleado.id_empleado)}>
                     <InfoIcon size="medium" />
                     {/* <span>Detalles</span> */}
                   </IconButton>
