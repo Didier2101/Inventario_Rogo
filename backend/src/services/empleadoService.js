@@ -1,7 +1,7 @@
-const database = require("../database");
+const pool = require("../database");
 
 const empleadosService = {
-  crearEmpleado: (nuevoEmpleado) => {
+  crearEmpleado: async (nuevoEmpleado) => {
     const {
       cedula,
       nombres,
@@ -13,110 +13,86 @@ const empleadosService = {
       fecha_ingreso,
       fecha_nacimiento,
       usuario,
-      contrasena, // Agregamos la contraseña
+      contrasena,
     } = nuevoEmpleado;
 
-    return new Promise((resolve, reject) => {
-      database.getConnection((err, connection) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
 
-        connection.beginTransaction(async (transactionError) => {
-          if (transactionError) {
-            connection.release();
-            reject(transactionError);
-            return;
-          }
+      // Insertar el usuario en la tabla 'usuarios'
+      const insertUsuarioQuery = `INSERT INTO usuarios (usuario, contrasena) VALUES (?, ?)`;
+      const [usuarioResult] = await connection.query(insertUsuarioQuery, [
+        usuario,
+        contrasena,
+      ]);
+      console.log("Usuario creado con ID:", usuarioResult.insertId);
 
-          try {
-            // Insertar en la tabla `usuarios`
-            const insertUsuarioQuery = `INSERT INTO usuarios (usuario, contrasena) VALUES (?, ?)`;
-            const [usuarioResult] = await connection
-              .promise()
-              .query(insertUsuarioQuery, [usuario, contrasena]);
+      // Insertar el empleado en la tabla 'empleados'
+      const insertEmpleadoQuery = `INSERT INTO empleados (cedula, nombres, correo, telefono, direccion, cargo, salario, fecha_ingreso, fecha_nacimiento, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const empleadoValues = [
+        cedula,
+        nombres,
+        correo,
+        telefono,
+        direccion,
+        cargo,
+        salario,
+        fecha_ingreso,
+        fecha_nacimiento,
+        usuarioResult.insertId,
+      ];
+      const [empleadoResult] = await connection.query(
+        insertEmpleadoQuery,
+        empleadoValues
+      );
+      console.log("Empleado creado con ID:", empleadoResult.insertId);
 
-            // Insertar en la tabla `empleados`
-            const insertEmpleadoQuery = `INSERT INTO empleados (cedula, nombres, correo, telefono, direccion, cargo, salario, fecha_ingreso, fecha_nacimiento, usuario_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-            const empleadoValues = [
-              cedula,
-              nombres,
-              correo,
-              telefono,
-              direccion,
-              cargo,
-              salario,
-              fecha_ingreso,
-              fecha_nacimiento,
-              usuarioResult.insertId,
-            ];
-            const [empleadoResult] = await connection
-              .promise()
-              .query(insertEmpleadoQuery, empleadoValues);
-
-            connection.commit((commitError) => {
-              if (commitError) {
-                connection.rollback(() => {
-                  connection.release();
-                  reject(commitError);
-                });
-              } else {
-                connection.release();
-                resolve({ id: empleadoResult.insertId, ...nuevoEmpleado });
-              }
-            });
-          } catch (error) {
-            connection.rollback(() => {
-              connection.release();
-              reject(error);
-            });
-          }
-        });
-      });
-    });
+      await connection.commit();
+      return { id: empleadoResult.insertId, ...nuevoEmpleado };
+    } catch (error) {
+      await connection.rollback();
+      console.error("Error durante la transacción:", error);
+      throw error;
+    } finally {
+      connection.release();
+    }
   },
+
   // ! ---------------------------------------------------------------
-  getAllEmpleados: () => {
+  getAllEmpleados: async () => {
     const query =
       "SELECT empleados.*, roles.nombre_rol AS cargo FROM empleados LEFT JOIN roles ON empleados.cargo = roles.id_rol";
-    return new Promise((resolve, reject) => {
-      database.query(query, (error, results, fields) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve(results);
-      });
-    });
+    try {
+      const [results] = await pool.query(query);
+      return results;
+    } catch (error) {
+      console.error("Error al obtener empleados:", error);
+      throw error;
+    }
   },
 
-  getEmpleadoPorId: (empleadoId) => {
+  getEmpleadoPorId: async (empleadoId) => {
     const query = "SELECT * FROM empleados WHERE id_empleado = ?";
-    return new Promise((resolve, reject) => {
-      database.query(query, [empleadoId], (error, results, fields) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve(results[0]); // Devuelve el primer resultado (debería ser único)
-      });
-    });
+    try {
+      const [results] = await pool.query(query, [empleadoId]);
+      return results[0]; // Devuelve el primer resultado (debería ser único)
+    } catch (error) {
+      console.error("Error al obtener empleado por ID:", error);
+      throw error;
+    }
   },
 
   // TODO =================================================================
   // ! codigo para la eliminacion de un empleado
-  eliminarEmpleado: (empleadoId) => {
+  eliminarEmpleado: async (empleadoId) => {
     const query = "DELETE FROM empleados WHERE id_empleado = ?";
-    return new Promise((resolve, reject) => {
-      database.query(query, [empleadoId], (error, results, fields) => {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve();
-      });
-    });
+    try {
+      await pool.query(query, [empleadoId]);
+    } catch (error) {
+      console.error("Error al eliminar empleado:", error);
+      throw error;
+    }
   },
   // TODO =================================================================
 };

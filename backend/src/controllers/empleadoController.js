@@ -3,11 +3,16 @@ const empleadosService = require("../services/empleadoService");
 const empleadosController = {
   crearEmpleado: async (req, res) => {
     try {
-      const nuevoEmpleado = req.body; // Obtén los datos del nuevo empleado del cuerpo de la solicitud
+      // Aquí deberías recibir los datos del empleado desde el frontend
+      const nuevoEmpleado = req.body; // Verifica que los datos estén llegando correctamente desde tu frontend
+      console.log(
+        "Datos del nuevo empleado estan llegando al controlador:",
+        nuevoEmpleado
+      );
       const empleadoCreado = await empleadosService.crearEmpleado(
         nuevoEmpleado
       );
-      res.status(201).json(empleadoCreado); // Devuelve el nuevo empleado creado con el código 201 (Created)
+      res.status(201).json(empleadoCreado);
     } catch (error) {
       console.error("Error al crear empleado:", error);
       res.status(500).send("Error al crear empleado");

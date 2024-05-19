@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import Modal from 'react-modal';
 import Swal from 'sweetalert2'
-
 import "../css/empleados.css";
 import ButtonComponent from "../otrosComponentes/ButtonComponent";
 
@@ -15,12 +14,130 @@ import EditIcon from '@mui/icons-material/Edit';
 
 
 const Empleados = () => {
+  // const [loading, setLoading] = useState(false);
   const [empleados, setEmpleados] = useState([]);
   const [showSubMenuIndex, setShowSubMenuIndex] = useState(null);
   const [selectedEmpleado, setSelectedEmpleado] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [formAddEmpleado, setFormAddEmpleado] = useState(false);
+  const [formData, setFormData] = useState({
+    cedula: "",
+    nombres: "",
+    correo: "",
+    telefono: "",
+    direccion: "",
+    cargo: "",
+    salario: "",
+    fechaIngreso: "",
+    fechaNacimiento: "",
+    usuario: "",
+    contrasena: ""
+  });
 
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    // Validaciones
+
+    let newValue = value;
+    if (name === "cedula" || name === "telefono" || name === "salario") {
+      newValue = newValue.replace(/\D/g, ''); // Eliminar caracteres no numéricos
+    }
+    if (name === "nombres") {
+      newValue = newValue.replace(/[^a-zA-Z\s]/g, ''); // Solo permitir letras y espacios   tengo un error aqui
+    }
+    if (name === "cedula" && newValue.length > 10) {
+      newValue = newValue.slice(0, 10);
+    }
+
+
+    setFormData({
+      ...formData,
+      [name]: newValue
+    });
+  };
+
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Validaciones adicionales
+    if (formData.cedula.length >= 10) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'La cédula no puede tener mas de 10 digitos.',
+      });
+      return;
+    }
+
+    if (formData.telefono.length !== 10) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El teléfono debe tener exactamente 10 dígitos.',
+      });
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(formData.correo)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El correo electrónico no es válido.',
+      });
+      return;
+    }
+
+    try {
+      const formattedData = {
+        ...formData,
+        fechaIngreso: formatDate(formData.fechaIngreso),
+        fechaNacimiento: formatDate(formData.fechaNacimiento)
+      };
+      const response = await axios.post('http://localhost:4000/empleados', formattedData);
+      // Mostrar un mensaje de éxito usando SweetAlert2
+      await Swal.fire({
+        icon: 'success',
+        title: 'Empleado agregado',
+        text: 'El empleado ha sido agregado correctamente.',
+      });
+      // Limpiar el formulario después de enviar los datos
+      setFormData({
+        cedula: "",
+        nombres: "",
+        correo: "",
+        telefono: "",
+        direccion: "",
+        cargo: "",
+        salario: "",
+        fechaIngreso: "",
+        fechaNacimiento: "",
+        usuario: "",
+        contrasena: ""
+      });
+      // Cerrar el modal de formulario
+      setFormAddEmpleado(false);
+      fetchEmpleados();
+    } catch (error) {
+      console.error('Error al enviar el formulario:', error);
+      // Mostrar un mensaje de error usando SweetAlert2
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un error al enviar el formulario. Por favor, inténtalo de nuevo más tarde.',
+      });
+    }
+  };
+
+
+  // Función para formatear la fecha en el formato YYYY-MM-DD
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  };
   // Función para abrir el modal
   const openFormAddEmpleado = () => {
     setFormAddEmpleado(true);
@@ -32,19 +149,19 @@ const Empleados = () => {
   };
 
   // mostrar todos los empleados
-  useEffect(() => {
-    const fetchEmpleados = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/empleados");
-        console.log("Datos de empleados:", response.data);
-        setEmpleados(response.data);
-      } catch (error) {
-        console.error("Error al obtener empleados:", error);
-      }
-    };
+  const fetchEmpleados = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/empleados");
+      setEmpleados(response.data);
+    } catch (error) {
+      console.error("Error al obtener empleados:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchEmpleados();
   }, []);
+
 
 
   // Mostrar empleado por id
@@ -86,6 +203,7 @@ const Empleados = () => {
 
         console.log("Empleado eliminado con éxito");
       }
+      fetchEmpleados();
     } catch (error) {
       console.error("Error al eliminar empleado:", error);
     }
@@ -97,20 +215,20 @@ const Empleados = () => {
     setShowSubMenuIndex(index === showSubMenuIndex ? null : index);
   };
 
-  // Función para formatear la fecha con ceros adelante si es necesario
+  // Función para formatear la fecha en el formato de MySQL (YYYY-MM-DD)
   const formatearFecha = (fecha) => {
     const fechaObj = new Date(fecha);
-    const dia = fechaObj.getDate().toString().padStart(2, '0'); // Agrega cero adelante si es necesario
-    const mes = (fechaObj.getMonth() + 1).toString().padStart(2, '0'); // Agrega cero adelante si es necesario
     const año = fechaObj.getFullYear();
-    return `${dia}/${mes}/${año}`;
+    const mes = (fechaObj.getMonth() + 1).toString().padStart(2, '0');
+    const dia = fechaObj.getDate().toString().padStart(2, '0');
+    return `${año}-${mes}-${dia}`;
   };
-
 
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedEmpleado(null);
   };
+
   const estilosFormEmpleado = {
     content: {
       top: '50%',
@@ -124,9 +242,29 @@ const Empleados = () => {
       borderRadius: '10px',
       backgroundColor: 'var(--primer)', // Fondo del contenido del modal
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      position: 'relative',
     },
     overlay: {
-      backgroundColor: 'rgba(255, 255, 255, 0.566)' // Fondo del overlay
+      backgroundColor: 'rgba(255, 255, 255, 0)' // Fondo del overlay
+    }
+  };
+  const estilosDetalles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      width: '1000px',
+      padding: '20px',
+      borderRadius: '10px',
+      backgroundColor: 'var(--primer)', // Fondo del contenido del modal
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      position: 'relative',
+    },
+    overlay: {
+      backgroundColor: 'rgba(255, 255, 255, 0)' // Fondo del overlay
     }
   };
   const cargos = [
@@ -135,15 +273,15 @@ const Empleados = () => {
       label: '',
     },
     {
-      value: 'Administrador',
+      id: 1,
       label: 'Administrador',
     },
     {
-      value: 'bodeguero',
+      id: 2,
       label: 'Bodeguero',
     },
     {
-      value: 'vendedor',
+      id: 3,
       label: 'Vendedor',
     },
   ];
@@ -158,53 +296,152 @@ const Empleados = () => {
         onRequestClose={closeFormAddEmpleado}
         contentLabel="Agregar Empleado"
         style={estilosFormEmpleado}
+
       >
 
-        <form className="grid-form">
+        <form className="grid-form" onSubmit={handleSubmit}>
           <h2 className="title-form">Ingresar Empleados</h2>
           <div className="contain-inputs">
-            <TextField fullWidth label="Cedula" id="fullWidth" />
-            <TextField fullWidth label="Nombres" id="fullWidth" />
-            <TextField fullWidth label="Correo electronico" id="fullWidth" type="email" />
-            <TextField fullWidth label="Telefono" id="fullWidth" />
-            <TextField fullWidth label="Direccion" id="fullWidth" />
+            <TextField
+              fullWidth
+              label="Cedula"
+              id="cedula"
+              name="cedula"
+              value={formData.cedula}
+              onChange={handleInputChange}
+
+              required
+            />
+            <TextField
+              fullWidth
+              label="Nombres"
+              id="nombres"
+              name="nombres"
+              value={formData.nombres}
+              onChange={handleInputChange}
+              required
+
+            />
+            <TextField
+              fullWidth
+              label="Correo electrónico"
+              type="email"
+              id="correo"
+              name="correo"
+              value={formData.correo}
+              onChange={handleInputChange}
+              required
+
+            />
+            <TextField
+              fullWidth
+              label="Teléfono"
+              id="telefono"
+              name="telefono"
+              value={formData.telefono}
+              onChange={handleInputChange}
+              required
+
+            />
+            <TextField
+              fullWidth
+              label="Dirección"
+              id="direccion"
+              name="direccion"
+              value={formData.direccion}
+              onChange={handleInputChange}
+              required
+
+            />
+
             <TextField
               id="outlined-select-currency-native"
               select
               label="Seleccione un cargo"
-              defaultValue="0"
               SelectProps={{
                 native: true,
               }}
               variant="outlined"
               fullWidth
+              name="cargo"
+              value={formData.cargo}
+              onChange={handleInputChange}
+              required
             >
               {cargos.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.id}>
                   {option.label}
                 </option>
               ))}
             </TextField>
-            <TextField fullWidth label="Salario" id="fullWidth" />
-            <TextField fullWidth label="Fecha de ingreso" id="fullWidth" type="date"
+
+
+            <TextField
+              fullWidth
+              label="Salario"
+              id="salario"
+              name="salario"
+              value={formData.salario}
+              onChange={handleInputChange}
+              required
+
+            />
+            <TextField
+              fullWidth
+              label="Fecha de ingreso"
+              type="date"
               InputLabelProps={{
                 shrink: true,
-              }} />
-            <TextField fullWidth label="Fecha de nacimiento" id="fullWidth" type="date"
+              }}
+              id="fechaIngreso"
+              name="fechaIngreso"
+              value={formData.fechaIngreso}
+              onChange={handleInputChange}
+              required
+
+            />
+            <TextField
+              fullWidth
+              label="Fecha de nacimiento"
+              type="date"
               InputLabelProps={{
                 shrink: true,
-              }} />
+              }}
+              id="fechaNacimiento"
+              name="fechaNacimiento"
+              value={formData.fechaNacimiento}
+              onChange={handleInputChange}
+              required
+
+            />
           </div>
           <Divider />
           <h2 className="title-form">Usuario</h2>
           <div className="contain-usuario">
-            <TextField fullWidth label="Usuario" id="fullWidth" />
+            <TextField
+              fullWidth
+              label="Usuario"
+              id="usuario"
+              name="usuario"
+              value={formData.usuario}
+              onChange={handleInputChange}
+              required
 
-            <TextField fullWidth label="contraseña" id="fullWidth" type="password" />
+            />
+            <TextField
+              fullWidth
+              label="Contraseña"
+              type="password"
+              id="contrasena"
+              name="contrasena"
+              value={formData.contrasena}
+              onChange={handleInputChange}
+              required
+
+            />
           </div>
           <Divider />
           <div className="contain-btns">
-
             <ButtonComponent
               onClick={closeFormAddEmpleado}
               color="var(--quinto)"
@@ -212,8 +449,10 @@ const Empleados = () => {
               height="40px"
               fontSize="1.1rem"
               margin="0"
-              text="Cancelar" />
+              text="Cancelar"
+              required
 
+            />
             <ButtonComponent
               type="submit"
               color="var(--segundo)"
@@ -221,10 +460,13 @@ const Empleados = () => {
               height="40px"
               fontSize="1.1rem"
               margin="0"
-              text="Agregar" />
+              text={"Agregar"}
 
+
+            />
           </div>
         </form>
+
 
       </Modal>
 
@@ -236,8 +478,10 @@ const Empleados = () => {
           width="11%"
           height="30px"
           fontSize="1rem"
+          style={{ zIndex: 0 }}
           margin="0"
           text="Nuevo" />
+
       </section>
       <Divider />
       <section className="witches max-width">
@@ -311,18 +555,24 @@ const Empleados = () => {
       </section>
       {
         selectedEmpleado && (
-          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Detalles del Empleado">
-            <h2>Detalles del Empleado</h2>
-            <div><strong>Cédula:</strong> {selectedEmpleado.cedula}</div>
-            <div><strong>Nombres:</strong> {selectedEmpleado.nombres}</div>
-            <div><strong>Correo:</strong> {selectedEmpleado.correo}</div>
-            <div><strong>Teléfono:</strong> {selectedEmpleado.telefono}</div>
-            <div><strong>Dirección:</strong> {selectedEmpleado.direccion}</div>
-            <div><strong>Cargo:</strong> {selectedEmpleado.cargo}</div>
-            <div><strong>Salario:</strong> {selectedEmpleado.salario}</div>
-            <div><strong>Fecha de Ingreso:</strong> {formatearFecha(selectedEmpleado.fecha_ingreso)}</div>
-            <div><strong>Fecha de Ing:</strong> {formatearFecha(selectedEmpleado.fecha_ingreso)}</div>
-            <button onClick={closeModal}>Cerrar</button>
+          <Modal
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+            style={estilosDetalles}
+            contentLabel="Detalles del Empleado">
+            <div className="detalles">
+              <h2>Detalles del Empleado</h2>
+              <div><strong>Cédula:</strong> {selectedEmpleado.cedula}</div>
+              <div><strong>Nombres:</strong> {selectedEmpleado.nombres}</div>
+              <div><strong>Correo:</strong> {selectedEmpleado.correo}</div>
+              <div><strong>Teléfono:</strong> {selectedEmpleado.telefono}</div>
+              <div><strong>Dirección:</strong> {selectedEmpleado.direccion}</div>
+              <div><strong>Cargo:</strong> {selectedEmpleado.cargo}</div>
+              <div><strong>Salario:</strong> {selectedEmpleado.salario}</div>
+              <div><strong>Fecha de Ingreso:</strong> {formatearFecha(selectedEmpleado.fecha_ingreso)}</div>
+              <div><strong>Fecha de nacimiento:</strong> {formatearFecha(selectedEmpleado.fecha_nacimiento)}</div>
+              <button onClick={closeModal}>Cerrar</button>
+            </div>
           </Modal>
         )
       }

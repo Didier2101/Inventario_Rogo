@@ -12,6 +12,7 @@ const ButtonComponent = ({ type = 'button', color, width, text, fontSize, height
                 fontSize: fontSize,
                 marginTop: margin,
 
+
             }}
             onClick={onClick}
             type={type}

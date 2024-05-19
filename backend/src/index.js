@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const database = require("./database");
+const pool = require("./database");
 
 const empleadosRouter = require("./routes/empleadoRouter");
 
@@ -12,6 +12,12 @@ app.use(express.json());
 
 app.use(empleadosRouter);
 
-app.listen(port, () => {
+app.listen(port, async () => {
+  try {
+    await pool.getConnection();
+    console.log("Conexión a la base de datos exitosa");
+  } catch (error) {
+    console.error("Error al conectar a la base de datos:", error);
+  }
   console.log(`Servidor backend corriendo en http://localhost:${port}`);
 });

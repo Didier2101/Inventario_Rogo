@@ -200,6 +200,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  z-index: 20;
 }
 .grid-form .contain-inputs {
   display: grid;
@@ -227,4 +228,23 @@
 }
 
 @media (min-width: 768px) {
+}
+.detalles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 1.2rem;
+}
+
+.detalles div {
+  padding: 5px 0;
+}
+
+@media screen and (max-width: 600px) {
+  .detalles {
+    grid-template-columns: 1fr;
+  }
 }
