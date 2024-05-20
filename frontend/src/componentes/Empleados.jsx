@@ -6,8 +6,8 @@ import Swal from 'sweetalert2'
 import "../css/empleados.css";
 import ButtonComponent from "../otrosComponentes/ButtonComponent";
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Divider, IconButton, TextField } from "@mui/material";
+
+import { Divider, IconButton, TextField, Tooltip } from "@mui/material";
 import InfoIcon from '@mui/icons-material/Info';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,8 +15,9 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const Empleados = () => {
   // const [loading, setLoading] = useState(false);
+
+
   const [empleados, setEmpleados] = useState([]);
-  const [showSubMenuIndex, setShowSubMenuIndex] = useState(null);
   const [selectedEmpleado, setSelectedEmpleado] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [formAddEmpleado, setFormAddEmpleado] = useState(false);
@@ -33,7 +34,14 @@ const Empleados = () => {
     usuario: "",
     contrasena: ""
   });
-
+  const formatCurrency = (value) => {
+    if (!value) return '';
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+    }).format(value).replace(/\$|COP/g, '');
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -50,6 +58,12 @@ const Empleados = () => {
     if (name === "cedula" && newValue.length > 10) {
       newValue = newValue.slice(0, 10);
     }
+    if (name === "telefono" && newValue.length > 10) {
+      newValue = newValue.slice(0, 10);
+    }
+    if (name === "salario") {
+      newValue = formatCurrency(newValue);
+    }
 
 
     setFormData({
@@ -64,7 +78,7 @@ const Empleados = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Validaciones adicionales
-    if (formData.cedula.length >= 10) {
+    if (formData.cedula.length > 10) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -94,6 +108,7 @@ const Empleados = () => {
     try {
       const formattedData = {
         ...formData,
+        salario: parseInt(formData.salario.replace(/\D/g, '')),
         fechaIngreso: formatDate(formData.fechaIngreso),
         fechaNacimiento: formatDate(formData.fechaNacimiento)
       };
@@ -210,11 +225,6 @@ const Empleados = () => {
   };
 
 
-
-  const toggleSubMenu = (index) => {
-    setShowSubMenuIndex(index === showSubMenuIndex ? null : index);
-  };
-
   // Función para formatear la fecha en el formato de MySQL (YYYY-MM-DD)
   const formatearFecha = (fecha) => {
     const fechaObj = new Date(fecha);
@@ -228,6 +238,8 @@ const Empleados = () => {
     setModalIsOpen(false);
     setSelectedEmpleado(null);
   };
+
+
 
   const estilosFormEmpleado = {
     content: {
@@ -294,7 +306,6 @@ const Empleados = () => {
       <Modal
         isOpen={formAddEmpleado}
         onRequestClose={closeFormAddEmpleado}
-        contentLabel="Agregar Empleado"
         style={estilosFormEmpleado}
 
       >
@@ -519,35 +530,28 @@ const Empleados = () => {
             </div>
 
             <div className="celda seven">{empleado.cargo}</div>
-            <div className="celda salario eight">{empleado.salario}</div>
+            <div className="celda salario eight">COP: {formatCurrency(empleado.salario)}</div>
             <div className="celda nine"><strong>{formatearFecha(empleado.fecha_ingreso)}</strong></div>
-            <div className="celda acciones ten">
-              <IconButton aria-label="delete" size="small " onClick={() => toggleSubMenu(index)}>
-                <MoreVertIcon fontSize="medium" />
-              </IconButton>
-
-              {showSubMenuIndex === index && (
-                <div className="sub-menu">
-                  <IconButton aria-label="delete" style={{ color: "var(--quinto)" }}
-                    onClick={() => eliminarEmpleado(empleado.id_empleado, empleado.nombres)}
-                  >
-                    <DeleteIcon size="medium" />
-                    {/* <span>Eliminar</span> */}
-                  </IconButton>
-                  <IconButton aria-label="delete" style={{ color: "var(--octavo)" }}>
-                    <EditIcon size="medium" />
-                    {/* <span>Editar</span> */}
-                  </IconButton>
-
-                  <IconButton aria-label="delete" style={{ color: "var(--tercero)" }}
+            <div className="celda acciones  ten">
+              <Tooltip title="Detalles">
+                <IconButton size="small" color="success">
+                  <InfoIcon
                     onClick={() => mostrarEmpleadoPorId(empleado.id_empleado)}
-                  >
-                    <InfoIcon size="medium" />
-                    {/* <span>Detalles</span> */}
-                  </IconButton>
-                </div>
-              )}
-
+                  />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Editar">
+                <IconButton size="small" color="primary">
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Eliminar">
+                <IconButton size="small" color="error">
+                  <DeleteIcon
+                    onClick={() => eliminarEmpleado(empleado.id_empleado, empleado.nombres)}
+                  />
+                </IconButton>
+              </Tooltip>
             </div>
 
           </div>
@@ -568,7 +572,7 @@ const Empleados = () => {
               <div><strong>Teléfono:</strong> {selectedEmpleado.telefono}</div>
               <div><strong>Dirección:</strong> {selectedEmpleado.direccion}</div>
               <div><strong>Cargo:</strong> {selectedEmpleado.cargo}</div>
-              <div><strong>Salario:</strong> {selectedEmpleado.salario}</div>
+              <p><strong>Salario:</strong> COP: {formatCurrency(selectedEmpleado.salario)}</p>
               <div><strong>Fecha de Ingreso:</strong> {formatearFecha(selectedEmpleado.fecha_ingreso)}</div>
               <div><strong>Fecha de nacimiento:</strong> {formatearFecha(selectedEmpleado.fecha_nacimiento)}</div>
               <button onClick={closeModal}>Cerrar</button>
