@@ -1,74 +1,57 @@
-const empleadosService = require("../services/empleadoService");
+const empleadoService = require("../services/empleadoService");
 
-const empleadosController = {
-  crearEmpleado: async (req, res) => {
-    try {
-      // Aquí deberías recibir los datos del empleado desde el frontend
-      const nuevoEmpleado = req.body; // Verifica que los datos estén llegando correctamente desde tu frontend
-      console.log(
-        "Datos del nuevo empleado estan llegando al controlador:",
-        nuevoEmpleado
-      );
-      const empleadoCreado = await empleadosService.crearEmpleado(
-        nuevoEmpleado
-      );
-      res.status(201).json(empleadoCreado);
-    } catch (error) {
-      console.error("Error al crear empleado:", error);
-      res.status(500).send("Error al crear empleado");
-    }
-  },
-
-  // TODO =================================================================
-  // ! codigo para mostrar todos los empleados
-  getAllEmpleados: (req, res) => {
-    empleadosService
-      .getAllEmpleados()
-      .then((empleados) => {
-        res.status(200).json(empleados);
-      })
-      .catch((error) => {
-        console.error("Error al obtener empleados:", error);
-        res.status(500).send("Error al obtener empleados");
-      });
-  },
-  // TODO =================================================================
-
-  // TODO =================================================================
-  // ! codigo para ver empleado por ID
-  getEmpleadoPorId: (req, res) => {
-    const empleadoId = req.params.id_empleado;
-    empleadosService
-      .getEmpleadoPorId(empleadoId)
-      .then((empleado) => {
-        if (!empleado) {
-          res.status(404).send("Empleado no encontrado");
-          return;
-        }
-        res.status(200).json(empleado);
-      })
-      .catch((error) => {
-        console.error("Error al obtener empleado por ID:", error);
-        res.status(500).send("Error al obtener empleado por ID");
-      });
-  },
-  // TODO =================================================================
-
-  // TODO =================================================================
-  // ! codigo para la eliminacion de un empleado
-  eliminarEmpleado: (req, res) => {
-    const empleadoId = req.params.id_empleado;
-    empleadosService
-      .eliminarEmpleado(empleadoId)
-      .then(() => {
-        res.status(200).send("Empleado eliminado con éxito");
-      })
-      .catch((error) => {
-        console.error("Error al eliminar empleado:", error);
-        res.status(500).send("Error al eliminar empleado");
-      });
-  },
-  // TODO =================================================================
+const crearEmpleado = (req, res) => {
+  try {
+    const empleado = req.body;
+    empleadoService.agregarEmpleado(empleado);
+    res.status(201).json({ message: "Empleado creado exitosamente" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al crear el empleado", error: error.message });
+  }
+};
+// TODO =================================================================
+// Controlador para obtener todos los empleados
+const obtenerTodosEmpleados = async (req, res) => {
+  try {
+    const empleados = await empleadoService.obtenerTodosEmpleados();
+    res.status(200).json(empleados);
+  } catch (error) {
+    console.error("Error al obtener los empleados:", error);
+    res.status(500).json({ message: "Error al obtener los empleados" });
+  }
+};
+// TODO =================================================================
+// Controlador para actualizar un empleado
+const actualizarEmpleado = async (req, res) => {
+  const idEmpleado = req.params.id_empleado;
+  const nuevoEmpleado = req.body;
+  console.log(`Actualizar empleado con ID: ${idEmpleado}`);
+  console.log("Datos del nuevo empleado:", nuevoEmpleado);
+  try {
+    await empleadoService.actualizarEmpleado(idEmpleado, nuevoEmpleado);
+    res.status(200).json({ message: "Empleado actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar el empleado:", error);
+    res.status(500).json({ message: "Error al actualizar el empleado" });
+  }
+};
+// TODO =================================================================
+const eliminarEmpleado = async (req, res) => {
+  const idEmpleado = req.params.id_empleado;
+  try {
+    await empleadoService.eliminarEmpleado(idEmpleado);
+    res.status(200).json({ message: "Empleado eliminado correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar el empleado:", error);
+    res.status(500).json({ message: "Error al eliminar el empleado" });
+  }
 };
 
-module.exports = empleadosController;
+module.exports = {
+  crearEmpleado,
+  obtenerTodosEmpleados,
+  actualizarEmpleado,
+  eliminarEmpleado,
+};

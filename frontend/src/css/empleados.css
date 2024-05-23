@@ -1,14 +1,14 @@
 .section-item {
-  margin-top: 20px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
   padding: 0px 10px;
+  gap: 10px;
 }
 .witches {
   width: 100%;
   background-color: var(--decimo);
-  border-radius: 10px;
+  border-radius: 4px;
 }
 .witches .witches-list {
   list-style: none;
@@ -227,7 +227,16 @@
   margin-top: 10px;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
+  .grid-form .contain-inputs {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid-form .contain-usuario {
+    display: flex;
+    flex-direction: column;
+  }
 }
 .detalles {
   display: grid;

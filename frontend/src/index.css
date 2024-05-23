@@ -42,7 +42,9 @@ img {
 .hide-menu {
   display: none;
 }
-
+.hide {
+  display: none;
+}
 /* Para WebKit (Chrome, Safari, Opera) */
 ::-webkit-scrollbar {
   width: 6px; /* Ancho del scrollbar */

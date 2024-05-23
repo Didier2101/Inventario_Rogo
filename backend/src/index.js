@@ -9,15 +9,10 @@ const port = 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(empleadosRouter);
 
 app.listen(port, async () => {
-  try {
-    await pool.getConnection();
-    console.log("Conexión a la base de datos exitosa");
-  } catch (error) {
-    console.error("Error al conectar a la base de datos:", error);
-  }
   console.log(`Servidor backend corriendo en http://localhost:${port}`);
 });

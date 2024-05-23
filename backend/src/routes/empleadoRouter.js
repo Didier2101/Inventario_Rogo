@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const {
-  getAllEmpleados,
   crearEmpleado,
-  getEmpleadoPorId,
+  obtenerTodosEmpleados,
+  actualizarEmpleado,
   eliminarEmpleado,
 } = require("../controllers/empleadoController");
 
 // Obtener todos los empleados
-router.get("/empleados", getAllEmpleados);
 router.post("/empleados", crearEmpleado);
-router.get("/empleados/:id_empleado", getEmpleadoPorId);
+router.get("/empleados", obtenerTodosEmpleados);
+router.put("/empleados/:id_empleado", actualizarEmpleado);
 router.delete("/empleados/:id_empleado", eliminarEmpleado);
 
 module.exports = router;
