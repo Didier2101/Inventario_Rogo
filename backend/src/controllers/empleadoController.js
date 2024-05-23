@@ -1,14 +1,13 @@
 const empleadoService = require("../services/empleadoService");
 
-const crearEmpleado = (req, res) => {
+const crearEmpleado = async (req, res) => {
   try {
     const empleado = req.body;
-    empleadoService.agregarEmpleado(empleado);
+    await empleadoService.agregarEmpleado(empleado);
     res.status(201).json({ message: "Empleado creado exitosamente" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al crear el empleado", error: error.message });
+    console.error("Error al crear los empleados:", error);
+    res.status(500).json({ message: "Error al crear los empleados" });
   }
 };
 // TODO =================================================================
@@ -42,10 +41,9 @@ const eliminarEmpleado = async (req, res) => {
   const idEmpleado = req.params.id_empleado;
   try {
     await empleadoService.eliminarEmpleado(idEmpleado);
-    res.status(200).json({ message: "Empleado eliminado correctamente" });
+    res.status(200).json();
   } catch (error) {
-    console.error("Error al eliminar el empleado:", error);
-    res.status(500).json({ message: "Error al eliminar el empleado" });
+    res.status(500).json();
   }
 };
 

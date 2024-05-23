@@ -8,11 +8,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ButtonComponent from "../otrosComponentes/ButtonComponent";
 
-
+// import { validarFormularioEmpleado, formatearConPuntos, validarLongitudTelefono } from '../utils/validaciones';
 
 
 const Empleados = () => {
   const cargos = [
+    {
+      id: 0,
+      label: "",
+    },
     {
       id: 1,
       label: "Administrador",
@@ -61,6 +65,19 @@ const Empleados = () => {
   const cambiosInputs = (e) => {
     const { name, value } = e.target;
     setFormularioInformacion({ ...formularioInformacion, [name]: value });
+    // Verificar si el nombre del campo es diferente de "usuario" y "contrasena"
+    if (name !== "usuario" && name !== "contrasena" && name !== "correo") {
+      // Dividir la cadena en palabras, capitalizar la primera letra de cada palabra y unirlas de nuevo
+      const formattedValue = value
+        .toLowerCase()
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      setFormularioInformacion({ ...formularioInformacion, [name]: formattedValue });
+    } else {
+      // Si es "usuario" o "contrasena", establecer el valor sin formato
+      setFormularioInformacion({ ...formularioInformacion, [name]: value });
+    }
   };
 
   const obtenerEmpleados = async () => {
@@ -82,9 +99,12 @@ const Empleados = () => {
   }, []);
 
 
+
   // Función para agregar o actualizar un empleado
   const agregarEmpleado = async (e) => {
     e.preventDefault();
+
+
     try {
       let url = 'http://localhost:4000/empleados';
       let method = 'POST';
@@ -101,6 +121,19 @@ const Empleados = () => {
         },
         body: JSON.stringify(formularioInformacion),
       });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.error && data.error === "CEDULA_DUPLICADA") {
+          // Si la cédula ya existe, mostrar un mensaje al usuario
+          alert("La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.");
+        } else {
+          // Si la cédula no existe, enviar el formulario
+          e.target.submit();
+        }
+      } else {
+        console.error("Error al verificar la cédula en el servidor");
+      }
+
 
       if (response.ok) {
         if (modoEditar) {
@@ -108,12 +141,16 @@ const Empleados = () => {
             title: 'Empleado Actualizado',
             text: 'El empleado ha sido actualizado correctamente.',
             icon: 'success',
+            timer: 1000,
+            showConfirmButton: false
           });
         } else {
           Swal.fire({
             title: 'Empleado Agregado',
             text: 'El empleado ha sido agregado correctamente.',
             icon: 'success',
+            timer: 1000,
+            showConfirmButton: false
           });
         }
         cerrarFormulario();
@@ -142,9 +179,15 @@ const Empleados = () => {
       });
 
       if (result.isConfirmed) {
-        await fetch(`http://localhost:4000/empleados/${empleadoId}`, {
+        const response = await fetch(`http://localhost:4000/empleados/${empleadoId}`, {
           method: 'DELETE',
         });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message); // Lanza un error con el mensaje del backend
+        }
+
         setEmpleados(
           empleados.filter((empleado) => empleado.id_empleado !== empleadoId)
         );
@@ -153,15 +196,20 @@ const Empleados = () => {
           title: "Eliminado!",
           html: `El empleado  <strong>${empleadoNombre}</strong>? ha sido eliminado.`,
           icon: "success",
+          timer: 1000,
+          showConfirmButton: false
         });
-
-        console.log("Empleado eliminado con éxito");
       }
       obtenerEmpleados(); // Asumiendo que fetchEmpleados() es una función que actualiza la lista de empleados
     } catch (error) {
-      console.error("Error al eliminar empleado:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message, // Muestra el mensaje de error del backend
+      });
     }
   };
+
 
 
 
@@ -263,7 +311,7 @@ const Empleados = () => {
             <div className="celda seven"> {empleado.cargo}</div>
 
             <div className="celda salario eight">
-              COP: {empleado.salario}
+              COP:  {empleado.salario}
             </div>
             <div className="celda nine">
               <strong>{empleado.fecha_ingreso}</strong>

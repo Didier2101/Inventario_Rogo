@@ -4,7 +4,6 @@ const pool = require("../database");
 // Función para agregar un empleado a la base de datos
 const agregarEmpleado = async (empleado) => {
   try {
-    // Insertar los datos del usuario en la tabla usuarios
     const usuarioInsertQuery =
       "INSERT INTO usuarios (usuario, contrasena) VALUES (?, ?)";
     const usuarioValues = [empleado.usuario, empleado.contrasena];

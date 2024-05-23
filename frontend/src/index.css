@@ -45,6 +45,11 @@ img {
 .hide {
   display: none;
 }
+/* styles.css or a relevant CSS file */
+.swal-container {
+  z-index: 2000 !important;
+}
+
 /* Para WebKit (Chrome, Safari, Opera) */
 ::-webkit-scrollbar {
   width: 6px; /* Ancho del scrollbar */
