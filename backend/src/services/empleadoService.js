@@ -57,7 +57,23 @@ const obtenerTodosEmpleados = async () => {
 
 const actualizarEmpleado = async (idEmpleado, nuevoEmpleado) => {
   try {
-    // Actualizar los datos del empleado en la base de datos
+    // Verificar si la nueva cédula ya existe en otro empleado
+    const checkCedulaQuery =
+      "SELECT id_empleado FROM empleados WHERE cedula = ? AND id_empleado != ?";
+    const [existingEmployee] = await pool.query(checkCedulaQuery, [
+      nuevoEmpleado.cedula,
+      idEmpleado,
+    ]);
+
+    if (existingEmployee.length > 0) {
+      throw {
+        code: "CEDULA_DUPLICADA",
+        message:
+          "La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.",
+      };
+    }
+
+    // Continuar con la actualización del empleado si no hay cédula duplicada
     const query = `
       UPDATE empleados 
       SET 

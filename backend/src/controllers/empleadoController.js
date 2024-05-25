@@ -6,10 +6,19 @@ const crearEmpleado = async (req, res) => {
     await empleadoService.agregarEmpleado(empleado);
     res.status(201).json({ message: "Empleado creado exitosamente" });
   } catch (error) {
-    console.error("Error al crear los empleados:", error);
-    res.status(500).json({ message: "Error al crear los empleados" });
+    if (error.code === "ER_DUP_ENTRY") {
+      res.status(400).json({
+        error: "CEDULA_DUPLICADA",
+        message:
+          "La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.",
+      });
+    } else {
+      console.error("Error al crear los empleados:", error);
+      res.status(500).json({ message: "Error al crear los empleados" });
+    }
   }
 };
+
 // TODO =================================================================
 // Controlador para obtener todos los empleados
 const obtenerTodosEmpleados = async (req, res) => {
@@ -26,16 +35,22 @@ const obtenerTodosEmpleados = async (req, res) => {
 const actualizarEmpleado = async (req, res) => {
   const idEmpleado = req.params.id_empleado;
   const nuevoEmpleado = req.body;
-  console.log(`Actualizar empleado con ID: ${idEmpleado}`);
-  console.log("Datos del nuevo empleado:", nuevoEmpleado);
   try {
     await empleadoService.actualizarEmpleado(idEmpleado, nuevoEmpleado);
     res.status(200).json({ message: "Empleado actualizado correctamente" });
   } catch (error) {
-    console.error("Error al actualizar el empleado:", error);
-    res.status(500).json({ message: "Error al actualizar el empleado" });
+    if (error.code === "CEDULA_DUPLICADA") {
+      res.status(400).json({
+        message:
+          "La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.",
+      });
+    } else {
+      console.error("Error al actualizar el empleado:", error);
+      res.status(500).json({ message: "Error al actualizar el empleado" });
+    }
   }
 };
+
 // TODO =================================================================
 const eliminarEmpleado = async (req, res) => {
   const idEmpleado = req.params.id_empleado;

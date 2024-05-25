@@ -8,8 +8,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ButtonComponent from "../otrosComponentes/ButtonComponent";
 
-// import { validarFormularioEmpleado, formatearConPuntos, validarLongitudTelefono } from '../utils/validaciones';
-
 
 const Empleados = () => {
   const cargos = [
@@ -64,6 +62,8 @@ const Empleados = () => {
   // Función para manejar cambios en los inputs del formulario
   const cambiosInputs = (e) => {
     const { name, value } = e.target;
+
+
     setFormularioInformacion({ ...formularioInformacion, [name]: value });
     // Verificar si el nombre del campo es diferente de "usuario" y "contrasena"
     if (name !== "usuario" && name !== "contrasena" && name !== "correo") {
@@ -100,9 +100,67 @@ const Empleados = () => {
 
 
 
-  // Función para agregar o actualizar un empleado
   const agregarEmpleado = async (e) => {
     e.preventDefault();
+
+    // Validaciones de campos requeridos
+    for (const key in formularioInformacion) {
+      if (formularioInformacion[key] === "") {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `El campo ${key} es obligatorio.`,
+        });
+        return;
+      }
+    }
+
+    // Validaciones adicionales
+    if (formularioInformacion.cedula.length > 10 && isNaN(formularioInformacion.cedula)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Cedula',
+        text: 'La cédula no puede tener más de 10 números y solo debe tener numeros.',
+      });
+      return;
+    }
+
+    if (isNaN(formularioInformacion.telefono) || formularioInformacion.telefono.length !== 10) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Telefono',
+        text: 'El teléfono debe ser numérico y no puede tener menos de 10 numeros.',
+      });
+      return;
+    }
+
+    if (!/^[a-zA-Z\s]+$/.test(formularioInformacion.nombres)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Nombres',
+        text: 'El campo nombres solo puede contener letras.',
+      });
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(formularioInformacion.correo)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Correo electronico',
+        text: 'El correo electrónico debe tener un formato válido.',
+      });
+      return;
+    }
+
+    if (isNaN(formularioInformacion.salario)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Salario',
+        text: 'El salario debe ser numérico y sin puntos ni caracteres.',
+      });
+      return;
+    }
+
 
 
     try {
@@ -112,8 +170,7 @@ const Empleados = () => {
         url += `/${empleadoID}`;
         method = 'PUT';
       }
-      console.log('Enviando solicitud:', method, url);
-      console.log('Datos:', formularioInformacion);
+
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -121,47 +178,56 @@ const Empleados = () => {
         },
         body: JSON.stringify(formularioInformacion),
       });
-      if (response.ok) {
+
+      if (response.status === 400) {
         const data = await response.json();
         if (data.error && data.error === "CEDULA_DUPLICADA") {
-          // Si la cédula ya existe, mostrar un mensaje al usuario
-          alert("La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.");
+          // Mostrar el mensaje de error al usuario utilizando SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.message,
+          });
+          return;
         } else {
-          // Si la cédula no existe, enviar el formulario
-          e.target.submit();
+          console.error('Error al agregar o actualizar el empleado');
+          return;
         }
-      } else {
-        console.error("Error al verificar la cédula en el servidor");
       }
 
-
-      if (response.ok) {
-        if (modoEditar) {
-          Swal.fire({
-            title: 'Empleado Actualizado',
-            text: 'El empleado ha sido actualizado correctamente.',
-            icon: 'success',
-            timer: 1000,
-            showConfirmButton: false
-          });
-        } else {
-          Swal.fire({
-            title: 'Empleado Agregado',
-            text: 'El empleado ha sido agregado correctamente.',
-            icon: 'success',
-            timer: 1000,
-            showConfirmButton: false
-          });
-        }
-        cerrarFormulario();
-      } else {
+      if (!response.ok) {
         console.error('Error al agregar o actualizar el empleado');
+        return;
       }
+
+      const data = await response.json();
+
+      if (modoEditar) {
+        Swal.fire({
+          title: 'Empleado Actualizado',
+          text: 'El empleado ha sido actualizado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          title: 'Empleado Agregado',
+          text: 'El empleado ha sido agregado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      }
+      cerrarFormulario();
+      obtenerEmpleados(); // Actualiza la lista de empleados después de agregar o editar uno
     } catch (error) {
       console.error('Error en la solicitud:', error);
     }
-    obtenerEmpleados(); // Actualiza la lista de empleados después de agregar o editar uno
   };
+
+
+
 
 
   // Función para eliminar un empleado
