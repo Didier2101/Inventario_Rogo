@@ -34,7 +34,7 @@ const Home = () => {
                     <Route path="/empleados" element={<Empleados />} />
                     <Route path="/clientes" element={<Clientes />} />
                     <Route path="/proveedores" element={<Proveedores />} />
-                    <Route path="/puntosVenta" element={<PuntosVenta />} />
+                    <Route path="/puntos_venta" element={<PuntosVenta />} />
                     <Route path="/bodegas" element={<Bodegas />} />
                     <Route path="/ventas" element={<Ventas />} />
                     <Route path="/facturas" element={<Facturas />} />

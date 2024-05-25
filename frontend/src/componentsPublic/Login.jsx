@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Button } from '@mui/material';
 import Swal from 'sweetalert2';
 
-import Home from '../componentesPrivados/Home';
+// import Home from '../componentesPrivados/Home';
 
 
 
@@ -45,7 +45,9 @@ function Login() {
                     showConfirmButton: false
                 });
                 // Redirigir al usuario a otra página si es necesario
-                navigate('/Home');
+                setTimeout(() => {
+                    navigate('/Home');
+                }, 1000);
             } else {
                 Swal.fire({
                     title: "Error",

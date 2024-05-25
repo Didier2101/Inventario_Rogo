@@ -1,12 +1,14 @@
 // Importar el módulo de conexión a la base de datos
 const pool = require("../database");
+const bcrypt = require("bcrypt");
 
 // Función para agregar un empleado a la base de datos
 const agregarEmpleado = async (empleado) => {
+  const hashedPassword = await bcrypt.hash(empleado.contrasena, 10);
   try {
     const usuarioInsertQuery =
       "INSERT INTO usuarios (usuario, contrasena) VALUES (?, ?)";
-    const usuarioValues = [empleado.usuario, empleado.contrasena];
+    const usuarioValues = [empleado.usuario, hashedPassword];
     const [usuarioInsertResult] = await pool.query(
       usuarioInsertQuery,
       usuarioValues

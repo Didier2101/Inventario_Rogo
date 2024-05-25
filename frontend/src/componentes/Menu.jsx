@@ -53,7 +53,7 @@ const Menu = () => {
             </span>
           </NavLink>
 
-          <NavLink to="/puntosVenta" className="menu-item">
+          <NavLink to="/puntos_venta" className="menu-item">
             <span>
               <AddBusinessIcon />
               <p className="text">Puntos de venta</p>
