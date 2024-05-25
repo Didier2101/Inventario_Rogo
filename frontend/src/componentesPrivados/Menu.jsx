@@ -1,5 +1,7 @@
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Button, Tooltip } from "@mui/material";
 
 
 import HomeIcon from "@mui/icons-material/Home";
@@ -11,12 +13,44 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import Swal from "sweetalert2";
+import { useContext } from "react";
+import Contexto from "../context/Contexto";
 
 
 
 const Menu = ({ visible }) => {
 
+    const navigate = useNavigate()
+    const { desloguearme } = useContext(Contexto)
+
+
+    const CerrarSesion = () => {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¿Realmente quieres cerrar sesión?',
+            icon: 'warning',
+            showCancelButton: true,
+            cancelButtonColor: '#d33',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cerrar sesión',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Aquí puedes añadir la lógica para cerrar sesión, por ejemplo, eliminar los datos del usuario en el estado
+                Swal.fire({
+                    title: "Terminaste",
+                    text: 'Sesion terminada',
+                    icon: "warning",
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+                // Lógica adicional para cerrar sesión, como redirigir a la página de inicio de sesión
+                desloguearme()
+                navigate("/", { replace: true });
+            }
+        });
+    }
 
     return (
         <section className={visible ? 'show-menu section-menu' : 'hide-menu '}>
@@ -67,10 +101,18 @@ const Menu = ({ visible }) => {
                     <p className="text">Facturas</p>
                 </NavLink>
 
-                <NavLink to="/" className="enlace-salir">
-                    <ExitToAppIcon className="icono-salir" />
-                    <p className="text-salir">salir</p>
-                </NavLink>
+                <Tooltip title="Cerrar Sesion" placement="right-start">
+                    <Button
+
+                        onClick={CerrarSesion}
+
+                        variant="outlined"
+                    >
+                        <LogoutIcon />
+                    </Button>
+                </Tooltip>
+
+
             </ul>
 
 

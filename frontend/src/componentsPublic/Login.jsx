@@ -4,9 +4,10 @@ import TextField from '@mui/material/TextField';
 
 import LogoCompañia from '../../public/logo.png'
 // import ButtonComponent from '../otrosComponentes/ButtonComponent';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Button } from '@mui/material';
 import Swal from 'sweetalert2';
+import Contexto from '../context/Contexto';
 
 // import Home from '../componentesPrivados/Home';
 
@@ -15,9 +16,11 @@ import Swal from 'sweetalert2';
 
 function Login() {
     const navigate = useNavigate();
+
     const [usuario, setUsuario] = useState('');
     const [contrasena, setContrasena] = useState('');
 
+    const { loguearme } = useContext(Contexto)
 
 
     const handdleLogin = async (e) => {
@@ -46,7 +49,9 @@ function Login() {
                 });
                 // Redirigir al usuario a otra página si es necesario
                 setTimeout(() => {
-                    navigate('/Home');
+                    navigate('/Home', { replace: true });
+                    loguearme('jab')
+
                 }, 1000);
             } else {
                 Swal.fire({
