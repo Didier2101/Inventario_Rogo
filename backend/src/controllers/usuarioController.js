@@ -7,12 +7,12 @@ const login = async (req, res) => {
   try {
     // Recuperar el usuario de la base de datos
     const result = await pool.query(
-      "SELECT * FROM usuarios WHERE usuario = ?",
+      "SELECT * FROM usuarios WHERE nombre_usuario = ?",
       [usuario]
     );
 
     if (result[0].length > 0) {
-      const user = result[0][0];
+      const user = result[0][0]; // Accede al primer usuario del resultado
 
       // Comparar la contraseña ingresada con la contraseña encriptada en la base de datos
       const isMatch = await bcrypt.compare(contrasena, user.contrasena);
@@ -28,7 +28,9 @@ const login = async (req, res) => {
     }
   } catch (error) {
     console.error("Error al autenticar usuario:", error);
-    res.status(500).json({ message: "Error interno del servidor" });
+    res.status(500).json({
+      message: "Error interno del servidor al conectar a la base de datos",
+    });
   }
 };
 

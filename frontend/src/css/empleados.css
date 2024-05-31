@@ -68,40 +68,28 @@
   font-size: 1.1rem;
 }
 .index {
-  background-color: var(--noveno);
+  background-color: var(--octavo);
+  color: var(--primer);
   display: inline-block;
-  padding: 3px 8px;
+  padding: 5px 8px;
   font-size: 1rem;
   font-weight: bold;
-  border-radius: 6px;
+  border-radius: 50%;
   margin-left: 4px;
 }
 
 .acciones {
-  display: inline-block;
+  display: flex;
+  justify-content: flex-end;
   padding: 1px;
   font-size: 1rem;
   font-weight: bold;
-
+  text-align: end;
   cursor: pointer;
   padding: 6px;
   position: relative;
 }
 
-.acciones .sub-menu {
-  display: flex;
-  position: absolute;
-  padding: 2px;
-  border-radius: 6px;
-  top: 3px;
-  right: 40px;
-  background-color: var(--primer);
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.acciones .sub-menu span {
-  font-size: 1rem;
-}
 .direccion {
   background-color: var(--noveno);
   display: inline-block;
@@ -223,8 +211,9 @@
 }
 .grid-form .contain-btns {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-top: 10px;
+  gap: 10px;
 }
 
 @media (max-width: 768px) {

@@ -92,3 +92,75 @@ img {
   color: var(--sub-titulos);
   margin-bottom: 30px;
 }
+
+/* Estilos del select */
+select {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #acacac;
+  border-radius: 4px;
+  background-color: #fff;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  color: #242424cb;
+}
+select:hover {
+  border: 1px solid black;
+}
+
+/* Cambios de estilo al interactuar con el select */
+select:focus {
+  border-color: rgb(86, 122, 240);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+select option {
+  font-size: 1rem;
+}
+
+/* codigo del modal de detalles del empleado y demas */
+.contenedor_detalle .titulo-detalle {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.contenedor_detalle .contenedor-detalles {
+  margin: 20px 0px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.contenedor_detalle .contenedor-detalles .detalle_item {
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+}
+.contenedor_detalle .contenedor-detalles .google {
+  display: flex;
+  align-items: center;
+}
+.contenedor_detalle .contenedor-detalles .detalle_titulo {
+  font-size: 1.5rem;
+}
+.contenedor_detalle .contenedor-detalles .detalle_valor {
+  font-size: 1.3rem;
+  margin-left: 2px;
+}
+.contenedor_detalle .cerrar_boton {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.footer {
+  background-color: var(--tercero);
+  p {
+    font-size: 1rem;
+    color: #fff;
+    padding: 10px;
+  }
+}

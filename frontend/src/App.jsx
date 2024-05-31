@@ -5,10 +5,7 @@ import Login from './componentsPublic/Login'
 import ForgotPassword from './componentsPublic/ForgotPassword'
 import NotFound from './componentsPublic/NotFound'
 import Home from './componentesPrivados/Home'
-import Provider from './context/Provider'
-import RutasPublicas from './router/RutasPublicas'
-import RutasPrivadas from './router/RutasPrivadas'
-
+import Footer from './componentesPrivados/Footer'
 
 
 
@@ -16,31 +13,31 @@ function App() {
 
 
   return (
-    <Provider>
+    <div>
       <Routes>
         <Route path="/" element={
-          <RutasPublicas>
-            <Login />
-          </RutasPublicas>
+
+          <Login />
+
         } />
         <Route path="/forgot-password" element={
-          <RutasPublicas>
-            <ForgotPassword />
-          </RutasPublicas>
+
+          <ForgotPassword />
+
         } />
         <Route path="/*" element={
-          <RutasPrivadas>
-            <Home />
-          </RutasPrivadas>
+
+          <Home />
+
         } />
         <Route path="*" element={
-          <RutasPublicas>
-            <NotFound />
-          </RutasPublicas>
+
+          <NotFound />
+
         } />
       </Routes>
-    </Provider>
-
+      <Footer />
+    </div>
   )
 }
 

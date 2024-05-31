@@ -13,7 +13,7 @@ const Header = ({ onMenuButtonClick }) => {
 
     return (
         <div className='encabezado-header'>
-            <header className="header max-width">
+            <header className="header">
                 <div className="iconos-izquierda">
                     <ViewListIcon className='icono-menu' onClick={onMenuButtonClick} />
                     <AccountCircleIcon className='icono-usuario' />

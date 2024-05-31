@@ -3,52 +3,54 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 
+import AddIcon from '@mui/icons-material/Add';
+import PlaceIcon from '@mui/icons-material/Place';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import ButtonComponent from "../otrosComponentes/ButtonComponent";
-
 
 const Empleados = () => {
-  const cargos = [
-    {
-      id: 0,
-      label: "",
-    },
-    {
-      id: 1,
-      label: "Administrador",
-    },
-    {
-      id: 2,
-      label: "Bodeguero",
-    },
-    {
-      id: 3,
-      label: "Vendedor",
-    },
-  ];
+
 
   // Agrega un nuevo estado para almacenar el ID del empleado seleccionado para editar
+
   const [empleadoID, setEmpleadoID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [empleados, setEmpleados] = useState([]);
   const [formularioAdd, setFormularioAdd] = useState(false);
+  const [detalleEmpleado, setDetalleEmpleado] = useState(null);
   const [formularioInformacion, setFormularioInformacion] = useState({
     cedula: '',
     nombres: '',
-    correo: '',
+    correo_electronico: '',
     telefono: '',
     direccion: '',
-    cargo: '',
+    id_cargo: '',
     salario: '',
     fecha_ingreso: '',
     fecha_nacimiento: '',
-    usuario: '',
+    nombre_usuario: '',
     contrasena: '',
   });
 
+  const formatearFecha = (fechaISO) => {
+    const fecha = new Date(fechaISO);
+    // Obtener los componentes de la fecha (año, mes, día)
+    const año = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    // Construir la cadena con el formato deseado (YYYY-MM-DD)
+    return `${año}-${mes}-${dia}`;
+  };
 
+  const fecha = new Date(); // Obtener la fecha actual, por ejemplo
+  const año = fecha.getFullYear(); // Obtener el año (ej: 2024)
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Obtener el mes (con ceros a la izquierda si es necesario)
+  const dia = String(fecha.getDate()).padStart(2, '0'); // Obtener el día (con ceros a la izquierda si es necesario)
+
+  const fechaFormateada = `${año}-${mes}-${dia}`; // Construir la cadena con el formato deseado
+
+  // console.log(fechaFormateada); // Imprimir la fecha formateada (ej: '2024-05-31')
 
   // Función para activar el modo de edición y cargar los datos del empleado seleccionado
   const activarModoEdicion = (empleado) => {
@@ -59,25 +61,15 @@ const Empleados = () => {
   };
 
 
+
+
   // Función para manejar cambios en los inputs del formulario
   const cambiosInputs = (e) => {
     const { name, value } = e.target;
 
-
     setFormularioInformacion({ ...formularioInformacion, [name]: value });
-    // Verificar si el nombre del campo es diferente de "usuario" y "contrasena"
-    if (name !== "usuario" && name !== "contrasena" && name !== "correo") {
-      // Dividir la cadena en palabras, capitalizar la primera letra de cada palabra y unirlas de nuevo
-      const formattedValue = value
-        .toLowerCase()
-        .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-      setFormularioInformacion({ ...formularioInformacion, [name]: formattedValue });
-    } else {
-      // Si es "usuario" o "contrasena", establecer el valor sin formato
-      setFormularioInformacion({ ...formularioInformacion, [name]: value });
-    }
+
+    console.log(formularioInformacion)
   };
 
   const obtenerEmpleados = async () => {
@@ -85,7 +77,11 @@ const Empleados = () => {
       const response = await fetch("http://localhost:4000/empleados");
       if (response.ok) {
         const data = await response.json();
-        setEmpleados(data);
+        setEmpleados(data.map(empleado => ({
+          ...empleado,
+          fecha_ingreso: formatearFecha(empleado.fecha_ingreso),
+          fecha_nacimiento: formatearFecha(empleado.fecha_nacimiento),
+        })));
       } else {
         console.error("Error al obtener los empleados");
       }
@@ -96,9 +92,36 @@ const Empleados = () => {
 
   useEffect(() => {
     obtenerEmpleados();
-  }, []);
+  });
 
 
+  const obtenerEmpleadoPorId = async (idEmpleado) => {
+    try {
+      const response = await fetch(`http://localhost:4000/empleados/${idEmpleado}`);
+      const data = await response.json();
+
+      const empleadoFormateado = {
+        ...data,
+        fecha_ingreso: formatearFecha(data.fecha_ingreso),
+        fecha_nacimiento: formatearFecha(data.fecha_nacimiento),
+      };
+      setDetalleEmpleado(empleadoFormateado);
+    } catch (error) {
+      console.error("Error al obtener el empleado:", error);
+    }
+  };
+  const calcularEdad = (fechaNacimiento) => {
+    const hoy = new Date();
+    const fechaNac = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+    const mes = hoy.getMonth() - fechaNac.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+      edad--;
+    }
+
+    return edad;
+  };
 
   const agregarEmpleado = async (e) => {
     e.preventDefault();
@@ -143,7 +166,7 @@ const Empleados = () => {
       return;
     }
 
-    if (!/\S+@\S+\.\S+/.test(formularioInformacion.correo)) {
+    if (!/\S+@\S+\.\S+/.test(formularioInformacion.correo_electronico)) {
       Swal.fire({
         icon: 'error',
         title: 'Correo electronico',
@@ -160,8 +183,17 @@ const Empleados = () => {
       });
       return;
     }
+    const edadEmpleado = calcularEdad(formularioInformacion.fecha_nacimiento);
 
-
+    // Verifica si el empleado es menor de 18 años
+    if (edadEmpleado < 18) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El empleado debe ser mayor de 18 años para registrarse.',
+      });
+      return;
+    }
 
     try {
       let url = 'http://localhost:4000/empleados';
@@ -177,6 +209,8 @@ const Empleados = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formularioInformacion),
+        fecha_ingreso: fechaFormateada,
+        fecha_nacimiento: fechaFormateada,
       });
 
       if (response.status === 400) {
@@ -288,17 +322,18 @@ const Empleados = () => {
   const cerrarFormulario = () => {
     setModoEditar(false);
     setFormularioAdd(false);
+    setDetalleEmpleado(false);
     setFormularioInformacion({
       cedula: '',
       nombres: '',
-      correo: '',
+      correo_electronico: '',
       telefono: '',
       direccion: '',
-      cargo: '',
+      id_cargo: '',
       salario: '',
       fecha_ingreso: '',
       fecha_nacimiento: '',
-      usuario: '',
+      nombre_usuario: '',
       contrasena: '',
     });
     setEmpleadoID(null); // Reinicia el ID del empleado seleccionado
@@ -328,22 +363,20 @@ const Empleados = () => {
 
 
 
-
   return (
     <section className="section-item">
       <div className="caja-section max-width">
 
         {/* codigo del boton agregar */}
         <h2 className="title-tabla">Lista de Empleados</h2>
-        <ButtonComponent
+
+        <IconButton
+          aria-label="delete"
           onClick={mostarFormulario}
-          color="var(--tercero)"
-          width="11%"
-          height="30px"
-          fontSize="1rem"
-          margin="0"
-          text="Nuevo"
-        />
+          style={{ background: 'var(--tercero)' }}>
+          <AddIcon style={{ color: 'var(--primer)' }} />
+        </IconButton>
+
       </div>
 
       <div className="witches max-width">
@@ -361,32 +394,18 @@ const Empleados = () => {
 
         {empleados.map((empleado, index) => (
           <div className="fila" key={index}>
-            <div className="celda index one">
-              <strong> {index + 1}</strong>
-            </div>
-
-            <div className="celda two">
-              <strong>{empleado.cedula}</strong>
-            </div>
-
+            <div className="celda index one"><strong> {index + 1}</strong></div>
+            <div className="celda two"><strong>{empleado.cedula}</strong></div>
             <div className="celda three">{empleado.nombres}</div>
-            <div className="celda four">{empleado.correo}</div>
+            <div className="celda four">{empleado.correo_electronico}</div>
             <div className="celda five">{empleado.telefono}</div>
             <div className="celda direccion six">{empleado.direccion}</div>
-
-            <div className="celda seven"> {empleado.cargo}</div>
-
-            <div className="celda salario eight">
-              COP:  {empleado.salario}
-            </div>
-            <div className="celda nine">
-              <strong>{empleado.fecha_ingreso}</strong>
-            </div>
+            <div className="celda seven"> {empleado.nombre_cargo}</div>
+            <div className="celda salario eight">{empleado.salario}</div>
+            <div className="celda nine"><strong>{empleado.fecha_ingreso}</strong></div>
             <div className="celda acciones  ten">
-              <Tooltip
-                title="Detalles"
-
-              >
+              <Tooltip title="Detalles"
+                onClick={() => obtenerEmpleadoPorId(empleado.id_empleado)}>
                 <IconButton size="small" color="success">
                   <InfoIcon />
                 </IconButton>
@@ -408,6 +427,7 @@ const Empleados = () => {
                 </IconButton>
               </Tooltip>
             </div>
+
           </div>
         ))}
       </div>
@@ -424,15 +444,16 @@ const Empleados = () => {
             <h2 className="title-form">{modoEditar ? 'Editar Empleado' : 'Agregar Empleado'}</h2>
             <div className="contain-inputs">
               <TextField
+                disabled={modoEditar}
                 fullWidth
                 label="Cedula"
-
                 name="cedula"
                 value={formularioInformacion.cedula}
                 onChange={cambiosInputs}
                 required
               />
               <TextField
+                disabled={modoEditar}
                 fullWidth
                 label="Nombres"
                 name="nombres"
@@ -444,8 +465,8 @@ const Empleados = () => {
                 fullWidth
                 label="Correo electrónico"
                 type="email"
-                name="correo"
-                value={formularioInformacion.correo}
+                name="correo_electronico"
+                value={formularioInformacion.correo_electronico}
                 onChange={cambiosInputs}
                 required
               />
@@ -466,26 +487,20 @@ const Empleados = () => {
                 required
               />
 
-              <TextField
-                id="outlined-select-currency-native"
-                select
-                label="Seleccione un cargo"
-                SelectProps={{
-                  native: true,
-                }}
-                variant="outlined"
-                fullWidth
-                name="cargo"
-                value={formularioInformacion.cargo}
+
+
+              <select
+                name="id_cargo"
+                value={formularioInformacion.id_cargo}
                 onChange={cambiosInputs}
                 required
               >
-                {cargos.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.label}
-                  </option>
-                ))}
-              </TextField>
+                <option value="" disabled>Elige un cargo</option>
+                <option value="1">Administrador</option>
+                <option value="2">Bodeguero</option>
+                <option value="3">Vendedor</option>
+                <option value="4">Auxiliar</option>
+              </select>
 
 
 
@@ -510,6 +525,7 @@ const Empleados = () => {
                 value={formularioInformacion.fecha_ingreso}
                 onChange={cambiosInputs}
                 required
+                disabled={modoEditar ? true : false}
               />
               <TextField
                 fullWidth
@@ -523,6 +539,7 @@ const Empleados = () => {
                 value={formularioInformacion.fecha_nacimiento}
                 onChange={cambiosInputs}
                 required
+                disabled={modoEditar ? true : false}
               />
             </div>
             <Divider />
@@ -532,8 +549,8 @@ const Empleados = () => {
                 fullWidth
                 label="Usuario"
                 disabled={modoEditar ? true : false}
-                name="usuario"
-                value={formularioInformacion.usuario}
+                name="nombre_usuario"
+                value={formularioInformacion.nombre_usuario}
                 onChange={cambiosInputs}
                 required
               />
@@ -564,8 +581,82 @@ const Empleados = () => {
         </Box>
       </Modal>
 
+      <Modal
+        open={Boolean(detalleEmpleado)}
+        onClose={cerrarFormulario}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
 
-    </section>
+      >
+        <Box sx={{ ...style }}>
+
+          {detalleEmpleado && (
+
+            <div className="contenedor_detalle">
+              <h2 className="titulo-detalle">Detalles del empleado</h2>
+              <Divider />
+              <div className="contenedor-detalles">
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Cédula:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.cedula}</span>
+                </div>
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Nombres:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.nombres}</span>
+                </div>
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Correo Electrónico:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.correo_electronico}</span>
+                </div>
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Teléfono:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.telefono}</span>
+                </div>
+                <div className="detalle_item google">
+                  <strong className="detalle_titulo">Dirección:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.direccion}</span>
+                  <IconButton style={{ marginLeft: '2px' }}>
+                    <PlaceIcon
+                      style={{ color: 'green', fontSize: '1.8rem' }} />
+                  </IconButton>
+                </div>
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Cargo:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.nombre_cargo}</span>
+                </div>
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Salario:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.salario}</span>
+                </div>
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Fecha de Ingreso:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.fecha_ingreso}</span>
+                </div>
+                <div className="detalle_item">
+                  <strong className="detalle_titulo">Fecha de Nacimiento:</strong>
+                  <span className="detalle_valor">{detalleEmpleado.fecha_nacimiento}</span>
+                </div>
+              </div>
+              <Divider />
+              <div className="cerrar_boton">
+
+                <Button
+                  variant="contained"
+                  color="success"
+                  className="btn-cerrar"
+                  onClick={cerrarFormulario}>Cerrar</Button>
+              </div>
+            </div>
+
+          )}
+
+
+
+        </Box>
+      </Modal>
+
+
+    </section >
 
   )
 }

@@ -9,8 +9,7 @@ const crearEmpleado = async (req, res) => {
     if (error.code === "ER_DUP_ENTRY") {
       res.status(400).json({
         error: "CEDULA_DUPLICADA",
-        message:
-          "La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.",
+        message: "Esta cedula ya se encuentra registrada",
       });
     } else {
       console.error("Error al crear los empleados:", error);
@@ -61,10 +60,23 @@ const eliminarEmpleado = async (req, res) => {
     res.status(500).json();
   }
 };
+// TODO =================================================================
+const obtenerEmpleadoPorId = async (req, res) => {
+  const idEmpleado = req.params.id_empleado;
+  try {
+    const empleado = await empleadoService.obtenerEmpleadoPorId(idEmpleado);
+    res.status(200).json(empleado);
+  } catch (error) {
+    console.error("Error al obtener el empleado:", error);
+    res.status(500).json({ message: "Error al obtener el empleado" });
+  }
+};
+// TODO =================================================================
 
 module.exports = {
   crearEmpleado,
   obtenerTodosEmpleados,
   actualizarEmpleado,
   eliminarEmpleado,
+  obtenerEmpleadoPorId,
 };

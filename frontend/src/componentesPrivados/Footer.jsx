@@ -2,7 +2,9 @@
 
 const Footer = () => {
     return (
-        <div>Proyecto creado por !BUG Colombia</div>
+        <div className="footer">
+            <p>Proyecto creado por !BUG Colombia</p>
+        </div>
     )
 }
 

@@ -14,15 +14,14 @@ import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
 import Swal from "sweetalert2";
-import { useContext } from "react";
-import Contexto from "../context/Contexto";
+
 
 
 
 const Menu = ({ visible }) => {
 
     const navigate = useNavigate()
-    const { desloguearme } = useContext(Contexto)
+
 
 
     const CerrarSesion = () => {
@@ -46,7 +45,7 @@ const Menu = ({ visible }) => {
                     showConfirmButton: false,
                 });
                 // Lógica adicional para cerrar sesión, como redirigir a la página de inicio de sesión
-                desloguearme()
+
                 navigate("/", { replace: true });
             }
         });
