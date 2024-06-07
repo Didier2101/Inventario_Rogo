@@ -2,7 +2,7 @@ import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip } from "@mu
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
-
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
 import PlaceIcon from '@mui/icons-material/Place';
 import InfoIcon from "@mui/icons-material/Info";
@@ -13,7 +13,7 @@ const Empleados = () => {
 
 
   // Agrega un nuevo estado para almacenar el ID del empleado seleccionado para editar
-
+  const [subMenu, setSubMenu] = useState(null);
   const [empleadoID, setEmpleadoID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [empleados, setEmpleados] = useState([]);
@@ -110,6 +110,7 @@ const Empleados = () => {
       console.error("Error al obtener el empleado:", error);
     }
   };
+
   const calcularEdad = (fechaNacimiento) => {
     const hoy = new Date();
     const fechaNac = new Date(fechaNacimiento);
@@ -261,9 +262,6 @@ const Empleados = () => {
   };
 
 
-
-
-
   // Función para eliminar un empleado
   const eliminarEmpleado = async (empleadoId, empleadoNombre) => {
     try {
@@ -309,9 +307,6 @@ const Empleados = () => {
       });
     }
   };
-
-
-
 
 
   const mostarFormulario = () => {
@@ -361,11 +356,17 @@ const Empleados = () => {
     },
   };
 
+  const mostrarSubMenu = (index) => {
+    setSubMenu(index)
+  }
+  const quitarSubMenu = () => {
+    setSubMenu(null)
+  }
 
 
   return (
     <section className="section-item">
-      <div className="caja-section max-width">
+      <div className="caja-section">
 
         {/* codigo del boton agregar */}
         <h2 className="title-tabla">Lista de Empleados</h2>
@@ -379,7 +380,7 @@ const Empleados = () => {
 
       </div>
 
-      <div className="witches max-width">
+      <div className="witches">
         <ul className="witches-list">
           <li className="witches-item">
             Todos
@@ -390,47 +391,63 @@ const Empleados = () => {
 
       <Divider />
 
-      <div className="lista-items max-width">
-
-        {empleados.map((empleado, index) => (
-          <div className="fila" key={index}>
-            <div className="celda index one"><strong> {index + 1}</strong></div>
-            <div className="celda two"><strong>{empleado.cedula}</strong></div>
-            <div className="celda three">{empleado.nombres}</div>
-            <div className="celda four">{empleado.correo_electronico}</div>
-            <div className="celda five">{empleado.telefono}</div>
-            <div className="celda direccion six">{empleado.direccion}</div>
-            <div className="celda seven"> {empleado.nombre_cargo}</div>
-            <div className="celda salario eight">{empleado.salario}</div>
-            <div className="celda nine"><strong>{empleado.fecha_ingreso}</strong></div>
-            <div className="celda acciones  ten">
-              <Tooltip title="Detalles"
-                onClick={() => obtenerEmpleadoPorId(empleado.id_empleado)}>
-                <IconButton size="small" color="success">
-                  <InfoIcon />
+      <table className="tabla-items">
+        <thead >
+          <tr>
+            <th>#</th>
+            <th>Cédula</th>
+            <th>Nombre</th>
+            <th>Correo Electrónico</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Cargo</th>
+            <th>Salario</th>
+            <th>Fecha de Ingreso</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {empleados.map((empleado, index) => (
+            <tr className="fila" key={index}>
+              <td className="one"><strong>{index + 1}</strong></td>
+              <td className="two"><strong>{empleado.cedula}</strong></td>
+              <td className="three">{empleado.nombres}</td>
+              <td className="five">{empleado.correo_electronico}</td>
+              <td className="four">{empleado.telefono}</td>
+              <td className="six">{empleado.direccion}</td>
+              <td className="seven">{empleado.nombre_cargo}</td>
+              <td className="eight">{empleado.salario}</td>
+              <td className="nine">{empleado.fecha_ingreso}</td>
+              <td className="acciones ten">
+                <IconButton size="small" color="success"
+                  onMouseEnter={() => mostrarSubMenu(index)}
+                >
+                  <MoreVertIcon />
                 </IconButton>
-              </Tooltip>
-              <Tooltip title="Editar"
-                onClick={() => activarModoEdicion(empleado)}
-
-              >
-                <IconButton size="small" color="primary">
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip
-                title="Eliminar"
-                onClick={() => eliminarEmpleado(empleado.id_empleado, empleado.nombres)}
-              >
-                <IconButton size="small" color="error">
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </div>
-
-          </div>
-        ))}
-      </div>
+                {subMenu === index && (
+                  <div className="sub_menu" onMouseLeave={quitarSubMenu}>
+                    <Tooltip title="Eliminar">
+                      <IconButton size="small" color="error" onClick={() => eliminarEmpleado(empleado.id_empleado, empleado.nombres)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Editar" onClick={() => activarModoEdicion(empleado)}>
+                      <IconButton size="small" color="primary">
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Detalles">
+                      <IconButton size="small" color="success" onClick={() => obtenerEmpleadoPorId(empleado.id_empleado)}>
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {/* codigo de formalario add */}
       <Modal
@@ -442,6 +459,7 @@ const Empleados = () => {
         <Box sx={{ ...style }}>
           <form className="grid-form" onSubmit={agregarEmpleado}>
             <h2 className="title-form">{modoEditar ? 'Editar Empleado' : 'Agregar Empleado'}</h2>
+            <p className="sub-title">Todos los campos con un <span>(*)</span> son obligatorios.</p>
             <div className="contain-inputs">
               <TextField
                 disabled={modoEditar}

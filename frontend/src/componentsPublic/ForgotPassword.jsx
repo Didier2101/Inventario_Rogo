@@ -2,22 +2,16 @@ import { NavLink } from "react-router-dom"
 
 import { TextField } from "@mui/material"
 
-import LogoCompañia from '../../public/logo.png'
+
 import ButtonComponent from '../otrosComponentes/ButtonComponent';
 
 const ForgotPassword = () => {
     return (
         <div className='container-all'>
-            <div className="container-login shadow">
-                <section className="berify">
-                    <div className="contain-logo">
-                        <img src={LogoCompañia} alt="" />
-                    </div>
-                    <div className="contain-description-company">
-                        <h1>Sistema de inventario</h1>
-                        <p>Controla todo el sistema de tu empresa desde aqui</p>
-                    </div>
-                </section>
+            <section className="img">
+
+            </section>
+            <div className="container-login">
 
                 <section className='contain-form-login'>
 

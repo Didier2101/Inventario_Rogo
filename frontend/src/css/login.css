@@ -1,43 +1,14 @@
 .container-all {
-  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .container-login {
-  width: 80%;
-  max-width: 700px;
-
-  border-radius: 20px;
-  display: grid;
-  grid-template-columns: 50% 50%;
-  padding: 20px;
-}
-.berify {
-  height: 100%;
-  border-radius: 10px;
-  background-color: var(--primer);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  text-align: center;
-
-  h1 {
-    margin-bottom: 10px;
-    color: var(--tercero);
-    font-size: 2.5rem;
-  }
-  p {
-    margin-bottom: 10px;
-    color: var(--tercero);
-    font-size: 1.5rem;
-  }
-}
-.contain-logo {
-  width: 80%;
+  background-color: var(--primer);
 }
 
 /*  codigo formulario login */
@@ -48,13 +19,13 @@
   margin-left: 20px;
 
   h2 {
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin: 10px 0;
     color: var(--tercero);
   }
   p {
     color: var(--tercero);
-
+    margin-top: 10px;
     font-size: 1.5rem;
   }
 }
@@ -77,8 +48,18 @@
   margin-right: 4px; /* Ajusta el margen derecho según sea necesario */
 }
 
+.img {
+  background-image: url("../../public/4799410.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
 @media (max-width: 768px) {
+  .img {
+    display: none;
+  }
   .container-all {
+    grid-template-columns: 1fr;
     background-color: var(--white);
   }
   .container-login {
@@ -90,18 +71,8 @@
     height: 100%;
     box-shadow: none;
   }
-  .berify {
-    padding: 20px 10px;
-    margin-bottom: 20px;
-    height: 300px;
-    h2 {
-      margin-bottom: 10px;
-    }
-  }
+
   .contain-form-login {
     margin-left: 0px;
-  }
-  .contain-logo {
-    width: 50%;
   }
 }

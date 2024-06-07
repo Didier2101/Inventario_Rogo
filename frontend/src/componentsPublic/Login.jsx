@@ -73,16 +73,11 @@ function Login() {
     return (
         <>
             <div className='container-all'>
-                <div className="container-login shadow">
-                    <section className="berify">
-                        <div className="contain-logo">
-                            <img src={LogoCompañia} alt="" />
-                        </div>
-                        <div className="contain-description-company">
-                            <h1 >Bienvenido al Sistema de Inventario</h1>
-                            <p className=''>¡Impulsa el control total de tu empresa desde aquí!</p>
-                        </div>
-                    </section>
+                <div className='img'>
+                    <p>todo a su lado</p>
+                </div>
+                <div className="container-login">
+
 
                     <section className='contain-form-login'>
 
@@ -125,7 +120,7 @@ function Login() {
                                 }}
 
                             >
-                                Login
+                                acceder
                             </Button>
 
                         </form>

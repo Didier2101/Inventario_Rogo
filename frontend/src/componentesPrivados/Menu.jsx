@@ -80,7 +80,7 @@ const Menu = ({ visible }) => {
                     <p className="text">Proveedores</p>
                 </NavLink>
 
-                <NavLink to="/puntos-venta" className="navlink-menu">
+                <NavLink to="/puntos" className="navlink-menu">
                     <AddBusinessIcon className="icon-menu" />
                     <p className="text">Puntos de venta</p>
                 </NavLink>

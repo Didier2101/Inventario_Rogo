@@ -4,7 +4,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import Menu from "../componentesPrivados/Menu"
 import Header from "../componentesPrivados/Header"
-import Inicio from "../componentesPrivados/Inicio"
+import Inicio from "../componentes/Inicio"
 import Productos from '../componentes/Productos';
 import Empleados from '../componentes/Empleados';
 import Clientes from '../componentes/Clientes';
@@ -34,7 +34,7 @@ const Home = () => {
                     <Route path="/empleados" element={<Empleados />} />
                     <Route path="/clientes" element={<Clientes />} />
                     <Route path="/proveedores" element={<Proveedores />} />
-                    <Route path="/puntos_venta" element={<PuntosVenta />} />
+                    <Route path="/puntos" element={<PuntosVenta />} />
                     <Route path="/bodegas" element={<Bodegas />} />
                     <Route path="/ventas" element={<Ventas />} />
                     <Route path="/facturas" element={<Facturas />} />

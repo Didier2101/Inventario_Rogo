@@ -11,13 +11,9 @@
 }
 html,
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 68.5%;
   background-color: var(--white);
-}
-.max-width {
-  max-width: 1300px;
-  margin: 0 auto;
 }
 
 img {
@@ -29,6 +25,7 @@ img {
 .flex-2 {
   /* background-color: red; */
   width: 100%;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -42,9 +39,7 @@ img {
 .hide-menu {
   display: none;
 }
-.hide {
-  display: none;
-}
+
 /* styles.css or a relevant CSS file */
 .swal-container {
   z-index: 2000 !important;
@@ -129,7 +124,6 @@ select option {
 .contenedor_detalle .contenedor-detalles {
   margin: 20px 0px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
 
@@ -151,16 +145,7 @@ select option {
 }
 .contenedor_detalle .cerrar_boton {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 30px;
   margin-bottom: 10px;
-}
-
-.footer {
-  background-color: var(--tercero);
-  p {
-    font-size: 1rem;
-    color: #fff;
-    padding: 10px;
-  }
 }
