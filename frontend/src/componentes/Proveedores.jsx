@@ -322,7 +322,7 @@ const Proveedores = () => {
                 variant="contained"
                 color="success"
                 type="submit"
-              > {modoEditar ? 'Editar' : 'Agregar'}
+              > {modoEditar ? 'Guardar cambios' : 'Agregar'}
               </Button>
             </div>
           </form>

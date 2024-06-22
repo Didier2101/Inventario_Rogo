@@ -8,14 +8,14 @@ import { Badge } from "@mui/material";
 
 
 
-const Header = ({ onMenuButtonClick }) => {
+const Header = () => {
 
 
     return (
         <div className='encabezado-header'>
             <header className="header">
                 <div className="iconos-izquierda">
-                    <ViewListIcon className='icono-menu' onClick={onMenuButtonClick} />
+                    <ViewListIcon className='icono-menu' />
                     <AccountCircleIcon className='icono-usuario' />
                     <h2>Yuri</h2>  {/* // aqui quiro mostrar el nombre del usuario */}
 

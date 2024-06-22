@@ -1,4 +1,4 @@
-import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip } from "@mui/material";
+import { Box, Button, Divider, IconButton, Modal, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
@@ -8,6 +8,7 @@ import PlaceIcon from '@mui/icons-material/Place';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from '@mui/icons-material/Close';
 
 const Empleados = () => {
 
@@ -338,23 +339,22 @@ const Empleados = () => {
     position: 'absolute',
     top: '50%',
     left: '50%',
+    width: '90%',
     transform: 'translate(-50%, -50%)',
-    width: 1000,
-    maxWidth: '90%', // Nuevo
-    maxHeight: '90vh', // Nuevo
     bgcolor: 'background.paper',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-    borderRadius: 2,
-    height: 'auto',
-    pt: 2,
-    px: 4,
-    pb: 3,
-    overflowY: 'auto', // Nuevo
+    overflow: 'auto',
+    borderRadius: 'none',
+    overflowY: 'auto',
+    border: 'none',
     '@media (max-width: 600px)': {
-      width: '90%',
-      position: 'relativa',
+      width: '100%',
+      position: 'relative', // Corrige 'relativa' a 'relative'
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
     },
   };
+
 
   const mostrarSubMenu = (index) => {
     setSubMenu(index)
@@ -362,6 +362,7 @@ const Empleados = () => {
   const quitarSubMenu = () => {
     setSubMenu(null)
   }
+
 
 
   return (
@@ -372,7 +373,6 @@ const Empleados = () => {
         <h2 className="title-tabla">Lista de Empleados</h2>
 
         <IconButton
-          aria-label="delete"
           onClick={mostarFormulario}
           style={{ background: 'var(--tercero)' }}>
           <AddIcon style={{ color: 'var(--primer)' }} />
@@ -426,21 +426,19 @@ const Empleados = () => {
                 </IconButton>
                 {subMenu === index && (
                   <div className="sub_menu" onMouseLeave={quitarSubMenu}>
-                    <Tooltip title="Eliminar">
-                      <IconButton size="small" color="error" onClick={() => eliminarEmpleado(empleado.id_empleado, empleado.nombres)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Editar" onClick={() => activarModoEdicion(empleado)}>
-                      <IconButton size="small" color="primary">
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Detalles">
-                      <IconButton size="small" color="success" onClick={() => obtenerEmpleadoPorId(empleado.id_empleado)}>
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
+
+                    <IconButton size="small" color="primary" onClick={() => activarModoEdicion(empleado)}>
+                      <EditIcon />
+                    </IconButton>
+
+
+                    <IconButton size="small" color="success" onClick={() => obtenerEmpleadoPorId(empleado.id_empleado)}>
+                      <InfoIcon />
+                    </IconButton>
+
+                    <IconButton size="small" color="error" onClick={() => eliminarEmpleado(empleado.id_empleado, empleados.nombres)}>
+                      <DeleteIcon />
+                    </IconButton>
                   </div>
                 )}
               </td>
@@ -560,7 +558,7 @@ const Empleados = () => {
                 disabled={modoEditar ? true : false}
               />
             </div>
-            <Divider />
+            {/* <Divider /> */}
             <h2 className="title-form">Usuario</h2>
             <div className="contain-usuario">
               <TextField
@@ -583,7 +581,7 @@ const Empleados = () => {
                 required
               />
             </div>
-            <Divider />
+            {/* <Divider /> */}
             <div className="contain-btns">
               <Button variant="contained" color="error" onClick={cerrarFormulario}>Cancelar</Button>
               <Button
@@ -591,7 +589,7 @@ const Empleados = () => {
                 color="success"
                 type="submit"
               >
-                {modoEditar ? 'Editar' : 'Agregar'}
+                {modoEditar ? 'Guardar cambios' : 'Agregar'}
               </Button>
             </div>
           </form>
@@ -611,8 +609,13 @@ const Empleados = () => {
           {detalleEmpleado && (
 
             <div className="contenedor_detalle">
-              <h2 className="titulo-detalle">Detalles del empleado</h2>
-              <Divider />
+              <div className="cerrar-boton">
+                <h2 className="titulo-detalle">Detalles del empleado</h2>
+                <IconButton onClick={cerrarFormulario}>
+                  <CloseIcon />
+                </IconButton>
+              </div>
+
               <div className="contenedor-detalles">
                 <div className="detalle_item">
                   <strong className="detalle_titulo">Cédula:</strong>
@@ -655,15 +658,8 @@ const Empleados = () => {
                   <span className="detalle_valor">{detalleEmpleado.fecha_nacimiento}</span>
                 </div>
               </div>
-              <Divider />
-              <div className="cerrar_boton">
 
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="btn-cerrar"
-                  onClick={cerrarFormulario}>Cerrar</Button>
-              </div>
+
             </div>
 
           )}

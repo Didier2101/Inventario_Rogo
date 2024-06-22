@@ -68,6 +68,7 @@
 .tabla-items th {
   background-color: var(--decimo);
   font-weight: bold;
+  padding: 20px 8px;
 }
 
 .tabla-items thead th:first-child {
@@ -78,10 +79,26 @@
   border-top-right-radius: 8px;
 }
 
-.tabla-items tr:hover {
-  background-color: #f1f1f1;
+.tabla-items .fila:hover {
+  background-color: var(--noveno);
+  transition: background ease-in;
+}
+.tabla-items .activo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: green;
 }
 
+.tabla-items .stado {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
 .tabla-items .acciones {
   text-align: end;
   position: relative;
@@ -91,8 +108,8 @@
   position: absolute;
   display: flex;
   background-color: white;
-  top: 0px;
-  right: 30px;
+  top: 2px;
+  right: 0px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   padding: 5px;
   border-radius: 5px;
@@ -125,33 +142,33 @@
     font-weight: bold;
     color: var(--segundo);
   }
-  .lista-items .four {
+  .tabla-items .four {
     grid-column: 1 / 2;
     grid-row: 4;
   }
-  .lista-items .five {
+  .tabla-items .five {
     grid-column: 1 / 1;
     grid-row: 2;
     text-align: end;
   }
-  .lista-items .six {
+  .tabla-items .six {
     grid-column: 1 / 1;
     grid-row: 3;
     background: none;
   }
-  .lista-items .seven {
+  .tabla-items .seven {
     grid-column: 2 / 2;
     grid-row: 2;
     text-align: end;
   }
-  .lista-items .eight {
+  .tabla-items .eight {
     grid-column: 2 / 2;
     text-align: end;
     grid-row: 5;
     background: none;
     color: var(--quinto);
   }
-  .lista-items .nine {
+  .tabla-items .nine {
     grid-column: 1 / 1;
     grid-row: 5;
   }
@@ -162,22 +179,22 @@
   }
 }
 .grid-form {
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  z-index: 20;
 }
 .grid-form .contain-inputs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
 .grid-form .contain-usuario {
-  display: flex;
-  width: 50%;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   margin-bottom: 20px;
 }
 .grid-form .title-form {
@@ -203,7 +220,13 @@
   margin-top: 10px;
   gap: 10px;
 }
-
+.contenedor_detalle .cerrar-boton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--decimo);
+  padding: 20px;
+}
 @media (max-width: 768px) {
   .grid-form .contain-inputs {
     display: flex;

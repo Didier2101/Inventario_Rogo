@@ -2,7 +2,7 @@ const pool = require("../database");
 const bcrypt = require("bcrypt");
 
 const login = async (req, res) => {
-  const { usuario, contrasena } = req.body;
+  const { usuario, contrasena, cargo } = req.body;
 
   try {
     // Recuperar el usuario de la base de datos
@@ -16,11 +16,30 @@ const login = async (req, res) => {
 
       // Comparar la contraseña ingresada con la contraseña encriptada en la base de datos
       const isMatch = await bcrypt.compare(contrasena, user.contrasena);
-      if (isMatch) {
-        res.status(200).json({ message: "Usuario autenticado correctamente" });
-      } else {
-        res.status(401).json({ message: "Contraseña incorrecta" });
+      if (!isMatch) {
+        return res.status(401).json({ message: "Contraseña incorrecta" });
       }
+
+      // Recuperar el empleado asociado al usuario
+      const [empleados] = await pool.query(
+        "SELECT * FROM empleados WHERE id_empleado = ?",
+        [user.id_empleado]
+      );
+
+      if (empleados.length === 0) {
+        return res
+          .status(401)
+          .json({ message: "Empleado asociado no encontrado" });
+      }
+
+      const empleado = empleados[0];
+
+      // Verificar que el cargo del empleado coincida con el cargo seleccionado
+      if (empleado.id_cargo !== cargo) {
+        return res.status(401).json({ message: "Cargo incorrecto" });
+      }
+
+      res.status(200).json({ message: "Usuario autenticado correctamente" });
     } else {
       res
         .status(401)

@@ -2,11 +2,14 @@ import { validarFormulario } from "../utils/validaciones";
 
 import "../css/empleados.css";
 
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+
 import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -223,25 +226,41 @@ const Clientes = () => {
   };
 
   // estilos del modal formulario
-  const style = {
+  const style_form = {
     position: 'absolute',
     top: '50%',
     left: '50%',
+    width: '90%',
     transform: 'translate(-50%, -50%)',
-    width: 1000,
-    maxWidth: '90%', // Nuevo
-    maxHeight: '90vh', // Nuevo
+    bgcolor: 'background.paper',
+    overflow: 'auto',
+    borderRadius: 'none',
+    overflowY: 'auto',
+    border: 'none',
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative', // Corrige 'relativa' a 'relative'
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+    },
+  };
+  const style = {
+    position: 'absolute',
+    display: 'flex',
+    flexDirection: 'column',
+    top: '0',
+    right: '0',
+    width: '500px',
+    maxHeight: '100vh',
     bgcolor: 'background.paper',
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-    borderRadius: 2,
-    height: 'auto',
-    pt: 2,
-    px: 4,
-    pb: 3,
-    overflowY: 'auto', // Nuevo
+    borderRadius: 'none',
+    height: '100vh',
+    overflowY: 'auto',
     '@media (max-width: 600px)': {
       width: '90%',
-      position: 'relativa',
+      position: 'relative', // Corrige 'relativa' a 'relative'
     },
   };
 
@@ -262,7 +281,7 @@ const Clientes = () => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style }}>
+        <Box sx={{ ...style_form }}>
           <form className="grid-form" onSubmit={enviarForm}>
             <h2 className="title-form">{modoEditar ? 'Editar Cliente' : 'Agregar Cliente'}</h2>
             <p className="sub-title">Todos los campos con un <span>(*)</span> son obligatorios.</p>
@@ -322,7 +341,7 @@ const Clientes = () => {
                 variant="contained"
                 color="success"
                 type="submit"
-              > {modoEditar ? 'Editar' : 'Agregar'}
+              > {modoEditar ? 'Guardar cambios' : 'Agregar'}
               </Button>
             </div>
           </form>
@@ -343,10 +362,10 @@ const Clientes = () => {
         <thead>
           <tr>
             <th>#</th>
-            <th>Nombre</th>
-            <th>Cédula</th>
+            <th>Cedula</th>
+            <th>Nombres</th>
             <th>Correo Electrónico</th>
-            <th>Teléfono</th>
+            <th>Teléfono Movil</th>
             <th>Dirección</th>
             <th></th>
           </tr>
@@ -358,7 +377,7 @@ const Clientes = () => {
               <td className="two"><strong>{cliente.cedula}</strong></td>
               <td className="three">{cliente.nombres}</td>
               <td className="five">{cliente.correo_electronico}</td>
-              <td className="four">{cliente.telefono}</td>
+              <td className="four"> {cliente.telefono}</td>
               <td className="six">{cliente.direccion}</td>
               <td className="acciones ten">
                 <IconButton size="small" color="success"
@@ -405,8 +424,12 @@ const Clientes = () => {
         <Box sx={{ ...style }}>
           {detalleCliente && (
             <div className="contenedor_detalle">
-              <h2 className="titulo-detalle">Detalles del cliente</h2>
-              <Divider />
+              <div className="cerrar-boton">
+                <h2 className="titulo-detalle">Detalles del cliente</h2>
+                <IconButton onClick={ocultarFormulario}>
+                  <CloseIcon />
+                </IconButton>
+              </div>
               <div className="contenedor-detalles">
                 <div className="detalle_item">
                   <strong className="detalle_titulo">Cédula:</strong>
@@ -430,19 +453,8 @@ const Clientes = () => {
 
                 </div>
 
-
-
-
               </div>
-              <Divider />
-              <div className="cerrar_boton">
 
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="btn-cerrar"
-                  onClick={ocultarFormulario}>Cerrar</Button>
-              </div>
             </div>
           )}
         </Box>

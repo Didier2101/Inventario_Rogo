@@ -1,15 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 
-
-import LogoCompañia from '../../public/logo.png'
-// import ButtonComponent from '../otrosComponentes/ButtonComponent';
-import { useState } from 'react';
-import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Swal from 'sweetalert2';
 
 
-// import Home from '../componentesPrivados/Home';
 
 
 
@@ -19,6 +15,25 @@ function Login() {
 
     const [usuario, setUsuario] = useState('');
     const [contrasena, setContrasena] = useState('');
+    const [cargos, setCargos] = useState([]);
+    const [cargoSeleccionado, setCargoSeleccionado] = useState('');
+
+
+
+    const obtenerCargos = async () => {
+        try {
+            const response = await fetch('http://localhost:4000/cargos');
+            if (response.ok) {
+                const data = await response.json();
+                setCargos(data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    useEffect(() => {
+        obtenerCargos();
+    }, []);
 
 
 
@@ -28,6 +43,7 @@ function Login() {
         const data = {
             usuario: usuario,
             contrasena: contrasena,
+            cargo: cargoSeleccionado,
         };
 
         try {
@@ -48,11 +64,35 @@ function Login() {
                     showConfirmButton: false
                 });
                 // Redirigir al usuario a otra página si es necesario
-                setTimeout(() => {
-                    navigate('/Home', { replace: true });
+                const cargoSeleccionadoObj = cargos.find(cargo => cargo.id_cargo === cargoSeleccionado);
 
 
-                }, 1000);
+                switch (cargoSeleccionadoObj.nombre_cargo) {
+                    case 'Administrador':
+                        console.log("¡Bienvenido Administrador!");
+                        navigate('/Administrador', { replace: true });
+                        break;
+                    case 'Bodeguero':
+                        console.log("¡Bienvenido Bodeguero!");
+                        navigate('/', { replace: true });
+                        break;
+                    case 'Vendedor':
+                        console.log("¡Bienvenido Vendedor!");
+                        navigate('/Vendedor', { replace: true });
+                        break;
+                    case 'Auxiliar':
+                        navigate('/', { replace: true });
+                        break;
+                    default:
+                        console.log(`Usuario con cargo "${cargoSeleccionado}" ha iniciado sesión`);
+                        break;
+                }
+
+                // setTimeout(() => {
+                //     navigate('/Home', { replace: true });
+
+
+                // }, 1000);
             } else {
                 Swal.fire({
                     title: "Error",
@@ -84,6 +124,22 @@ function Login() {
                         <h2>¡Bienvenido de nuevo!</h2>
                         <p>¡Nos alegra mucho que hayas regresado!</p>
                         <form className='form-login' onSubmit={handdleLogin}>
+                            <FormControl required sx={{ width: '100%' }}>
+                                <InputLabel>Ingrese su cargo</InputLabel>
+                                <Select
+                                    name="cargo"
+                                    // required
+                                    value={cargoSeleccionado}
+                                    onChange={(e) => setCargoSeleccionado(e.target.value)}
+                                >
+                                    {cargos.map(cargo =>
+                                        <MenuItem key={cargo.id_cargo} value={cargo.id_cargo}>
+                                            {cargo.nombre_cargo}
+                                        </MenuItem>
+                                    )}
+                                </Select>
+
+                            </FormControl>
                             <TextField
                                 fullWidth
                                 label="Usuario"
@@ -102,12 +158,6 @@ function Login() {
                                 InputLabelProps={{ className: 'custom-label' }}
                                 onChange={(e) => setContrasena(e.target.value)}
                             />
-
-
-                            <label className='label' htmlFor="">
-                                <input type="checkbox" name="" id="" />
-                                Recordar Contraseña
-                            </label>
 
                             <Button
                                 type='submit'

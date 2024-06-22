@@ -57,7 +57,11 @@ const eliminarEmpleado = async (req, res) => {
     await empleadoService.eliminarEmpleado(idEmpleado);
     res.status(200).json();
   } catch (error) {
-    res.status(500).json();
+    // Si ocurre un error al eliminar el empleado, envía el error al cliente
+    res.status(500).json({
+      message:
+        "el empleado no se puede eliminar porque esta encargado de un punto!",
+    });
   }
 };
 // TODO =================================================================

@@ -1,8 +1,8 @@
 @import url("./css/colors.css");
-@import url("./css/clases.css");
 @import url("./css/login.css");
 @import url("./css/menu.css");
 @import url("./css/header.css");
+@import url("./css/inicio.css");
 
 * {
   padding: 0%;
@@ -116,21 +116,27 @@ select option {
 }
 
 /* codigo del modal de detalles del empleado y demas */
+.contenedor_detalle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: var(--fondo);
+}
+
 .contenedor_detalle .titulo-detalle {
   font-size: 2rem;
-  text-align: center;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 .contenedor_detalle .contenedor-detalles {
   margin: 20px 0px;
-  display: grid;
   gap: 10px;
+  padding: 20px;
 }
 
 .contenedor_detalle .contenedor-detalles .detalle_item {
-  margin-bottom: 6px;
-  display: flex;
-  align-items: center;
+  margin-bottom: 16px;
 }
 .contenedor_detalle .contenedor-detalles .google {
   display: flex;
@@ -141,11 +147,29 @@ select option {
 }
 .contenedor_detalle .contenedor-detalles .detalle_valor {
   font-size: 1.3rem;
-  margin-left: 2px;
+  margin-left: 8px;
+}
+.contenedor_detalle .contenedor-detalles .activo {
+  margin-top: 8px;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: green;
+}
+.contenedor_detalle .contenedor-detalles .inactivo {
+  margin-top: 8px;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: red;
 }
 .contenedor_detalle .cerrar_boton {
   display: flex;
   justify-content: flex-end;
   margin-top: 30px;
   margin-bottom: 10px;
+}
+.agotado {
+  color: red;
+  font-weight: bold;
 }

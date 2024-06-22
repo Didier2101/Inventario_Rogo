@@ -1,5 +1,3 @@
-// validaciones.js
-
 export const validarCedula = (cedula) => {
   const regex = /^[0-9]{5,10}$/;
   return regex.test(cedula);
@@ -20,35 +18,55 @@ export const validarTelefono = (telefono) => {
   return regex.test(telefono);
 };
 
-export const validarFormulario = (formData) => {
+export const validarFormulario = (formData, tipoFormulario) => {
   const { cedula, nombres, correo_electronico, telefono } = formData;
-  if (!validarCedula(cedula)) {
-    return {
-      valido: false,
-      mensaje:
-        "La cedula tiene que ser numerica y no mas de 10 numeros y no menos de 5",
-    };
+
+  if (tipoFormulario === "puntoVenta") {
+    if (!validarNombres(nombres)) {
+      return {
+        valido: false,
+        mensaje:
+          "El nombre tiene que contener solo letras y espacios. No puede contener numeros ni caracteres especiales.",
+      };
+    }
+    if (!validarTelefono(telefono)) {
+      return {
+        valido: false,
+        mensaje:
+          "El telefono tiene que ser numero de celular y contener 10 numeros, No puede contener letras.",
+      };
+    }
+  } else {
+    // Validaciones generales
+    if (!validarCedula(cedula)) {
+      return {
+        valido: false,
+        mensaje:
+          "La cedula tiene que ser numerica y no mas de 10 numeros y no menos de 5",
+      };
+    }
+    if (!validarNombres(nombres)) {
+      return {
+        valido: false,
+        mensaje:
+          "El nombre tiene que contener solo letras y espacios. No puede contener numeros ni caracteres especiales.",
+      };
+    }
+    if (correo_electronico && !validarCorreo(correo_electronico)) {
+      return {
+        valido: false,
+        mensaje:
+          "Correo electrónico no válido. Asegúrese de que el correo electrónico siga el formato: ejemplo@dominio.com, donde 'ejemplo' puede contener letras, números y los caracteres especiales ._%+- y 'dominio.com' debe incluir un punto seguido de al menos dos letras.",
+      };
+    }
+    if (!validarTelefono(telefono)) {
+      return {
+        valido: false,
+        mensaje:
+          "El telefono tiene que ser numero de celular y contener 10 numeros, No puede contener letras.",
+      };
+    }
   }
-  if (!validarNombres(nombres)) {
-    return {
-      valido: false,
-      mensaje:
-        "El nombre tiene que contener solo letras y espacios. No puede contener numeros ni caracteres especiales.",
-    };
-  }
-  if (correo_electronico && !validarCorreo(correo_electronico)) {
-    return {
-      valido: false,
-      mensaje:
-        "Correo electrónico no válido. Asegúrese de que el correo electrónico siga el formato: ejemplo@dominio.com, donde 'ejemplo' puede contener letras, números y los caracteres especiales ._%+- y 'dominio.com' debe incluir un punto seguido de al menos dos letras.",
-    };
-  }
-  if (!validarTelefono(telefono)) {
-    return {
-      valido: false,
-      mensaje:
-        "El telefono tiene que ser numero de celular y contener 10 numeros, No puede contener letras.",
-    };
-  }
+
   return { valido: true, mensaje: "" };
 };
