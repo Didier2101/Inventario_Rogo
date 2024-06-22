@@ -1,7 +1,6 @@
-import { NavLink, useNavigate } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 
-import LogoutIcon from '@mui/icons-material/Logout';
-import { Button, Tooltip } from "@mui/material";
+
 
 
 import HomeIcon from "@mui/icons-material/Home";
@@ -11,43 +10,14 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
-import Swal from "sweetalert2";
+
 
 
 
 
 const Menu = () => {
 
-    const navigate = useNavigate()
 
-
-
-    const CerrarSesion = () => {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: '¿Realmente quieres cerrar sesión?',
-            icon: 'warning',
-            showCancelButton: true,
-            cancelButtonColor: '#d33',
-            confirmButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, cerrar sesión',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Aquí puedes añadir la lógica para cerrar sesión, por ejemplo, eliminar los datos del usuario en el estado
-                Swal.fire({
-                    title: "Terminaste",
-                    text: 'Sesion terminada',
-                    icon: "warning",
-                    timer: 2000,
-                    showConfirmButton: false,
-                });
-                // Lógica adicional para cerrar sesión, como redirigir a la página de inicio de sesión
-
-                navigate("/", { replace: true });
-            }
-        });
-    }
 
     return (
         <section className='section-menu'>
@@ -88,16 +58,8 @@ const Menu = () => {
                     <p className="text">Bodegas</p>
                 </NavLink>
 
-                <Tooltip title="Cerrar Sesion" placement="right-start">
-                    <Button
 
-                        onClick={CerrarSesion}
 
-                        variant="outlined"
-                    >
-                        <LogoutIcon />
-                    </Button>
-                </Tooltip>
 
 
             </ul>

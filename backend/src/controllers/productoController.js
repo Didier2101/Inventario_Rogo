@@ -1,22 +1,21 @@
 const productoService = require("../services/productoService");
 
-// Controlador para agregar un producto
 const agregarProducto = async (req, res) => {
   try {
     const producto = req.body;
-    // Verificar si la referencia ya existe
-    const referenciaExistente =
-      await productoService.obtenerProductoPorReferencia(producto.referencia);
-    if (referenciaExistente) {
-      return res
-        .status(400)
-        .json({ message: "La referencia del producto ya existe" });
-    }
+
     await productoService.agregarProducto(producto);
     res.status(201).json({ message: "Producto creado exitosamente" });
   } catch (error) {
-    console.error("Error al crear el producto", error);
-    res.status(500).json({ message: "Error al crear el producto" });
+    if (error.code === "ER_DUP_ENTRY") {
+      res.status(400).json({
+        error: "REFERENCIA_DUPLICADA",
+        message: "Esta REFERENCIA ya se encuentra registrada en otro producto",
+      });
+    } else {
+      console.error("Error al crear los el producto:", error);
+      res.status(500).json({ message: "Error al crear los productos" });
+    }
   }
 };
 

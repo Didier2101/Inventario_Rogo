@@ -2,26 +2,6 @@
 
 const pool = require("../database");
 
-const obtenerProductoPorReferencia = async (referencia) => {
-  try {
-    const query = `
-      SELECT *
-      FROM productos
-      WHERE referencia = ?
-    `;
-    const [productos] = await pool.query(query, [referencia]);
-    if (productos.length === 0) {
-      return null; // Producto no encontrado
-    } else {
-      return productos[0]; // Devuelve el primer producto encontrado (debería ser único por referencia)
-    }
-  } catch (error) {
-    console.error("Error al obtener el producto por referencia:", error);
-    throw error;
-  }
-};
-
-// Función para agregar un producto
 const agregarProducto = async (producto) => {
   try {
     if (
@@ -200,6 +180,5 @@ module.exports = {
   eliminarProducto,
   obtenerProductoPorId,
   actualizarProducto,
-  obtenerProductoPorReferencia,
   actualizarEstadoProducto,
 };

@@ -135,6 +135,18 @@ const Productos = () => {
         body: JSON.stringify({ ...formData }),
       });
 
+      if (response.status === 400) {
+        const data = await response.json();
+        if (data.error && data.error === "REFERENCIA_DUPLICADA") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.message,
+          });
+          return;
+        }
+      }
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error('Error al agregar o actualizar el producto:', errorData.message);
@@ -160,12 +172,13 @@ const Productos = () => {
       }
       ocultarFormulario();
       obtenerProductos();
+      setFormData({
+        activo: true,
+      });
     } catch (error) {
       console.error('Error en la solicitud:', error);
     }
-    setFormData({
-      activo: true
-    });
+
   };
 
   const obtenerProductoPorId = async (idProducto) => {
@@ -538,7 +551,22 @@ const Productos = () => {
                   ))}
 
                 </Select>
+
               </FormControl>
+              <FormControl fullWidth>
+                <InputLabel id="estado-label">Estado</InputLabel>
+                <Select
+                  labelId="estado-label"
+                  name="estado"
+                  value={formData.estado}
+                  onChange={cambiosInputs}
+                  required
+                >
+                  <MenuItem value={1}>Activo</MenuItem>
+                  <MenuItem value={0}>Inactivo</MenuItem>
+                </Select>
+              </FormControl>
+
 
 
 
