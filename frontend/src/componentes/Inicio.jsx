@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TextField, List, ListItem, ListItemText, Typography, Grid, Card, CardContent } from "@mui/material";
+import { TextField, Typography, Grid, Card, CardContent, CardActions, Button, } from "@mui/material";
 
 const Inicio = () => {
   const [productos, setProductos] = useState([]);
@@ -51,37 +51,32 @@ const Inicio = () => {
             label="Buscar productos"
             value={busqueda}
             onChange={manejarCambioBusqueda}
-            fullWidtd
-          />
-        </div>
-        <div>
-          <TextField
-            label="Buscar clientes"
-            value={busqueda}
-            onChange={manejarCambioBusqueda}
-            fullWidtd
+
           />
         </div>
       </div>
       <div>
-        <Grid container spacing={2}>
+
+        <Grid container spacing={1}>
           {resultados.map((producto) => (
-            <Grid item xs={12} sm={6} md={4} key={producto.id_producto}>
-              <Card>
+
+            <Grid item xs={12} sm={2} md={2} key={producto.id_producto}>
+              <Card sx={{ minWidth: 200, height: 150 }}>
                 <CardContent>
-                  <Typography variant="h6" component="div">
+                  <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
                     {producto.nombre}
                   </Typography>
-                  <Typography color="text.secondary">
-                    Precio: ${producto.precio_venta}
+                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    $: {producto.precio_venta}
                   </Typography>
-                  <Typography color="text.secondary">
-                    Referencia: {producto.referencia}
-                  </Typography>
-                  <Typography color={producto.cantidad === 0 ? 'error.main' : 'text.secondary'}>
-                    {producto.cantidad === 0 ? 'Agotado' : `Stock: ${producto.cantidad}`}
+                  <Typography variant="body2">
+                    {producto.descripcion}
+                    <br />
                   </Typography>
                 </CardContent>
+                <CardActions>
+                  <Button size="small">Ver mas</Button>
+                </CardActions>
               </Card>
             </Grid>
           ))}

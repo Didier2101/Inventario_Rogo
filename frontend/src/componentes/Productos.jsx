@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip, Select, MenuItem, FormControl, InputLabel, Switch, Paper, InputBase } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
+import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel, Switch, InputBase } from "@mui/material";
+
+
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import InfoIcon from "@mui/icons-material/Info";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-
-
-
-import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import QrCodeIcon from '@mui/icons-material/QrCode';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PriceCheckOutlinedIcon from '@mui/icons-material/PriceCheckOutlined';
+import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 
 const Productos = () => {
@@ -21,7 +26,6 @@ const Productos = () => {
   const [productoID, setProductoID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detalleProducto, setDetalleProducto] = useState(null);
-  const [subMenu, setSubMenu] = useState(null);
   const [productos, setProductos] = useState([]);
   const [formulario, setFormulario] = useState(false);
   const [proveedores, setProveedores] = useState([]);
@@ -40,13 +44,14 @@ const Productos = () => {
 
 
 
+  // Activar el modo de edición y configurar el formulario con datos del producto seleccionado
   const activarModoEdicion = (producto) => {
     const bodega = bodegas.find(b => b.id_bodega === producto.bodega);
     const proveedor = proveedores.find(p => p.id_proveedor === producto.proveedor);
     setModoEditar(true);
     setFormulario(true);
     setFormData({
-      proveedor: proveedor ? proveedor.id_proveedor : '', // Usar el ID del proveedor
+      proveedor: proveedor ? proveedor.id_proveedor : '',
       bodega: bodega ? bodega.id_bodega : '',
       nombre: producto.nombre,
       referencia: producto.referencia,
@@ -56,7 +61,7 @@ const Productos = () => {
       cantidad: producto.cantidad,
       estado: producto.estado
     });
-    setProductoID(producto.id_producto);
+    setProductoID(producto.id_producto);  // Guardar ID del producto seleccionado
   };
 
   const cambiosInputs = (e) => {
@@ -137,12 +142,15 @@ const Productos = () => {
 
       if (response.status === 400) {
         const data = await response.json();
-        if (data.error && data.error === "REFERENCIA_DUPLICADA") {
+        if (data.error && data.error === "REGISTRO_DUPLICADO") {
           Swal.fire({
             icon: 'error',
             title: 'Error',
             text: data.message,
           });
+          return;
+        } else {
+          console.error('Error al agregar o actualizar el cliente');
           return;
         }
       }
@@ -187,13 +195,9 @@ const Productos = () => {
       if (response.ok) {
         const data = await response.json();
 
-        // Buscar la bodega correspondiente
         const bodega = bodegas.find(b => b.id_bodega === data.bodega);
-
-        // Buscar el proveedor correspondiente
         const proveedor = proveedores.find(p => p.id_proveedor === data.proveedor);
 
-        // Actualizar el detalle del producto
         setDetalleProducto({
           ...data,
           bodega: bodega ? bodega.nombres : 'Desconocida',
@@ -206,6 +210,7 @@ const Productos = () => {
       console.error('Error al obtener el producto', error);
     }
   };
+
 
 
 
@@ -275,52 +280,7 @@ const Productos = () => {
     });
   };
 
-  const style_form = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    width: '90%',
-    transform: 'translate(-50%, -50%)',
-    bgcolor: 'background.paper',
-    overflow: 'auto',
-    borderRadius: '10px',
-    overflowY: 'auto',
-    border: 'none',
-    '@media (max-width: 600px)': {
-      width: '100%',
-      position: 'relative',
-      top: 'auto',
-      left: 'auto',
-      transform: 'none',
-    },
-  };
 
-  const style = {
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-    top: '0',
-    right: '0',
-    width: '500px',
-    maxHeight: '100vh',
-    bgcolor: 'background.paper',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-    borderRadius: 'none',
-    height: '100vh',
-    overflowY: 'auto',
-    '@media (max-width: 600px)': {
-      width: '90%',
-      position: 'relative',
-    },
-  };
-
-  const mostrarSubMenu = (index) => {
-    setSubMenu(index);
-  };
-
-  const quitarSubMenu = () => {
-    setSubMenu(null);
-  };
 
   const toggleEstado = async (id_producto, nuevoEstado) => {
     try {
@@ -348,54 +308,99 @@ const Productos = () => {
     return estado ? 'Activo' : 'Inactivo';
   };
 
+  const style_form = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 1100,
+    height: 'auto', // Establece una altura específica para permitir el desplazamiento
+    bgcolor: 'background.paper',
+    border: '2px solid #fff',
+    borderRadius: '6px',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+    overflowY: 'scroll', // Desplazamiento solo vertical
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative',
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+    },
+  };
+
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '400px',
+    height: '100vh',
+    bgcolor: 'background.paper',
+    overflow: 'auto',
+    overflowY: 'auto',
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative', // Corrige 'relativa' a 'relative'
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+    },
+  };
+
+
+  const [subMenu, setSubMenu] = useState(false)
+  const ocultarSubMenu = () => {
+    setSubMenu(false)
+  };
+
+  const capitalizeWords = (str) => {
+    return str.split(' ').map(word => capitalize(word)).join(' ');
+  };
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   return (
-    <section className="section-item">
-      <section className="caja-section">
-        <Paper
-          component="form"
-          sx={{ p: '4px 8px', display: 'flex', alignItems: 'center', width: '100%' }}
-        >
+    <>
+      <section className="contenedor_buscar">
 
-          <InputBase
-            sx={{ ml: 1, flex: 1 }}
-            placeholder="Buscar productos"
-            inputProps={{ 'aria-label': '' }}
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
+        <InputBase
+          style={{ fontSize: '1.6rem' }}
+          placeholder="Buscar productos"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
 
-          />
-          <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-            <SearchIcon />
-          </IconButton>
-          <Divider sx={{ height: 28, mr: '12px' }} orientation="vertical" />
-          <IconButton
-            color="primary" sx={{ p: '8px' }}
-            onClick={mostarFormulario}
-            style={{ background: 'var(--tercero)' }}>
-            <AddIcon style={{ color: 'var(--primer)' }} />
-          </IconButton>
-        </Paper>
-
-      </section>
+        />
 
 
-      <Paper>
+
+
+      </section >
+
+      <section className="section-item">
+
+        <div className="witches">
+          <ul className="witches-list">
+            <li className="witches-item">
+              <span className="cantidad-empleados">{productos.length}</span>
+              Listado de los productos
+            </li>
+            <li>
+              <IconButton
+                color="primary" sx={{ p: '8px' }}
+                onClick={mostarFormulario}
+                style={{ background: 'var(--tercero)' }}>
+                <AddIcon style={{ color: 'var(--primer)' }} />
+              </IconButton>
+            </li>
+          </ul>
+        </div>
+
         <table className="tabla-items">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Proveedor</th>
-              <th>Ubicación</th>
-              <th>Nombre</th>
-              <th>Referencia</th>
-              <th>Descripción</th>
-              <th>Precio de Compra</th>
-              <th>Precio de Venta</th>
-              <th>Stock</th>
-              <th>Estado</th>
-              <th></th>
-            </tr>
-          </thead>
           <tbody>
             {productos
               .filter((producto) =>
@@ -406,256 +411,320 @@ const Productos = () => {
               )
               .map((producto, index) => (
                 <tr className="fila" key={index}>
-                  <td className="one"><strong>{index + 1}</strong></td>
-                  <td className="five">{producto.proveedor}</td>
-                  <td className="five">{producto.bodega}</td>
-                  <td className="eight">{producto.nombre}</td>
-                  <td>{producto.referencia}</td>
-                  <td className="six">{producto.descripcion}</td>
-                  <td>{producto.precio_compra}</td>
-                  <td>{producto.precio_venta}</td>
-                  <td className={producto.cantidad === 0 ? 'agotado' : ''}>
-                    {producto.cantidad === 0 ? 'Agotado' : producto.cantidad}
+                  <td className="a4">
+                    <div className="centered-content">
+                      <LocationOnIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                      {producto.bodega}
+                    </div>
                   </td>
-                  <td className="estado">
+
+
+                  <td className="a4">
+                    <div className="centered-content">
+                      <Inventory2OutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                      {capitalizeWords(producto.nombre)}
+                    </div>
+                  </td>
+                  <td className="a4">
+                    <div className="centered-content">
+                      <QrCodeIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                      {capitalizeWords(producto.referencia)}
+                    </div>
+                  </td>
+
+                  <td className="a4">
+                    <div className="centered-content">
+                      <DescriptionIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                      {capitalizeWords(producto.descripcion)}
+                    </div>
+                  </td>
+
+
+                  <td className="a4">
+                    <div className="centered-content">
+                      <PriceCheckOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                      {producto.precio_venta}
+                    </div>
+                  </td>
+                  <td className={producto.cantidad === 0 ? 'agotado' : 'a9'}>
+                    <div className="centered-content">
+                      <InventoryOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                      <strong>   {producto.cantidad === 0 ? 'Agotado' : producto.cantidad}</strong>
+                    </div>
+                  </td>
+
+                  <td className="estado a10">
                     <Switch
+                      size="small"
                       checked={!!producto.estado}
                       color="success"
                       onChange={() => toggleEstado(producto.id_producto, !producto.estado)}
                     />
                   </td>
-                  <td className="acciones ten">
-                    <IconButton size="small" color="success"
-                      onMouseEnter={() => mostrarSubMenu(index)}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                    {subMenu === index && (
-                      <div className="sub_menu" onMouseLeave={quitarSubMenu}>
-                        <Tooltip title="Eliminar">
-                          <IconButton size="small" color="error"
-                            onClick={() => eliminarProducto(producto.id_producto, producto.nombre)}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Editar" onClick={() => activarModoEdicion(producto)}>
-                          <IconButton size="small" color="primary">
-                            <EditIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Detalles">
-                          <IconButton size="small" color="success"
-                            onClick={() => obtenerProductoPorId(producto.id_producto)}
-                          >
-                            <InfoIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </div>
-                    )}
+                  <td className="ten">
+                    <div className="centered-content">
+                      <IconButton onClick={() => setSubMenu(producto.id_producto)}>
+                        <MoreVertIcon />
+                      </IconButton>
+                      {subMenu === producto.id_producto && (
+                        <div className="sub_menu" onMouseLeave={ocultarSubMenu}>
+                          <div onClick={() => obtenerProductoPorId(producto.id_producto)}>
+                            <IconButton size="small" color="success">
+                              <InfoIcon />
+                            </IconButton>
+                            <span>Detalles</span>
+                          </div>
+
+                          <div onClick={() => activarModoEdicion(producto)}>
+                            <IconButton size="small" color="primary">
+                              <EditIcon />
+                            </IconButton>
+                            <span>Editar</span>
+                          </div>
+
+                          <div onClick={() => eliminarProducto(producto.id_producto, producto.nombre)}>
+                            <IconButton size="small" color="error">
+                              <DeleteIcon />
+                            </IconButton>
+                            <span>Eliminar</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </td>
+
                 </tr>
               ))}
           </tbody>
         </table>
-      </Paper>
 
-      <Modal
-        open={formulario}
-        onClose={ocultarFormulario}
-        aria-labelledby="parent-modal-title"
-        aria-describedby="parent-modal-description"
-      >
-        <Box sx={{ ...style_form }}>
-          <form className="grid-form" onSubmit={enviarForm}>
-            <h2 className="title-form">{modoEditar ? 'Editar Producto' : 'Agregar Producto'}</h2>
-            <p className="sub-title">Todos los campos con un <span>(*)</span> son obligatorios.</p>
-            <div className="contain-inputs">
-              <TextField
-                fullWidth
-                label="Referencia"
-                name="referencia"
-                onChange={cambiosInputs}
-                value={formData.referencia}
-                required
-              />
-              <TextField
-                fullWidth
-                label="Nombre del producto"
-                name="nombre"
-                onChange={cambiosInputs}
-                value={formData.nombre}
-                required
-              />
-              <TextField
-                fullWidth
-                label="Cantidad"
-                name="cantidad"
-                onChange={cambiosInputs}
-                value={formData.cantidad}
-                required
-              />
-              <TextField
-                fullWidth
-                label="Descripción"
-                name="descripcion"
-                onChange={cambiosInputs}
-                value={formData.descripcion}
-                required
-              />
-              <TextField
-                fullWidth
-                label="Precio de Compra"
-                name="precio_compra"
-                onChange={cambiosInputs}
-                value={formData.precio_compra}
-                required
-              />
-              <TextField
-                fullWidth
-                label="Precio de Venta"
-                name="precio_venta"
-                onChange={cambiosInputs}
-                value={formData.precio_venta}
-                required
-              />
-              <FormControl fullWidth>
-                <InputLabel id="bodega-label">Ubicación</InputLabel>
-                <Select
-                  labelId="bodega-label"
-                  name="bodega"
-                  value={formData.bodega}
+
+        <Modal
+          open={formulario}
+          onClose={ocultarFormulario}
+          aria-labelledby="parent-modal-title"
+          aria-describedby="parent-modal-description"
+        >
+          <Box sx={{ ...style_form }}>
+            <form className="grid-form" onSubmit={enviarForm}>
+              <h2 className="title-form">{modoEditar ? 'Editar Producto' : 'Agregar Producto'}</h2>
+              <p className="sub-title">Todos los campos con un <span>(*)</span> son obligatorios.</p>
+              <div className="contain-inputs">
+                <TextField
+                  fullWidth
+                  label="Referencia"
+                  name="referencia"
                   onChange={cambiosInputs}
+                  value={formData.referencia}
                   required
-                >
-                  {bodegas.map((bodega) => (
-                    <MenuItem key={bodega.id_bodega} value={bodega.id_bodega}>
-                      {bodega.nombres}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel id="proveedor-label">Proveedor</InputLabel>
-                <Select
-                  labelId="proveedor-label"
-                  name="proveedor"
-                  value={formData.proveedor}
+                />
+                <TextField
+                  fullWidth
+                  label="Nombre del producto"
+                  name="nombre"
                   onChange={cambiosInputs}
+                  value={formData.nombre}
                   required
-                >
-                  {proveedores.map((proveedor) => (
-                    <MenuItem key={proveedor.id_proveedor} value={proveedor.id_proveedor}>
-                      {proveedor.empresa}
-                    </MenuItem>
-
-                  ))}
-
-                </Select>
-
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel id="estado-label">Estado</InputLabel>
-                <Select
-                  labelId="estado-label"
-                  name="estado"
-                  value={formData.estado}
+                />
+                <TextField
+                  type="number"
+                  fullWidth
+                  label="Cantidad"
+                  name="cantidad"
                   onChange={cambiosInputs}
+                  value={formData.cantidad}
                   required
-                >
-                  <MenuItem value={1}>Activo</MenuItem>
-                  <MenuItem value={0}>Inactivo</MenuItem>
-                </Select>
-              </FormControl>
+                />
+                <TextField
+                  fullWidth
+                  label="Descripción"
+                  name="descripcion"
+                  onChange={cambiosInputs}
+                  value={formData.descripcion}
+                  required
+                />
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Precio de Compra"
+                  name="precio_compra"
+                  onChange={cambiosInputs}
+                  value={formData.precio_compra}
+                  required
+                />
+                <TextField
+                  type="number"
+                  fullWidth
+                  label="Precio de Venta"
+                  name="precio_venta"
+                  onChange={cambiosInputs}
+                  value={formData.precio_venta}
+                  required
+                />
+                <FormControl fullWidth>
+                  <InputLabel id="bodega-label">Ubicación</InputLabel>
+                  <Select
+                    labelId="bodega-label"
+                    name="bodega"
+                    value={formData.bodega}
+                    onChange={cambiosInputs}
+                    required
+                  >
+                    {bodegas.map((bodega) => (
+                      <MenuItem key={bodega.id_bodega} value={bodega.id_bodega}>
+                        {bodega.nombres}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="proveedor-label">Proveedor</InputLabel>
+                  <Select
+                    labelId="proveedor-label"
+                    name="proveedor"
+                    value={formData.proveedor}
+                    onChange={cambiosInputs}
+                    required
+                  >
+                    {proveedores.map((proveedor) => (
+                      <MenuItem key={proveedor.id_proveedor} value={proveedor.id_proveedor}>
+                        {proveedor.empresa}
+                      </MenuItem>
+
+                    ))}
+
+                  </Select>
+
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="estado-label">Estado</InputLabel>
+                  <Select
+                    labelId="estado-label"
+                    name="estado"
+                    value={formData.estado}
+                    onChange={cambiosInputs}
+                    required
+                  >
+                    <MenuItem value={1}>Activo</MenuItem>
+                    <MenuItem value={0}>Inactivo</MenuItem>
+                  </Select>
+                </FormControl>
 
 
 
 
 
 
-
-            </div>
-            <Divider />
-            <div className="contain-btns">
-              <Button
-                variant="contained"
-                color="error"
-                onClick={ocultarFormulario}
-              >
-                Cancelar
-              </Button>
-              <Button
-                variant="contained"
-                color="success"
-                type="submit"
-              > {modoEditar ? 'Editar' : 'Agregar'}
-              </Button>
-            </div>
-          </form>
-        </Box>
-      </Modal>
-
-      <Modal
-        open={Boolean(detalleProducto)}
-        onClose={ocultarFormulario}
-        aria-labelledby="parent-modal-title"
-        aria-describedby="parent-modal-description"
-      >
-        <Box sx={{ ...style }}>
-          {detalleProducto && (
-            <div className="contenedor_detalle">
-              <div className="cerrar-boton">
-                <h2 className="titulo-detalle">Detalles del Producto</h2>
-                <IconButton onClick={ocultarFormulario}>
-                  <CloseIcon />
-                </IconButton>
-              </div>
-              <div className="contenedor-detalles">
-
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Proveedor:</strong>
-                  <span className="detalle_valor">{detalleProducto.proveedor}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Ubicación:</strong>
-                  <span className="detalle_valor">{detalleProducto.bodega}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Nombre:</strong>
-                  <span className="detalle_valor">{detalleProducto.nombre}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Referencia:</strong>
-                  <span className="detalle_valor">{detalleProducto.referencia}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Descripción:</strong>
-                  <span className="detalle_valor">{detalleProducto.descripcion}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Precio de Compra:</strong>
-                  <span className="detalle_valor">{detalleProducto.precio_compra}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Precio de Venta:</strong>
-                  <span className="detalle_valor">{detalleProducto.precio_venta}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Cantidad:</strong>
-                  <span className="detalle_valor">{detalleProducto.cantidad}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Estado:</strong>
-                  <span className="detalle_valor">
-                    {mostrarEstadoTexto(detalleProducto.estado)}
-                  </span>
-                </div>
 
               </div>
-            </div>
-          )}
-        </Box>
-      </Modal>
-    </section>
+
+              <div className="contain-btns">
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={ocultarFormulario}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  type="submit"
+                > {modoEditar ? 'Guardar cambios' : 'Agregar producto'}
+                </Button>
+              </div>
+            </form>
+          </Box>
+        </Modal>
+
+        <Modal
+          open={Boolean(detalleProducto)}
+          onClose={ocultarFormulario}
+          aria-labelledby="parent-modal-title"
+          aria-describedby="parent-modal-description"
+        >
+          <Box sx={{ ...style }}>
+            {detalleProducto && (
+              <div className="contenedor_detalle">
+                <div className="cerrar-boton">
+                  <h2 className="titulo-detalle">Detalles del Producto</h2>
+                  <IconButton onClick={ocultarFormulario}>
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+                <div className="contenedor-detalles">
+
+                  <div className="detalle_item">
+                    <DescriptionIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Proveedor</strong>
+                      <span className="detalle_valor">{detalleProducto.proveedor}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <LocationOnIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Ubicación</strong>
+                      <span className="detalle_valor">{detalleProducto.bodega}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <Inventory2OutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Nombre</strong>
+                      <span className="detalle_valor">{capitalizeWords(detalleProducto.nombre)}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <QrCodeIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Referencia</strong>
+                      <span className="detalle_valor">{capitalizeWords(detalleProducto.referencia)}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <DescriptionIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Descripción</strong>
+                      <span className="detalle_valor">{capitalizeWords(detalleProducto.descripcion)}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <AttachMoneyIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Precio de Compra</strong>
+                      <span className="detalle_valor">{detalleProducto.precio_compra}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <PriceCheckOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Precio de Venta</strong>
+                      <span className="detalle_valor">{detalleProducto.precio_venta}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <InventoryOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Cantidad</strong>
+                      <span className="detalle_valor">{detalleProducto.cantidad}</span>
+                    </div>
+                  </div>
+                  <div className="detalle_item">
+                    <LocationOnIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                    <div className="centered-content-detalle">
+                      <strong className="detalle_titulo">Estado</strong>
+                      <span className="detalle_valor">{mostrarEstadoTexto(detalleProducto.estado)}</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            )}
+          </Box>
+        </Modal>
+      </section>
+    </>
   );
 };
 

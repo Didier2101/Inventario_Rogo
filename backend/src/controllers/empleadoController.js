@@ -1,47 +1,48 @@
 const empleadoService = require("../services/empleadoService");
 
-const crearEmpleado = async (req, res) => {
+const crearEmpleado = async (request, response) => {
   try {
-    const empleado = req.body;
+    const empleado = request.body;
     await empleadoService.agregarEmpleado(empleado);
-    res.status(201).json({ message: "Empleado creado exitosamente" });
+    response.status(201).json({ message: "Empleado creado exitosamente" });
   } catch (error) {
-    if (error.code === "ER_DUP_ENTRY") {
-      res.status(400).json({
-        error: "CEDULA_DUPLICADA",
-        message: "Esta cedula ya se encuentra registrada",
+    if (
+      error.message === "La cédula ya se encuentra registrada" ||
+      error.message === "El correo electrónico ya se encuentra registrado"
+    ) {
+      response.status(400).json({
+        error: "REGISTRO_DUPLICADO",
+        message: error.message,
+      });
+    } else if (error.message === "Datos del empleado incompletos") {
+      response.status(400).json({
+        error: "DATOS_INCOMPLETOS",
+        message: error.message,
       });
     } else {
       console.error("Error al crear los empleados:", error);
-      res.status(500).json({ message: "Error al crear los empleados" });
+      response.status(500).json({ message: "Error al crear los empleados" });
     }
   }
 };
 
-// TODO =================================================================
-// Controlador para obtener todos los empleados
-const obtenerTodosEmpleados = async (req, res) => {
-  try {
-    const empleados = await empleadoService.obtenerTodosEmpleados();
-    res.status(200).json(empleados);
-  } catch (error) {
-    console.error("Error al obtener los empleados:", error);
-    res.status(500).json({ message: "Error al obtener los empleados" });
-  }
-};
-// TODO =================================================================
 // Controlador para actualizar un empleado
-const actualizarEmpleado = async (req, res) => {
-  const idEmpleado = req.params.id_empleado;
-  const nuevoEmpleado = req.body;
+const actualizarEmpleado = async (request, response) => {
+  const idEmpleado = request.params.id_empleado;
+  const nuevoEmpleado = request.body;
   try {
     await empleadoService.actualizarEmpleado(idEmpleado, nuevoEmpleado);
-    res.status(200).json({ message: "Empleado actualizado correctamente" });
+    response
+      .status(200)
+      .json({ message: "Empleado actualizado correctamente" });
   } catch (error) {
-    if (error.code === "CEDULA_DUPLICADA") {
-      res.status(400).json({
-        message:
-          "La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.",
+    if (
+      error.code === "CEDULA_DUPLICADA" ||
+      error.code === "CORREO_DUPLICADO"
+    ) {
+      response.status(400).json({
+        message: error.message,
+        error: "REGISTRO_DUPLICADO",
       });
     } else {
       console.error("Error al actualizar el empleado:", error);
@@ -49,6 +50,19 @@ const actualizarEmpleado = async (req, res) => {
     }
   }
 };
+
+// TODO =================================================================
+// Controlador para obtener todos los empleados
+const obtenerTodosEmpleados = async (request, response) => {
+  try {
+    const empleados = await empleadoService.obtenerTodosEmpleados();
+    response.status(200).json(empleados);
+  } catch (error) {
+    console.error("Error al obtener los empleados:", error);
+    response.status(500).json({ message: "Error al obtener los empleados" });
+  }
+};
+// TODO =================================================================
 
 // TODO =================================================================
 const eliminarEmpleado = async (req, res) => {

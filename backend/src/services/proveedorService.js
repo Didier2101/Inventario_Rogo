@@ -22,11 +22,23 @@ const agregarProveedor = async (proveedor) => {
       [proveedor.nit]
     );
     if (proveedoresExistentes.length > 0) {
-      const error = new Error("NIT_DUPLICADO");
-      error.codigo = "NIT_DUPLICADO";
-      throw error;
+      throw new Error("El NIT ya se encuentra registrado");
     }
-
+    const [proveedorExistentes] = await pool.query(
+      "SELECT * FROM proveedores WHERE cedula = ?",
+      [proveedor.cedula]
+    );
+    if (proveedorExistentes.length > 0) {
+      throw new Error("La cédula ya se encuentra registrada");
+    }
+    // Verificar si el correo electrónico ya existe
+    const [emailExistentes] = await pool.query(
+      "SELECT * FROM proveedores WHERE correo_electronico = ?",
+      [proveedor.correo_electronico]
+    );
+    if (emailExistentes.length > 0) {
+      throw new Error("El correo electrónico ya se encuentra registrado");
+    }
     // Insertar datos del proveedor
     const insertarProveedor = `INSERT INTO proveedores (nit, empresa, cedula, nombres, telefono, correo_electronico, direccion)
     VALUES(?, ?, ?, ?, ?, ?, ?)`;
@@ -49,6 +61,77 @@ const agregarProveedor = async (proveedor) => {
   } catch (error) {
     await pool.query("ROLLBACK");
     console.error("Error al agregar el proveedor", error);
+    throw error;
+  }
+};
+
+const actualizarProveedor = async (idProveedor, nuevoProveedor) => {
+  try {
+    // Verificar si el nuevo NIT ya existe en otro proveedor
+    const checkNitQuery =
+      "SELECT id_proveedor FROM proveedores WHERE nit = ? AND id_proveedor != ?";
+    const [proveedorExistente] = await pool.query(checkNitQuery, [
+      nuevoProveedor.nit,
+      idProveedor,
+    ]);
+
+    if (proveedorExistente.length > 0) {
+      throw {
+        code: "NIT_DUPLICADO",
+        message: "El NIT ya se encuentra registrado",
+      };
+    }
+
+    // Verificar si la nueva cédula ya existe en otro proveedor
+    const checkCedulaQuery =
+      "SELECT id_proveedor FROM proveedores WHERE cedula = ? AND id_proveedor != ?";
+    const [proveedorCedulaExistente] = await pool.query(checkCedulaQuery, [
+      nuevoProveedor.cedula,
+      idProveedor,
+    ]);
+
+    if (proveedorCedulaExistente.length > 0) {
+      throw {
+        code: "CEDULA_DUPLICADA",
+        message: "La cédula ya se encuentra registrada",
+      };
+    }
+
+    // Verificar si el nuevo correo electrónico ya existe en otro proveedor
+    const checkCorreoQuery =
+      "SELECT id_proveedor FROM proveedores WHERE correo_electronico = ? AND id_proveedor != ?";
+    const [proveedorCorreoExistente] = await pool.query(checkCorreoQuery, [
+      nuevoProveedor.correo_electronico,
+      idProveedor,
+    ]);
+
+    if (proveedorCorreoExistente.length > 0) {
+      throw {
+        code: "CORREO_DUPLICADO",
+        message: "El correo electrónico ya se encuentra registrado",
+      };
+    }
+
+    // Aquí puedes continuar con la lógica para actualizar el proveedor
+    const actualizarQuery = `
+      UPDATE proveedores
+      SET nit = ?, empresa = ?, cedula = ?, nombres = ?, telefono = ?, correo_electronico = ?, direccion = ?
+      WHERE id_proveedor = ?
+    `;
+    const [resultadoActualizacion] = await pool.query(actualizarQuery, [
+      nuevoProveedor.nit,
+      nuevoProveedor.empresa,
+      nuevoProveedor.cedula,
+      nuevoProveedor.nombres,
+      nuevoProveedor.telefono,
+      nuevoProveedor.correo_electronico,
+      nuevoProveedor.direccion,
+      idProveedor,
+    ]);
+
+    console.log("Proveedor actualizado correctamente:", resultadoActualizacion);
+  } catch (error) {
+    console.error("Error al actualizar el proveedor:", error);
     throw error;
   }
 };
@@ -101,56 +184,6 @@ const obtenerProveedorPorId = async (idProveedor) => {
     }
   } catch (error) {
     console.error("Error al obtener el proveedor:", error);
-    throw error;
-  }
-};
-
-const actualizarProveedor = async (idProveedor, nuevoProveedor) => {
-  try {
-    // Verificar si el nuevo NIT ya existe en otro proveedor
-    const checkNitQuery =
-      "SELECT id_proveedor FROM proveedores WHERE nit = ? AND id_proveedor != ?";
-    const [existingProvider] = await pool.query(checkNitQuery, [
-      nuevoProveedor.nit,
-      idProveedor,
-    ]);
-
-    if (existingProvider.length > 0) {
-      throw {
-        code: "NIT_DUPLICADO",
-        message:
-          "El NIT ingresado ya está registrado. Por favor, ingrese un NIT diferente.",
-      };
-    }
-
-    // Continuar con la actualización del proveedor si no hay NIT duplicado
-    const query = `
-      UPDATE proveedores 
-      SET 
-        nit = ?,
-        empresa = ?,
-        cedula = ?,
-        nombres = ?,
-        correo_electronico = ?,
-        telefono = ?,
-        direccion = ?
-      WHERE id_proveedor = ?
-    `;
-    const values = [
-      nuevoProveedor.nit,
-      nuevoProveedor.empresa,
-      nuevoProveedor.cedula,
-      nuevoProveedor.nombres,
-      nuevoProveedor.correo_electronico,
-      nuevoProveedor.telefono,
-      nuevoProveedor.direccion,
-      idProveedor,
-    ];
-    await pool.query(query, values);
-
-    console.log("Proveedor actualizado correctamente");
-  } catch (error) {
-    console.error("Error al actualizar el proveedor:", error);
     throw error;
   }
 };

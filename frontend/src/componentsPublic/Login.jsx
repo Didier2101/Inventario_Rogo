@@ -45,7 +45,6 @@ function Login() {
             contrasena: contrasena,
             cargo: cargoSeleccionado,
         };
-
         try {
             const response = await fetch('http://localhost:4000/ingresar', {
                 method: 'POST',
@@ -56,6 +55,7 @@ function Login() {
             });
             const result = await response.json();
             if (response.ok) {
+
                 Swal.fire({
                     title: "Éxito",
                     text: result.message,
@@ -63,36 +63,10 @@ function Login() {
                     timer: 1000,
                     showConfirmButton: false
                 });
-                // Redirigir al usuario a otra página si es necesario
-                const cargoSeleccionadoObj = cargos.find(cargo => cargo.id_cargo === cargoSeleccionado);
+
+                navigate('/administrativo', { replace: true });
 
 
-                switch (cargoSeleccionadoObj.nombre_cargo) {
-                    case 'Administrador':
-                        console.log("¡Bienvenido Administrador!");
-                        navigate('/Administrador', { replace: true });
-                        break;
-                    case 'Bodeguero':
-                        console.log("¡Bienvenido Bodeguero!");
-                        navigate('/', { replace: true });
-                        break;
-                    case 'Vendedor':
-                        console.log("¡Bienvenido Vendedor!");
-                        navigate('/Vendedor', { replace: true });
-                        break;
-                    case 'Auxiliar':
-                        navigate('/', { replace: true });
-                        break;
-                    default:
-                        console.log(`Usuario con cargo "${cargoSeleccionado}" ha iniciado sesión`);
-                        break;
-                }
-
-                // setTimeout(() => {
-                //     navigate('/Home', { replace: true });
-
-
-                // }, 1000);
             } else {
                 Swal.fire({
                     title: "Error",
@@ -108,7 +82,6 @@ function Login() {
             console.log(error)
         }
     }
-
 
     return (
         <>

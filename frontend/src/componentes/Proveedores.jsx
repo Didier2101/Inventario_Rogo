@@ -1,21 +1,28 @@
-import { validarFormulario } from "../utils/validaciones";
+import { Box, Button, IconButton, Modal, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
-import "../css/empleados.css";
 
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add';
+import PlaceIcon from '@mui/icons-material/Place';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from '@mui/icons-material/Add';
-import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import CloseIcon from '@mui/icons-material/Close';
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
+import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
+import DnsIcon from '@mui/icons-material/Dns';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+
+
 
 const Proveedores = () => {
   const [proveedorID, setProveedorID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detalleProveedor, setDetalleProveedor] = useState(null)
-  const [subMenu, setSubMenu] = useState(null);
   const [proveedores, setProveedores] = useState([]);
   const [formulario, setFormulario] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,6 +34,12 @@ const Proveedores = () => {
     correo_electronico: '',
     direccion: ''
   });
+  const [cedulaError, setCedulaError] = useState(false);
+  const [nitError, setNitError] = useState(false);
+  const [telefonoError, setTelefonoError] = useState(false);
+  const [nombresError, setNombresError] = useState(false);
+  const [correoError, setCorreoError] = useState(false);
+  const [formularioValido, setFormularioValido] = useState(false);
 
   const activarModoEdicion = (proveedor) => {
     setModoEditar(true);
@@ -38,6 +51,52 @@ const Proveedores = () => {
   const cambiosInputs = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    switch (name) {
+      case 'cedula':
+        if (/^\d+$/.test(value) || value === '') {
+          setCedulaError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setCedulaError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'nit':
+        if (/^\d+$/.test(value) || value === '') {
+          setNitError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setNitError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'telefono':
+        if (/^\d+$/.test(value) || value === '') {
+          setTelefonoError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setTelefonoError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'nombres':
+        if (/^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/.test(value) || value === '') {
+          setNombresError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setNombresError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'correo_electronico':
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || value === '') {
+          setCorreoError(false); // No hay error si el valor es un correo válido o está vacío
+        } else {
+          setCorreoError(true); // Hay error si el valor no cumple con el formato de correo
+        }
+        break;
+
+
+      default:
+        break;
+    }
+    // Verificar si todos los campos obligatorios están llenos y no hay errores
+    const camposLlenos = Object.values(formData).every(val => val !== '');
+    const noHayErrores = !(cedulaError || nitError || telefonoError || nombresError || correoError);
+    setFormularioValido(camposLlenos && noHayErrores);
   };
 
   const obtenerProveedores = async () => {
@@ -56,6 +115,106 @@ const Proveedores = () => {
   useEffect(() => {
     obtenerProveedores();
   }, []);
+
+
+
+  const enviarForm = async (e) => {
+    e.preventDefault();
+
+    if (
+      cedulaError ||
+      nitError ||
+      telefonoError ||
+      nombresError ||
+      correoError ||
+      !formData.nit ||
+      !formData.empresa ||
+      !formData.cedula ||
+      !formData.nombres ||
+      !formData.correo_electronico ||
+      !formData.telefono ||
+      !formData.direccion
+    ) {
+      return; // No envía el formulario si hay errores o campos vacíos
+    }
+
+    try {
+      let url = 'http://localhost:4000/proveedores';
+      let method = 'POST';
+      if (modoEditar) {
+        url += `/${proveedorID}`;
+        method = 'PUT';
+      }
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.status === 400) {
+        const data = await response.json();
+        if (data.error && data.error === "REGISTRO_DUPLICADO") {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.message,
+          });
+          return;
+        } else {
+          console.error('Error al agregar o actualizar el proveedor');
+          return;
+        }
+      }
+
+      if (!response.ok) {
+        console.error('Error al agregar o actualizar el proveedor');
+        return;
+      }
+
+      // const data = await response.json();
+
+      if (modoEditar) {
+        Swal.fire({
+          title: 'Proveedor Actualizado',
+          text: 'El proveedor ha sido actualizado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          title: 'Proveedor Agregado',
+          text: 'El proveedor ha sido agregado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      }
+      ocultarFormulario();
+      obtenerProveedores();
+      setFormularioValido(false)
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+
+  }
+
+  const obtenerProveedorPorId = async (idProveedor) => {
+    try {
+      const response = await fetch(`http://localhost:4000/proveedores/${idProveedor}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDetalleProveedor(data);
+      } else {
+        console.error("No se pudo obtener los proveedores");
+      }
+    } catch (error) {
+      console.error('error al obtener los proveedores', error);
+    }
+  }
 
   const eliminarProveedor = async (proveedorId, proveedorNombre) => {
     try {
@@ -102,95 +261,6 @@ const Proveedores = () => {
     }
   };
 
-  const enviarForm = async (e) => {
-    e.preventDefault();
-    const { valido, mensaje } = validarFormulario(formData);
-
-    if (!valido) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de validación',
-        text: mensaje,
-      });
-      return;
-    }
-    try {
-      let url = 'http://localhost:4000/proveedores';
-      let method = 'POST';
-      if (modoEditar) {
-        url += `/${proveedorID}`;
-        method = 'PUT';
-      }
-
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.status === 400) {
-        const data = await response.json();
-        if (data.error && data.error === "NIT_DUPLICADO") {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.message,
-          });
-          return;
-        } else {
-          console.error('Error al agregar o actualizar el proveedor');
-          return;
-        }
-      }
-
-      if (!response.ok) {
-        console.error('Error al agregar o actualizar el proveedor');
-        return;
-      }
-
-      const data = await response.json();
-
-      if (modoEditar) {
-        Swal.fire({
-          title: 'Proveedor Actualizado',
-          text: 'El proveedor ha sido actualizado correctamente.',
-          icon: 'success',
-          timer: 1000,
-          showConfirmButton: false
-        });
-      } else {
-        Swal.fire({
-          title: 'Proveedor Agregado',
-          text: 'El proveedor ha sido agregado correctamente.',
-          icon: 'success',
-          timer: 1000,
-          showConfirmButton: false
-        });
-      }
-      ocultarFormulario();
-      obtenerProveedores();
-    } catch (error) {
-      console.error('Error en la solicitud:', error);
-    }
-
-  }
-
-  const obtenerProveedorPorId = async (idProveedor) => {
-    try {
-      const response = await fetch(`http://localhost:4000/proveedores/${idProveedor}`);
-      if (response.ok) {
-        const data = await response.json();
-        setDetalleProveedor(data);
-      } else {
-        console.error("No se pudo obtener los proveedores");
-      }
-    } catch (error) {
-      console.error('error al obtener los proveedores', error);
-    }
-  }
-
   const mostarFormulario = () => {
     setFormulario(true);
     setModoEditar(false)
@@ -210,44 +280,173 @@ const Proveedores = () => {
     });
   };
 
-  const style = {
+  const style_form = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 1000,
-    maxWidth: '90%',
-    maxHeight: '90vh',
+    width: 1100,
+    height: 'auto', // Establece una altura específica para permitir el desplazamiento
     bgcolor: 'background.paper',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-    borderRadius: 2,
-    height: 'auto',
+    border: '2px solid #fff',
+    borderRadius: '6px',
+    boxShadow: 24,
     pt: 2,
     px: 4,
     pb: 3,
-    overflowY: 'auto',
+    overflowY: 'scroll', // Desplazamiento solo vertical
     '@media (max-width: 600px)': {
-      width: '90%',
-      position: 'relativa',
+      width: '100%',
+      position: 'relative',
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
     },
   };
 
-  const mostrarSubMenu = (index) => {
-    setSubMenu(index)
-  }
-  const quitarSubMenu = () => {
-    setSubMenu(null)
-  }
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '400px',
+    height: '100vh',
+    bgcolor: 'background.paper',
+    overflow: 'auto',
+    overflowY: 'auto',
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative', // Corrige 'relativa' a 'relative'
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+    },
+  };
+
+
+
+  const [subMenu, setSubMenu] = useState(false)
+  const ocultarSubMenu = () => {
+    setSubMenu(false)
+  };
+
+  const capitalizeWords = (str) => {
+    return str.split(' ').map(word => capitalize(word)).join(' ');
+  };
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <section className="section-item">
+
+
+      <div className="witches">
+        <ul className="witches-list">
+          <li className="witches-item">
+            <span className="cantidad-proveedores">{proveedores.length}</span>
+            Lista de proveedores
+          </li>
+          <li>
+            <IconButton
+              onClick={mostarFormulario}
+              style={{ background: 'var(--tercero)' }}>
+              <AddIcon style={{ color: 'var(--primer)' }} />
+            </IconButton>
+          </li>
+        </ul>
+      </div>
+
+      <table className="tabla-items">
+        <tbody>
+          {proveedores.map((proveedor, index) => (
+            <tr className="fila" key={index}>
+              <td className="a1">
+                <div className="centered-content">
+                  <DnsIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {proveedor.nit}
+                </div>
+              </td>
+              <td className="a4">
+                <div className="centered-content">
+                  <ApartmentIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {capitalizeWords(proveedor.empresa)}
+                </div>
+              </td>
+
+              <td className="a2">
+                <div className="centered-content">
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {proveedor.cedula}
+                </div>
+              </td>
+              <td className="a2">
+                <div className="centered-content">
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {capitalizeWords(proveedor.nombres)}
+                </div>
+              </td>
+              <td className="a3">
+                <div className="centered-content">
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  <div className="contacto">
+                    <span>{proveedor.telefono}</span>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#636363' }}> {proveedor.direccion}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td className="a6">
+                <div className="centered-content">
+                  <LocalPostOfficeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {proveedor.correo_electronico}
+                </div>
+              </td>
+              <td className="ten">
+
+                <IconButton onClick={() => setSubMenu(proveedor.id_proveedor)}>
+                  <MoreVertIcon />
+                </IconButton>
+                {subMenu === proveedor.id_proveedor && (
+                  <div className="sub_menu" onMouseLeave={ocultarSubMenu}>
+                    <div onClick={() => obtenerProveedorPorId(proveedor.id_proveedor)}>
+                      <IconButton size="small" color="success">
+                        <InfoIcon />
+                      </IconButton>
+                      <span>Detalles</span>
+                    </div>
+
+                    <div onClick={() => activarModoEdicion(proveedor)}>
+                      <IconButton size="small" color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <span>Editar</span>
+                    </div>
+
+                    <div onClick={() => eliminarProveedor(proveedor.id_proveedor, proveedor.nombres)}>
+                      <IconButton size="small" color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                      <span>Eliminar</span>
+                    </div>
+                  </div>
+                )}
+
+              </td>
+
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+
       <Modal
         open={formulario}
         onClose={ocultarFormulario}
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style }}>
+        <Box sx={{ ...style_form }}>
           <form className="grid-form" onSubmit={enviarForm}>
             <h2 className="title-form">{modoEditar ? 'Editar Proveedor' : 'Agregar Proveedor'}</h2>
             <p className="sub-title">Todos los campos con un <span>(*)</span> son obligatorios.</p>
@@ -258,6 +457,8 @@ const Proveedores = () => {
                 name="nit"
                 onChange={cambiosInputs}
                 value={formData.nit}
+                error={nitError}
+                helperText={nitError ? 'Solo números permitidos' : ''}
                 required
               />
               <TextField
@@ -266,6 +467,7 @@ const Proveedores = () => {
                 name="empresa"
                 onChange={cambiosInputs}
                 value={formData.empresa}
+                error={false}
                 required
               />
               <TextField
@@ -274,6 +476,8 @@ const Proveedores = () => {
                 name="cedula"
                 onChange={cambiosInputs}
                 value={formData.cedula}
+                error={cedulaError}
+                helperText={cedulaError ? 'Solo números permitidos' : ''}
                 required
               />
               <TextField
@@ -282,6 +486,8 @@ const Proveedores = () => {
                 name="nombres"
                 onChange={cambiosInputs}
                 value={formData.nombres}
+                error={nombresError}
+                helperText={nombresError ? 'Solo se permiten letras de la (A) a la (Z)' : ''}
                 required
               />
               <TextField
@@ -290,6 +496,8 @@ const Proveedores = () => {
                 name="correo_electronico"
                 onChange={cambiosInputs}
                 value={formData.correo_electronico}
+                error={correoError}
+                helperText={correoError ? 'El correo es invalido!' : ''}
                 required
               />
               <TextField
@@ -298,6 +506,8 @@ const Proveedores = () => {
                 name="telefono"
                 onChange={cambiosInputs}
                 value={formData.telefono}
+                error={telefonoError}
+                helperText={telefonoError ? 'Solo números permitidos' : ''}
                 required
               />
               <TextField
@@ -306,13 +516,13 @@ const Proveedores = () => {
                 name="direccion"
                 onChange={cambiosInputs}
                 value={formData.direccion}
+                error={false}
                 required
               />
             </div>
-            <Divider />
             <div className="contain-btns">
               <Button
-                variant="contained"
+                variant="outlined"
                 color="error"
                 onClick={ocultarFormulario}
               >
@@ -322,81 +532,13 @@ const Proveedores = () => {
                 variant="contained"
                 color="success"
                 type="submit"
-              > {modoEditar ? 'Guardar cambios' : 'Agregar'}
+                disabled={!formularioValido}
+              > {modoEditar ? 'Guardar cambios' : 'Agregar Proveedor'}
               </Button>
             </div>
           </form>
         </Box>
       </Modal>
-
-      <section className="caja-section">
-        <h2 className="title-tabla">Lista de Proveedores</h2>
-        <IconButton
-          onClick={mostarFormulario}
-          style={{ background: 'var(--tercero)' }}>
-          <AddIcon style={{ color: 'var(--primer)' }} />
-        </IconButton>
-      </section>
-      <Divider />
-
-      <table className="tabla-items">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Empresa</th>
-            <th>NIT</th>
-            <th>Cédula</th>
-            <th>Nombres</th>
-            <th>Correo Electrónico</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {proveedores.map((proveedor, index) => (
-            <tr className="fila" key={index}>
-              <td className="one"><strong>{index + 1}</strong></td>
-              <td className="eight">{proveedor.empresa}</td>
-              <td className=""><strong>{proveedor.nit}</strong></td>
-              <td className="two"><strong>{proveedor.cedula}</strong></td>
-              <td className="three">{proveedor.nombres}</td>
-              <td className="five">{proveedor.correo_electronico}</td>
-              <td className="four">{proveedor.telefono}</td>
-              <td className="six">{proveedor.direccion}</td>
-              <td className="acciones ten">
-                <IconButton size="small" color="success"
-                  onMouseEnter={() => mostrarSubMenu(index)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-                {subMenu === index && (
-                  <div className="sub_menu" onMouseLeave={quitarSubMenu}>
-                    <Tooltip title="Eliminar">
-                      <IconButton size="small" color="error"
-                        onClick={() => eliminarProveedor(proveedor.id_proveedor, proveedor.empresa)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Editar" onClick={() => activarModoEdicion(proveedor)}>
-                      <IconButton size="small" color="primary">
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Detalles">
-                      <IconButton size="small" color="success"
-                        onClick={() => obtenerProveedorPorId(proveedor.id_proveedor)}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
 
       <Modal
         open={Boolean(detalleProveedor)}
@@ -407,50 +549,75 @@ const Proveedores = () => {
         <Box sx={{ ...style }}>
           {detalleProveedor && (
             <div className="contenedor_detalle">
-              <h2 className="titulo-detalle">Detalles del proveedor</h2>
-              <Divider />
+              <div className="cerrar-boton">
+                <h2 className="titulo-detalle">Detalles del proveedor</h2>
+                <IconButton onClick={ocultarFormulario}>
+                  <CloseIcon />
+                </IconButton>
+              </div>
               <div className="contenedor-detalles">
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">NIT:</strong>
-                  <span className="detalle_valor">{detalleProveedor.nit}</span>
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">NIT</strong>
+                    <span className="detalle_valor">{detalleProveedor.nit}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Empresa:</strong>
-                  <span className="detalle_valor">{detalleProveedor.empresa}</span>
+                  <ApartmentIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Empresa</strong>
+                    <span className="detalle_valor">{capitalizeWords(detalleProveedor.empresa)}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Cédula:</strong>
-                  <span className="detalle_valor">{detalleProveedor.cedula}</span>
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Cédula</strong>
+                    <span className="detalle_valor">{detalleProveedor.cedula}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Nombres:</strong>
-                  <span className="detalle_valor">{detalleProveedor.nombres}</span>
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Nombres</strong>
+                    <span className="detalle_valor">{capitalizeWords(detalleProveedor.nombres)}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Correo Electrónico:</strong>
-                  <span className="detalle_valor">{detalleProveedor.correo_electronico}</span>
+                  <LocalPostOfficeOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Correo Electrónico</strong>
+                    <span className="detalle_valor">{detalleProveedor.correo_electronico}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Teléfono:</strong>
-                  <span className="detalle_valor">{detalleProveedor.telefono}</span>
+                  <PhoneIphoneOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Teléfono</strong>
+                    <span className="detalle_valor">{detalleProveedor.telefono}</span>
+                  </div>
                 </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Dirección:</strong>
-                  <span className="detalle_valor">{detalleProveedor.direccion}</span>
+
+                <div className="detalle_item google">
+                  <PlaceIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Dirección</strong>
+                    <span className="detalle_valor">{detalleProveedor.direccion}</span>
+                  </div>
                 </div>
-              </div>
-              <Divider />
-              <div className="cerrar_boton">
-                <Button
-                  variant="contained"
-                  color="success"
-                  className="btn-cerrar"
-                  onClick={ocultarFormulario}>Cerrar</Button>
+
               </div>
             </div>
           )}
         </Box>
       </Modal>
+
     </section >
   );
 };

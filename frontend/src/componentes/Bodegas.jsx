@@ -1,6 +1,4 @@
-// import { validarFormulario } from "../utils/validaciones";
 
-import "../css/empleados.css";
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoIcon from "@mui/icons-material/Info";
@@ -8,8 +6,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
+import PlaceIcon from '@mui/icons-material/Place';
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
 
-import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+
+import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
@@ -17,7 +21,6 @@ const Bodegas = () => {
   const [bodegaID, setBodegaID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detalleBodega, setDetalleBodega] = useState(null)
-  const [subMenu, setSubMenu] = useState(null);
   const [bodegas, setBodegas] = useState([]);
   const [formulario, setFormulario] = useState(false);
   const [empleados, setEmpleados] = useState([]);
@@ -32,6 +35,8 @@ const Bodegas = () => {
     obtenerBodegas();
     obtenerEmpleados();
   }, []);
+
+
 
   const activarModoEdicion = (bodega) => {
     setModoEditar(true);
@@ -149,7 +154,7 @@ const Bodegas = () => {
       });
 
       if (response.status === 400) {
-        const data = await response.json();
+        // const data = await response.json();
         console.error('Error al agregar o actualizar la bodega');
         return;
       }
@@ -159,7 +164,7 @@ const Bodegas = () => {
         return;
       }
 
-      const data = await response.json();
+      // const data = await response.json();
 
       if (modoEditar) {
         Swal.fire({
@@ -221,16 +226,37 @@ const Bodegas = () => {
 
   const style_form = {
     position: 'absolute',
-
     top: '50%',
     left: '50%',
-    width: '90%',
     transform: 'translate(-50%, -50%)',
+    width: 1100,
+    height: 'auto', // Establece una altura específica para permitir el desplazamiento
     bgcolor: 'background.paper',
-    overflow: 'auto',
-    borderRadius: 'none',
+    border: '2px solid #fff',
+    borderRadius: '6px',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+    overflowY: 'scroll', // Desplazamiento solo vertical
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative',
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+    },
+  };
+
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '400px',
+    height: '100vh',
+    bgcolor: 'background.paper',
     overflowY: 'auto',
-    border: 'none',
     '@media (max-width: 600px)': {
       width: '100%',
       position: 'relative', // Corrige 'relativa' a 'relative'
@@ -239,36 +265,102 @@ const Bodegas = () => {
       transform: 'none',
     },
   };
-  const style = {
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-    top: '0',
-    right: '0',
-    width: '500px',
-    maxHeight: '100vh',
-    bgcolor: 'background.paper',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-    borderRadius: 'none',
-    height: '100vh',
-    overflowY: 'auto',
-    '@media (max-width: 600px)': {
-      width: '90%',
-      position: 'relative', // Corrige 'relativa' a 'relative'
-    },
-  };
 
 
-  const mostrarSubMenu = (index) => {
-    setSubMenu(index);
+
+  const [subMenu, setSubMenu] = useState(false)
+  const ocultarSubMenu = () => {
+    setSubMenu(false)
   };
 
-  const quitarSubMenu = () => {
-    setSubMenu(null);
-  };
 
   return (
     <section className="section-item">
+
+
+      <section className="witches">
+        <ul className="witches-list">
+          <li className="witches-item">
+            <span className="cantidad-empleados">{bodegas.length}</span>
+            Lista de los puntos de almacenamiento
+          </li>
+          <li>
+            <IconButton
+              onClick={mostarFormulario}
+              style={{ background: 'var(--tercero)' }}>
+              <AddIcon style={{ color: 'var(--primer)' }} />
+            </IconButton>
+          </li>
+        </ul>
+      </section>
+
+
+      <table className="tabla-items">
+        <tbody>
+          {bodegas.map((bodega, index) => (
+            <tr className="fila" key={index}>
+
+              <td className="a4">
+                <div className="centered-content">
+                  <WarehouseIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {bodega.nombres}
+                </div>
+              </td>
+              <td className="a3">
+                <div className="centered-content">
+                  <ContactsOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  <div className="contacto">
+                    <span>{bodega.telefono}</span>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#636363' }}> {bodega.direccion}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td className="a3">
+                <div className="centered-content">
+
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {bodega.encargado}
+                </div>
+              </td>
+              <td className="ten">
+
+                <IconButton onClick={() => setSubMenu(bodega.id_bodega)}>
+                  <MoreVertIcon
+
+                  />
+                </IconButton >
+                {subMenu === bodega.id_bodega && (
+                  <div className="sub_menu" onMouseLeave={ocultarSubMenu}>
+                    <div onClick={() => obtenerBodegaPorId(bodega.id_bodega)}>
+                      <IconButton size="small" color="success">
+                        <InfoIcon />
+                      </IconButton>
+                      <span>Detalles</span>
+                    </div>
+
+                    <div onClick={() => activarModoEdicion(bodega)}>
+                      <IconButton size="small" color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <span>Editar</span>
+                    </div>
+
+                    <div onClick={() => eliminarBodega(bodega.id_bodega, bodega.nombres)}>
+                      <IconButton size="small" color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                      <span>Eliminar</span>
+                    </div>
+                  </div>
+                )}
+
+              </td>
+
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <Modal
         open={formulario}
         onClose={ocultarFormulario}
@@ -323,10 +415,9 @@ const Bodegas = () => {
 
 
             </div>
-            <Divider />
             <div className="contain-btns">
               <Button
-                variant="contained"
+                variant="outlined"
                 color="error"
                 onClick={ocultarFormulario}
               >
@@ -342,70 +433,6 @@ const Bodegas = () => {
           </form>
         </Box>
       </Modal>
-
-      <section className="caja-section">
-        <h2 className="title-tabla">Lista de Bodegas</h2>
-        <IconButton
-          onClick={mostarFormulario}
-          style={{ background: 'var(--tercero)' }}>
-          <AddIcon style={{ color: 'var(--primer)' }} />
-        </IconButton>
-      </section>
-      <Divider />
-
-      <table className="tabla-items">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Encargado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {bodegas.map((bodega, index) => (
-            <tr className="fila" key={index}>
-              <td className="one"><strong>{index + 1}</strong></td>
-              <td className="eight">{bodega.nombres}</td>
-              <td className=""><strong>{bodega.telefono}</strong></td>
-              <td className="six">{bodega.direccion}</td>
-              <td className="five">{bodega.encargado}</td>
-              <td className="acciones ten">
-                <IconButton size="small" color="success"
-                  onMouseEnter={() => mostrarSubMenu(index)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-                {subMenu === index && (
-                  <div className="sub_menu" onMouseLeave={quitarSubMenu}>
-                    <Tooltip title="Eliminar">
-                      <IconButton size="small" color="error"
-                        onClick={() => eliminarBodega(bodega.id_bodega, bodega.nombres)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Editar" onClick={() => activarModoEdicion(bodega)}>
-                      <IconButton size="small" color="primary">
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Detalles">
-                      <IconButton size="small" color="success"
-                        onClick={() => obtenerBodegaPorId(bodega.id_bodega)}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
       <Modal
         open={Boolean(detalleBodega)}
         onClose={ocultarFormulario}
@@ -423,28 +450,40 @@ const Bodegas = () => {
               </div>
               <div className="contenedor-detalles">
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Nombre:</strong>
-                  <span className="detalle_valor">{detalleBodega.nombres}</span>
+                  <WarehouseIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Nombres del punto de almacenamiento</strong>
+                    <span className="detalle_valor">{detalleBodega.nombres}</span>
+                  </div>
+                </div>
+
+                <div className="detalle_item">
+                  <PhoneIphoneOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Teléfono</strong>
+                    <span className="detalle_valor">{detalleBodega.telefono}</span>
+                  </div>
                 </div>
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Teléfono:</strong>
-                  <span className="detalle_valor">{detalleBodega.telefono}</span>
+                  <PlaceIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Dirección</strong>
+                    <span className="detalle_valor">{detalleBodega.direccion}</span>
+                  </div>
                 </div>
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Dirección:</strong>
-                  <span className="detalle_valor">{detalleBodega.direccion}</span>
-                </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Encargado:</strong>
-                  <span className="detalle_valor">{detalleBodega.encargado}</span>
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Ecargado del punto</strong>
+                    <span className="detalle_valor">{detalleBodega.encargado}</span>
+                  </div>
                 </div>
               </div>
-
             </div>
           )}
         </Box>
       </Modal>
-    </section>
+    </section >
   );
 
 };

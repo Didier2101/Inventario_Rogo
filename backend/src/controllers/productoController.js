@@ -7,10 +7,10 @@ const agregarProducto = async (req, res) => {
     await productoService.agregarProducto(producto);
     res.status(201).json({ message: "Producto creado exitosamente" });
   } catch (error) {
-    if (error.code === "ER_DUP_ENTRY") {
+    if (error.code === "REFERENCIA_DUPLICADA") {
       res.status(400).json({
-        error: "REFERENCIA_DUPLICADA",
-        message: "Esta REFERENCIA ya se encuentra registrada en otro producto",
+        message: error.message,
+        error: "REGISTRO_DUPLICADO",
       });
     } else {
       console.error("Error al crear los el producto:", error);
@@ -63,8 +63,15 @@ const actualizarProducto = async (req, res) => {
     await productoService.actualizarProducto(idProducto, nuevoProducto);
     res.status(200).json({ message: "Producto actualizado correctamente" });
   } catch (error) {
-    console.error("Error al actualizar el producto:", error);
-    res.status(500).json({ message: "Error al actualizar el producto" });
+    if (error.code === "REFERENCIA_DUPLICADA") {
+      res.status(400).json({
+        message: error.message,
+        error: "REGISTRO_DUPLICADO",
+      });
+    } else {
+      console.error("Error al actualizar el PRODUCTO:", error);
+      res.status(500).json({ message: "Error al actualizar el PRODUCTO" });
+    }
   }
 };
 

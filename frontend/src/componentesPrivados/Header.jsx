@@ -9,8 +9,9 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-const Header = () => {
+const Header = ({ onMenuToggle }) => {
     const navigate = useNavigate()
+
 
     const CerrarSesion = () => {
         Swal.fire({
@@ -24,6 +25,7 @@ const Header = () => {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
+
                 // Aquí puedes añadir la lógica para cerrar sesión, por ejemplo, eliminar los datos del usuario en el estado
                 Swal.fire({
                     title: "Terminaste",
@@ -32,6 +34,7 @@ const Header = () => {
                     timer: 2000,
                     showConfirmButton: false,
                 });
+
                 navigate("/", { replace: true });
             }
         });
@@ -41,9 +44,9 @@ const Header = () => {
         <div className='encabezado-header'>
             <header className="header">
                 <div className="iconos-izquierda">
-                    <ViewListIcon className='icono-menu' />
+                    <ViewListIcon className='icono-menu' onClick={onMenuToggle} />
                     <AccountCircleIcon className='icono-usuario' />
-                    <h2>Yuri</h2>  {/* // aqui quiro mostrar el nombre del usuario */}
+                    <h2>Didier</h2> {/* // aqui quiro mostrar el nombre del usuario */}
                 </div>
                 <div className='iconos-derecha'>
                     <IconButton

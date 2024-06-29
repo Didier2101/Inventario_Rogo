@@ -3,6 +3,7 @@
 @import url("./css/menu.css");
 @import url("./css/header.css");
 @import url("./css/inicio.css");
+@import url("./css/global.css");
 
 * {
   padding: 0%;
@@ -13,7 +14,7 @@ html,
 body {
   font-family: "Montserrat", sans-serif;
   font-size: 68.5%;
-  background-color: var(--white);
+  background-color: #fff;
 }
 
 img {
@@ -122,12 +123,12 @@ select option {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background-color: var(--fondo);
+  background-color: #fff;
 }
 
 .contenedor_detalle .titulo-detalle {
   font-size: 2rem;
-  /* margin-bottom: 20px; */
+  color: #424242;
 }
 .contenedor_detalle .contenedor-detalles {
   margin: 20px 0px;
@@ -137,17 +138,26 @@ select option {
 
 .contenedor_detalle .contenedor-detalles .detalle_item {
   margin-bottom: 16px;
-}
-.contenedor_detalle .contenedor-detalles .google {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
+
+.contenedor_detalle
+  .contenedor-detalles
+  .detalle_item
+  .centered-content-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .contenedor_detalle .contenedor-detalles .detalle_titulo {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  color: #535353;
 }
 .contenedor_detalle .contenedor-detalles .detalle_valor {
-  font-size: 1.3rem;
-  margin-left: 8px;
+  font-size: 1rem;
 }
 .contenedor_detalle .contenedor-detalles .activo {
   margin-top: 8px;
@@ -163,12 +173,13 @@ select option {
   border-radius: 6px;
   background-color: red;
 }
-.contenedor_detalle .cerrar_boton {
+.contenedor_detalle .cerrar-boton {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
 }
+
 .agotado {
   color: red;
   font-weight: bold;

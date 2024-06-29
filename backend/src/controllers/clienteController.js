@@ -7,10 +7,18 @@ const crearCliente = async (request, response) => {
     await clienteService.agregarCliente(cliente);
     response.status(201).json({ message: "Cliente creado exitosamente" });
   } catch (error) {
-    if (error.codigo === "CEDULA_DUPLICADA") {
+    if (
+      error.message === "La cédula ya se encuentra registrada" ||
+      error.message === "El correo electrónico ya se encuentra registrado"
+    ) {
       response.status(400).json({
-        error: "CEDULA_DUPLICADA",
-        message: "La cedula ya se encuentra registrada",
+        error: "REGISTRO_DUPLICADO",
+        message: error.message,
+      });
+    } else if (error.message === "Datos del cliente incompletos") {
+      response.status(400).json({
+        error: "DATOS_INCOMPLETOS",
+        message: error.message,
       });
     } else {
       console.error("Error al crear el cliente", error);
@@ -19,6 +27,29 @@ const crearCliente = async (request, response) => {
   }
 };
 
+// TODO =================================================================
+const actualizarCliente = async (req, res) => {
+  const idCliente = req.params.id_cliente; // Cambiado de 'id_empleado' a 'id_cliente'
+  const nuevoCliente = req.body; // El cuerpo de la solicitud contiene los datos actualizados del cliente
+  try {
+    // Lógica para actualizar el cliente utilizando el servicio de cliente correspondiente
+    await clienteService.actualizarCliente(idCliente, nuevoCliente);
+    res.status(200).json({ message: "Cliente actualizado correctamente" });
+  } catch (error) {
+    if (
+      error.code === "CEDULA_DUPLICADA" ||
+      error.code === "CORREO_DUPLICADO"
+    ) {
+      res.status(400).json({
+        message: error.message,
+        error: "REGISTRO_DUPLICADO",
+      });
+    } else {
+      console.error("Error al actualizar el cliente:", error);
+      res.status(500).json({ message: "Error al actualizar el cliente" });
+    }
+  }
+};
 // codigo para obtener todos los clientes
 const obtenerTodosClientes = async (req, res) => {
   try {
@@ -49,26 +80,6 @@ const eliminarCliente = async (req, res) => {
     res.status(200).json();
   } catch (error) {
     res.status(500).json();
-  }
-};
-// TODO =================================================================
-const actualizarCliente = async (req, res) => {
-  const idCliente = req.params.id_cliente; // Cambiado de 'id_empleado' a 'id_cliente'
-  const nuevoCliente = req.body; // El cuerpo de la solicitud contiene los datos actualizados del cliente
-  try {
-    // Lógica para actualizar el cliente utilizando el servicio de cliente correspondiente
-    await clienteService.actualizarCliente(idCliente, nuevoCliente);
-    res.status(200).json({ message: "Cliente actualizado correctamente" });
-  } catch (error) {
-    if (error.code === "CEDULA_DUPLICADA") {
-      res.status(400).json({
-        message:
-          "La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.",
-      });
-    } else {
-      console.error("Error al actualizar el cliente:", error);
-      res.status(500).json({ message: "Error al actualizar el cliente" });
-    }
   }
 };
 

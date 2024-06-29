@@ -1,7 +1,14 @@
-import { Box, Button, Divider, IconButton, Modal, TextField } from "@mui/material";
+import { Box, Button, IconButton, Modal, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
+
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -9,12 +16,13 @@ import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from '@mui/icons-material/Close';
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
+import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
 
 const Empleados = () => {
 
 
   // Agrega un nuevo estado para almacenar el ID del empleado seleccionado para editar
-  const [subMenu, setSubMenu] = useState(null);
   const [empleadoID, setEmpleadoID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [empleados, setEmpleados] = useState([]);
@@ -33,6 +41,13 @@ const Empleados = () => {
     nombre_usuario: '',
     contrasena: '',
   });
+
+  const [cedulaError, setCedulaError] = useState(false);
+  const [salarioError, setSalarioError] = useState(false);
+  const [telefonoError, setTelefonoError] = useState(false);
+  const [nombresError, setNombresError] = useState(false);
+  const [correoError, setCorreoError] = useState(false);
+  const [formularioValido, setFormularioValido] = useState(false);
 
   const formatearFecha = (fechaISO) => {
     const fecha = new Date(fechaISO);
@@ -70,7 +85,51 @@ const Empleados = () => {
 
     setFormularioInformacion({ ...formularioInformacion, [name]: value });
 
-    console.log(formularioInformacion)
+    switch (name) {
+      case 'cedula':
+        if (/^\d+$/.test(value) || value === '') {
+          setCedulaError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setCedulaError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'salario':
+        if (/^\d+$/.test(value) || value === '') {
+          salarioError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setSalarioError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'telefono':
+        if (/^\d+$/.test(value) || value === '') {
+          setTelefonoError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setTelefonoError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'nombres':
+        if (/^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/.test(value) || value === '') {
+          setNombresError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setNombresError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'correo_electronico':
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || value === '') {
+          setCorreoError(false); // No hay error si el valor es un correo válido o está vacío
+        } else {
+          setCorreoError(true); // Hay error si el valor no cumple con el formato de correo
+        }
+        break;
+
+
+      default:
+        break;
+    }
+    // Verificar si todos los campos obligatorios están llenos y no hay errores
+    const camposLlenos = Object.values(formularioInformacion).every(val => val !== '');
+    const noHayErrores = !(cedulaError || salarioError || telefonoError || nombresError || correoError);
+    setFormularioValido(camposLlenos && noHayErrores);
   };
 
   const obtenerEmpleados = async () => {
@@ -112,18 +171,7 @@ const Empleados = () => {
     }
   };
 
-  const calcularEdad = (fechaNacimiento) => {
-    const hoy = new Date();
-    const fechaNac = new Date(fechaNacimiento);
-    let edad = hoy.getFullYear() - fechaNac.getFullYear();
-    const mes = hoy.getMonth() - fechaNac.getMonth();
 
-    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-      edad--;
-    }
-
-    return edad;
-  };
 
   const agregarEmpleado = async (e) => {
     e.preventDefault();
@@ -140,62 +188,7 @@ const Empleados = () => {
       }
     }
 
-    // Validaciones adicionales
-    if (formularioInformacion.cedula.length > 10 && isNaN(formularioInformacion.cedula)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Cedula',
-        text: 'La cédula no puede tener más de 10 números y solo debe tener numeros.',
-      });
-      return;
-    }
 
-    if (isNaN(formularioInformacion.telefono) || formularioInformacion.telefono.length !== 10) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Telefono',
-        text: 'El teléfono debe ser numérico y no puede tener menos de 10 numeros.',
-      });
-      return;
-    }
-
-    if (!/^[a-zA-Z\s]+$/.test(formularioInformacion.nombres)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Nombres',
-        text: 'El campo nombres solo puede contener letras.',
-      });
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(formularioInformacion.correo_electronico)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Correo electronico',
-        text: 'El correo electrónico debe tener un formato válido.',
-      });
-      return;
-    }
-
-    if (isNaN(formularioInformacion.salario)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Salario',
-        text: 'El salario debe ser numérico y sin puntos ni caracteres.',
-      });
-      return;
-    }
-    const edadEmpleado = calcularEdad(formularioInformacion.fecha_nacimiento);
-
-    // Verifica si el empleado es menor de 18 años
-    if (edadEmpleado < 18) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'El empleado debe ser mayor de 18 años para registrarse.',
-      });
-      return;
-    }
 
     try {
       let url = 'http://localhost:4000/empleados';
@@ -217,7 +210,7 @@ const Empleados = () => {
 
       if (response.status === 400) {
         const data = await response.json();
-        if (data.error && data.error === "CEDULA_DUPLICADA") {
+        if (data.error && data.error === "REGISTRO_DUPLICADO") {
           // Mostrar el mensaje de error al usuario utilizando SweetAlert
           Swal.fire({
             icon: 'error',
@@ -236,7 +229,7 @@ const Empleados = () => {
         return;
       }
 
-      const data = await response.json();
+      // const data = await response.json();
 
       if (modoEditar) {
         Swal.fire({
@@ -334,18 +327,40 @@ const Empleados = () => {
     });
     setEmpleadoID(null); // Reinicia el ID del empleado seleccionado
   };
-
-  const style = {
+  const style_form = {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    width: '90%',
     transform: 'translate(-50%, -50%)',
+    width: 1100,
+    height: 'auto', // Establece una altura específica para permitir el desplazamiento
+    bgcolor: 'background.paper',
+    border: '2px solid #fff',
+    borderRadius: '6px',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+    overflowY: 'scroll', // Desplazamiento solo vertical
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative',
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+    },
+  };
+
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '400px',
+    height: '100vh',
     bgcolor: 'background.paper',
     overflow: 'auto',
-    borderRadius: 'none',
     overflowY: 'auto',
-    border: 'none',
     '@media (max-width: 600px)': {
       width: '100%',
       position: 'relative', // Corrige 'relativa' a 'relative'
@@ -356,92 +371,118 @@ const Empleados = () => {
   };
 
 
-  const mostrarSubMenu = (index) => {
-    setSubMenu(index)
-  }
-  const quitarSubMenu = () => {
-    setSubMenu(null)
-  }
+
+  const [subMenu, setSubMenu] = useState(false)
+  const ocultarSubMenu = () => {
+    setSubMenu(false)
+  };
+  const capitalizeWords = (str) => {
+    return str.split(' ').map(word => capitalize(word)).join(' ');
+  };
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
 
 
   return (
     <section className="section-item">
-      <div className="caja-section">
-
-        {/* codigo del boton agregar */}
-        <h2 className="title-tabla">Lista de Empleados</h2>
-
-        <IconButton
-          onClick={mostarFormulario}
-          style={{ background: 'var(--tercero)' }}>
-          <AddIcon style={{ color: 'var(--primer)' }} />
-        </IconButton>
-
-      </div>
-
       <div className="witches">
         <ul className="witches-list">
           <li className="witches-item">
-            Todos
             <span className="cantidad-empleados">{empleados.length}</span>
+            Lista de empleados
+          </li>
+          <li>
+            <IconButton
+              onClick={mostarFormulario}
+              style={{ background: 'var(--tercero)' }}>
+              <AddIcon style={{ color: 'var(--primer)' }} />
+            </IconButton>
           </li>
         </ul>
       </div>
 
-      <Divider />
-
       <table className="tabla-items">
-        <thead >
-          <tr>
-            <th>#</th>
-            <th>Cédula</th>
-            <th>Nombre</th>
-            <th>Correo Electrónico</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Cargo</th>
-            <th>Salario</th>
-            <th>Fecha de Ingreso</th>
-            <th></th>
-          </tr>
-        </thead>
         <tbody>
           {empleados.map((empleado, index) => (
             <tr className="fila" key={index}>
-              <td className="one"><strong>{index + 1}</strong></td>
-              <td className="two"><strong>{empleado.cedula}</strong></td>
-              <td className="three">{empleado.nombres}</td>
-              <td className="five">{empleado.correo_electronico}</td>
-              <td className="four">{empleado.telefono}</td>
-              <td className="six">{empleado.direccion}</td>
-              <td className="seven">{empleado.nombre_cargo}</td>
-              <td className="eight">{empleado.salario}</td>
-              <td className="nine">{empleado.fecha_ingreso}</td>
-              <td className="acciones ten">
-                <IconButton size="small" color="success"
-                  onMouseEnter={() => mostrarSubMenu(index)}
-                >
+              {/* <td className="one"><strong>{index + 1}</strong></td> */}
+              <td className="a4">
+                <div className="centered-content">
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {capitalizeWords(empleado.nombres)}
+                </div>
+              </td>
+              <td className="a1">
+                <div className="centered-content">
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {empleado.cedula}
+                </div>
+              </td>
+              <td className="a2">
+                <div className="centered-content">
+                  <LocalPostOfficeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {empleado.correo_electronico}
+                </div>
+              </td>
+              <td className="a3">
+                <div className="centered-content">
+                  <ContactsOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  <div className="contacto">
+                    <span>{empleado.telefono}</span>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#636363' }}> {empleado.direccion}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td className="a5">
+                <div className="centered-content">
+                  <PeopleOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {empleado.nombre_cargo}
+                </div>
+
+              </td>
+              <td className="a6">
+                <div className="centered-content">
+                  <AttachMoneyOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {empleado.salario}
+                </div>
+
+              </td>
+              <td className="ten">
+
+                <IconButton onClick={() => setSubMenu(empleado.id_empleado)}>
                   <MoreVertIcon />
                 </IconButton>
-                {subMenu === index && (
-                  <div className="sub_menu" onMouseLeave={quitarSubMenu}>
+                {subMenu === empleado.id_empleado && (
+                  <div className="sub_menu" onMouseLeave={ocultarSubMenu}>
+                    <div onClick={() => obtenerEmpleadoPorId(empleado.id_empleado)}>
+                      <IconButton size="small" color="success">
+                        <InfoIcon />
+                      </IconButton>
+                      <span>Detalles</span>
+                    </div>
 
-                    <IconButton size="small" color="primary" onClick={() => activarModoEdicion(empleado)}>
-                      <EditIcon />
-                    </IconButton>
+                    <div onClick={() => activarModoEdicion(empleado)}>
+                      <IconButton size="small" color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <span>Editar</span>
+                    </div>
 
-
-                    <IconButton size="small" color="success" onClick={() => obtenerEmpleadoPorId(empleado.id_empleado)}>
-                      <InfoIcon />
-                    </IconButton>
-
-                    <IconButton size="small" color="error" onClick={() => eliminarEmpleado(empleado.id_empleado, empleados.nombres)}>
-                      <DeleteIcon />
-                    </IconButton>
+                    <div onClick={() => eliminarEmpleado(empleado.id_empleado, empleado.nombres)}>
+                      <IconButton size="small" color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                      <span>Eliminar</span>
+                    </div>
                   </div>
                 )}
+
               </td>
+
+
             </tr>
           ))}
         </tbody>
@@ -454,7 +495,7 @@ const Empleados = () => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-        <Box sx={{ ...style }}>
+        <Box sx={{ ...style_form }}>
           <form className="grid-form" onSubmit={agregarEmpleado}>
             <h2 className="title-form">{modoEditar ? 'Editar Empleado' : 'Agregar Empleado'}</h2>
             <p className="sub-title">Todos los campos con un <span>(*)</span> son obligatorios.</p>
@@ -466,6 +507,8 @@ const Empleados = () => {
                 name="cedula"
                 value={formularioInformacion.cedula}
                 onChange={cambiosInputs}
+                error={cedulaError}
+                helperText={cedulaError ? 'Solo números permitidos' : ''}
                 required
               />
               <TextField
@@ -475,6 +518,8 @@ const Empleados = () => {
                 name="nombres"
                 value={formularioInformacion.nombres}
                 onChange={cambiosInputs}
+                error={nombresError}
+                helperText={nombresError ? 'Solo se permiten letras de la (A) a la (Z)' : ''}
                 required
               />
               <TextField
@@ -484,6 +529,8 @@ const Empleados = () => {
                 name="correo_electronico"
                 value={formularioInformacion.correo_electronico}
                 onChange={cambiosInputs}
+                error={correoError}
+                helperText={correoError ? 'El correo es invalido!' : ''}
                 required
               />
               <TextField
@@ -492,6 +539,8 @@ const Empleados = () => {
                 name="telefono"
                 value={formularioInformacion.telefono}
                 onChange={cambiosInputs}
+                error={telefonoError}
+                helperText={telefonoError ? 'Solo números permitidos' : ''}
                 required
               />
               <TextField
@@ -523,11 +572,12 @@ const Empleados = () => {
               <TextField
                 fullWidth
                 label="Salario"
-
                 name="salario"
                 value={formularioInformacion.salario}
                 onChange={cambiosInputs}
                 required
+                error={salarioError}
+                helperText={salarioError ? 'Solo números permitidos' : ''}
               />
               <TextField
                 fullWidth
@@ -558,7 +608,7 @@ const Empleados = () => {
                 disabled={modoEditar ? true : false}
               />
             </div>
-            {/* <Divider /> */}
+
             <h2 className="title-form">Usuario</h2>
             <div className="contain-usuario">
               <TextField
@@ -583,13 +633,14 @@ const Empleados = () => {
             </div>
             {/* <Divider /> */}
             <div className="contain-btns">
-              <Button variant="contained" color="error" onClick={cerrarFormulario}>Cancelar</Button>
+              <Button variant="outlined" color="error" onClick={cerrarFormulario}>Cancelar</Button>
               <Button
                 variant="contained"
                 color="success"
                 type="submit"
+                disabled={!formularioValido}
               >
-                {modoEditar ? 'Guardar cambios' : 'Agregar'}
+                {modoEditar ? 'Guardar cambios' : 'Agregar empleado'}
               </Button>
             </div>
           </form>
@@ -618,45 +669,77 @@ const Empleados = () => {
 
               <div className="contenedor-detalles">
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Cédula:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.cedula}</span>
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Identificación</strong>
+                    <span className="detalle_valor">{detalleEmpleado.cedula}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Nombres:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.nombres}</span>
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Nombres y apellidos</strong>
+                    <span className="detalle_valor">{capitalizeWords(detalleEmpleado.nombres)}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Correo Electrónico:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.correo_electronico}</span>
+                  <LocalPostOfficeOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Correo Electrónico</strong>
+                    <span className="detalle_valor">{detalleEmpleado.correo_electronico}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Teléfono:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.telefono}</span>
+                  <PhoneIphoneOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Teléfono</strong>
+                    <span className="detalle_valor">{detalleEmpleado.telefono}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item google">
-                  <strong className="detalle_titulo">Dirección:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.direccion}</span>
-                  <IconButton style={{ marginLeft: '2px' }}>
-                    <PlaceIcon
-                      style={{ color: 'green', fontSize: '1.8rem' }} />
-                  </IconButton>
+                  <PlaceIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Dirección</strong>
+                    <span className="detalle_valor">{capitalizeWords(detalleEmpleado.direccion)}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Cargo:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.nombre_cargo}</span>
+                  <PeopleOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Cargo</strong>
+                    <span className="detalle_valor">{capitalizeWords(detalleEmpleado.nombre_cargo)}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Salario:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.salario}</span>
+                  <AttachMoneyOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Salario</strong>
+                    <span className="detalle_valor">{detalleEmpleado.salario}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Fecha de Ingreso:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.fecha_ingreso}</span>
+                  <CalendarMonthOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Fecha de Ingreso</strong>
+                    <span className="detalle_valor">{detalleEmpleado.fecha_ingreso}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Fecha de Nacimiento:</strong>
-                  <span className="detalle_valor">{detalleEmpleado.fecha_nacimiento}</span>
+                  <CalendarMonthOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Fecha de Nacimiento</strong>
+                    <span className="detalle_valor">{detalleEmpleado.fecha_nacimiento}</span>
+                  </div>
                 </div>
+
               </div>
 
 

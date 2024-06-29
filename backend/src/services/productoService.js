@@ -19,6 +19,19 @@ const agregarProducto = async (producto) => {
     }
 
     await pool.query("START TRANSACTION");
+
+    // Verificar si la cédula ya existe
+    const [referenciaExistente] = await pool.query(
+      "SELECT * FROM productos WHERE referencia = ?",
+      [producto.referencia]
+    );
+    if (referenciaExistente.length > 0) {
+      const error = new Error(
+        "La referencia ya se encuentra registrada con otro producto"
+      );
+      error.code = "REFERENCIA_DUPLICADA";
+      throw error;
+    }
     // Insertar datos del producto
     const insertarProductoQuery = `
       INSERT INTO productos (proveedor, bodega, nombre, referencia, descripcion, precio_compra, precio_venta, cantidad, estado)
@@ -100,6 +113,19 @@ const obtenerProductoPorId = async (idProducto) => {
 // Función para actualizar un producto por su ID
 const actualizarProducto = async (idProducto, nuevoProducto) => {
   try {
+    const checkReferenciaQuery =
+      "SELECT id_producto FROM productos WHERE referencia = ? AND id_producto != ?";
+    const [existingReferencia] = await pool.query(checkReferenciaQuery, [
+      nuevoProducto.referencia,
+      idProducto,
+    ]);
+
+    if (existingReferencia.length > 0) {
+      throw {
+        code: "REFERENCIA_DUPLICADA",
+        message: "La referencia ingresada ya está registrada",
+      };
+    }
     // Verificar si la nueva referencia ya existe en otro producto
     const query = `
       UPDATE productos

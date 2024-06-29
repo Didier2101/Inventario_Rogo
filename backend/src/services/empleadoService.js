@@ -19,12 +19,27 @@ const agregarEmpleado = async (empleado) => {
       !empleado.contrasena ||
       !empleado.nombre_usuario
     ) {
-      throw new Error("Los datos del empleado y del usuario son incompletos");
+      throw new Error("Datos del empleado incompletos");
     }
 
     // Iniciar transacción
     await pool.query("START TRANSACTION");
 
+    // Verificar si la cédula ya existe
+    const [cedulaExistente] = await pool.query(
+      "SELECT * FROM empleados WHERE cedula = ?",
+      [empleado.cedula]
+    );
+    if (cedulaExistente.length > 0) {
+      throw new Error("La cédula ya se encuentra registrada");
+    }
+    const [correoExistente] = await pool.query(
+      "SELECT * FROM empleados WHERE correo_electronico = ?",
+      [empleado.correo_electronico]
+    );
+    if (correoExistente.length > 0) {
+      throw new Error("El correo electrónico ya se encuentra registrado");
+    }
     // Insertar datos del empleado
     const empleadoInsertQuery = `
       INSERT INTO empleados (cedula, nombres, correo_electronico, telefono, direccion, id_cargo, salario, fecha_ingreso, fecha_nacimiento)
@@ -108,11 +123,23 @@ const actualizarEmpleado = async (idEmpleado, nuevoEmpleado) => {
     if (existingEmployee.length > 0) {
       throw {
         code: "CEDULA_DUPLICADA",
-        message:
-          "La cédula ingresada ya está registrada. Por favor, ingrese una cédula diferente.",
+        message: "La cédula ingresada ya está registrada",
       };
     }
+    // Verificar si el nuevo correo electrónico ya existe en otro proveedor
+    const checkCorreoQuery =
+      "SELECT id_empleado FROM empleados WHERE correo_electronico = ? AND id_empleado != ?";
+    const [empleadoCorreoExistente] = await pool.query(checkCorreoQuery, [
+      nuevoEmpleado.correo_electronico,
+      idEmpleado,
+    ]);
 
+    if (empleadoCorreoExistente.length > 0) {
+      throw {
+        code: "CORREO_DUPLICADO",
+        message: "El correo electrónico ya se encuentra registrado",
+      };
+    }
     // Continuar con la actualización del empleado si no hay cédula duplicada
     const query = `
       UPDATE empleados 

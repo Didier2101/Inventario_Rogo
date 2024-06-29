@@ -1,9 +1,9 @@
 import { NavLink } from "react-router-dom"
 
-import { TextField } from "@mui/material"
+import { Button, TextField } from "@mui/material"
 
 
-import ButtonComponent from '../otrosComponentes/ButtonComponent';
+
 
 const ForgotPassword = () => {
     return (
@@ -19,15 +19,19 @@ const ForgotPassword = () => {
                     <p>No te preocupes, ¡aquí estamos para ayudarte!</p>
                     <form className='form-login'>
                         <TextField fullWidth label="Correo Electronico" required InputLabelProps={{ className: 'custom-label' }} />
+                        <Button
+                            type='submit'
+                            variant="contained"
+                            fullWidth
+                            style={{
+                                height: '40px',
+                                fontSize: '1.2rem',
+                                backgroundColor: 'var(--segundo)'
+                            }}
 
-
-
-
-
-                        <ButtonComponent
-
-                            color="var(--segundo)" width="100%" height="55px" fontSize="1.5rem" margin="2px" text="Rucuperar" />
-
+                        >
+                            Enviar
+                        </Button>
                     </form>
                     <NavLink
                         style={{ marginBottom: '10px', fontSize: '1.2rem', color: 'var(--tercero)' }}

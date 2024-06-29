@@ -1,18 +1,22 @@
-import { validarFormulario } from "../utils/validaciones";
+import { Box, Button, IconButton, Modal, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
-import "../css/empleados.css";
 
-import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add';
+import PlaceIcon from '@mui/icons-material/Place';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
+import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
 
-import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+
 
 
 
@@ -22,7 +26,6 @@ const Clientes = () => {
   const [clienteID, setClienteID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detalleCliente, setDetalleCliente] = useState(null)
-  const [subMenu, setSubMenu] = useState(null);
   const [clientes, setClientes] = useState([]);
   const [formulario, setFormulario] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,7 +35,11 @@ const Clientes = () => {
     telefono: '',
     direccion: ''
   });
-
+  const [cedulaError, setCedulaError] = useState(false);
+  const [telefonoError, setTelefonoError] = useState(false);
+  const [nombresError, setNombresError] = useState(false);
+  const [correoError, setCorreoError] = useState(false);
+  const [formularioValido, setFormularioValido] = useState(false);
 
   const activarModoEdicion = (cliente) => {
     setModoEditar(true);
@@ -48,6 +55,45 @@ const Clientes = () => {
   const cambiosInputs = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    switch (name) {
+      case 'cedula':
+        if (/^\d+$/.test(value) || value === '') {
+          setCedulaError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setCedulaError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+
+      case 'telefono':
+        if (/^\d+$/.test(value) || value === '') {
+          setTelefonoError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setTelefonoError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'nombres':
+        if (/^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/.test(value) || value === '') {
+          setNombresError(false); // No hay error si el valor es válido o está vacío
+        } else {
+          setNombresError(true); // Hay error si el valor contiene caracteres no permitidos
+        }
+        break;
+      case 'correo_electronico':
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || value === '') {
+          setCorreoError(false); // No hay error si el valor es un correo válido o está vacío
+        } else {
+          setCorreoError(true); // Hay error si el valor no cumple con el formato de correo
+        }
+        break;
+
+
+      default:
+        break;
+    }
+    // Verificar si todos los campos obligatorios están llenos y no hay errores
+    const camposLlenos = Object.values(formData).every(val => val !== '');
+    const noHayErrores = !(cedulaError || telefonoError || nombresError || correoError);
+    setFormularioValido(camposLlenos && noHayErrores);
   };
 
   const obtenerClientes = async () => {
@@ -68,6 +114,104 @@ const Clientes = () => {
   }, []);
 
 
+
+
+
+
+  const enviarForm = async (e) => {
+    e.preventDefault();
+    if (
+      cedulaError ||
+      telefonoError ||
+      nombresError ||
+      correoError ||
+      !formData.empresa ||
+      !formData.cedula ||
+      !formData.nombres ||
+      !formData.correo_electronico ||
+      !formData.telefono ||
+      !formData.direccion
+    ) {
+      return; // No envía el formulario si hay errores o campos vacíos
+    }
+
+    try {
+      let url = 'http://localhost:4000/clientes';
+      let method = 'POST';
+      if (modoEditar) {
+        url += `/${clienteID}`;
+        method = 'PUT';
+      }
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.status === 400) {
+        const data = await response.json();
+        if (data.error && data.error === "REGISTRO_DUPLICADO") {
+          // Mostrar el mensaje de error al usuario utilizando SweetAlert
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.message,
+          });
+          return;
+        } else {
+          console.error('Error al agregar o actualizar el cliente');
+          return;
+        }
+      }
+
+      if (!response.ok) {
+        console.error('Error al agregar o actualizar el cliente');
+        return;
+      }
+
+      // const data = await response.json();
+
+      if (modoEditar) {
+        Swal.fire({
+          title: 'Cliente Actualizado',
+          text: 'El cliente ha sido actualizado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          title: 'Cliente Agregado',
+          text: 'El cliente ha sido agregado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      }
+      ocultarFormulario();
+      obtenerClientes(); // Actualiza la lista de clientes después de agregar o editar uno
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+
+  }
+
+  const obtenerClientePorId = async (idCliente) => {
+    try {
+      const response = await fetch(`http://localhost:4000/clientes/${idCliente}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDetalleCliente(data);
+      } else {
+        console.error("No se pudo obtener los clientes");
+      }
+    } catch (error) {
+      console.error('error al obtener los clientes', error);
+    }
+  }
 
   // Función para eliminar un empleado
   const eliminarCliente = async (clienteId, clienteNombre) => {
@@ -115,99 +259,6 @@ const Clientes = () => {
     }
   };
 
-
-  const enviarForm = async (e) => {
-    e.preventDefault();
-    const { valido, mensaje } = validarFormulario(formData);
-
-    if (!valido) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de validación',
-        text: mensaje,
-      });
-      return;
-    }
-    try {
-      let url = 'http://localhost:4000/clientes';
-      let method = 'POST';
-      if (modoEditar) {
-        url += `/${clienteID}`;
-        method = 'PUT';
-      }
-
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.status === 400) {
-        const data = await response.json();
-        if (data.error && data.error === "CEDULA_DUPLICADA") {
-          // Mostrar el mensaje de error al usuario utilizando SweetAlert
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: data.message,
-          });
-          return;
-        } else {
-          console.error('Error al agregar o actualizar el cliente');
-          return;
-        }
-      }
-
-      if (!response.ok) {
-        console.error('Error al agregar o actualizar el cliente');
-        return;
-      }
-
-      const data = await response.json();
-
-      if (modoEditar) {
-        Swal.fire({
-          title: 'Cliente Actualizado',
-          text: 'El cliente ha sido actualizado correctamente.',
-          icon: 'success',
-          timer: 1000,
-          showConfirmButton: false
-        });
-      } else {
-        Swal.fire({
-          title: 'Cliente Agregado',
-          text: 'El cliente ha sido agregado correctamente.',
-          icon: 'success',
-          timer: 1000,
-          showConfirmButton: false
-        });
-      }
-      ocultarFormulario();
-      obtenerClientes(); // Actualiza la lista de clientes después de agregar o editar uno
-    } catch (error) {
-      console.error('Error en la solicitud:', error);
-    }
-
-  }
-
-  const obtenerClientePorId = async (idCliente) => {
-    try {
-      const response = await fetch(`http://localhost:4000/clientes/${idCliente}`);
-      if (response.ok) {
-        const data = await response.json();
-        setDetalleCliente(data);
-      } else {
-        console.error("No se pudo obtener los clientes");
-      }
-    } catch (error) {
-      console.error('error al obtener los clientes', error);
-    }
-  }
-
-  // espacio para los modales
-
   const mostarFormulario = () => {
     setFormulario(true);
     setModoEditar(false)
@@ -225,18 +276,40 @@ const Clientes = () => {
     });
   };
 
-  // estilos del modal formulario
   const style_form = {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    width: '90%',
     transform: 'translate(-50%, -50%)',
+    width: 1100,
+    height: 'auto', // Establece una altura específica para permitir el desplazamiento
+    bgcolor: 'background.paper',
+    border: '2px solid #fff',
+    borderRadius: '6px',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+    overflowY: 'scroll', // Desplazamiento solo vertical
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative',
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+    },
+  };
+
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '400px',
+    height: '100vh',
     bgcolor: 'background.paper',
     overflow: 'auto',
-    borderRadius: 'none',
     overflowY: 'auto',
-    border: 'none',
     '@media (max-width: 600px)': {
       width: '100%',
       position: 'relative', // Corrige 'relativa' a 'relative'
@@ -245,35 +318,111 @@ const Clientes = () => {
       transform: 'none',
     },
   };
-  const style = {
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-    top: '0',
-    right: '0',
-    width: '500px',
-    maxHeight: '100vh',
-    bgcolor: 'background.paper',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-    borderRadius: 'none',
-    height: '100vh',
-    overflowY: 'auto',
-    '@media (max-width: 600px)': {
-      width: '90%',
-      position: 'relative', // Corrige 'relativa' a 'relative'
-    },
+
+
+
+  const [subMenu, setSubMenu] = useState(false)
+  const ocultarSubMenu = () => {
+    setSubMenu(false)
   };
-
-  const mostrarSubMenu = (index) => {
-    setSubMenu(index)
-  }
-  const quitarSubMenu = () => {
-    setSubMenu(null)
-  }
-
+  const capitalizeWords = (str) => {
+    return str.split(' ').map(word => capitalize(word)).join(' ');
+  };
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <section className="section-item">
+
+
+
+      <div className="witches">
+        <ul className="witches-list">
+          <li className="witches-item">
+            <span className="cantidad-clientes">{clientes.length}</span>
+            Lista de clientes
+          </li>
+          <li>
+            <IconButton
+              onClick={mostarFormulario}
+              style={{ background: 'var(--tercero)' }}>
+              <AddIcon style={{ color: 'var(--primer)' }} />
+            </IconButton>
+          </li>
+        </ul>
+      </div>
+
+
+      <table className="tabla-items">
+        <tbody>
+          {clientes.map((cliente, index) => (
+            <tr className="fila" key={index}>
+              <td className="a2">
+                <div className="centered-content">
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {capitalizeWords(cliente.nombres)}
+                </div>
+              </td>
+              <td className="a2">
+                <div className="centered-content">
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {cliente.cedula}
+                </div>
+              </td>
+
+              <td className="a3">
+                <div className="centered-content">
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  <div className="contacto">
+                    <span>{cliente.telefono}</span>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#636363' }}> {cliente.direccion}</span>
+                  </div>
+                </div>
+              </td>
+              <td className="a6">
+                <div className="centered-content">
+                  <LocalPostOfficeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {cliente.correo_electronico}
+                </div>
+              </td>
+              <td className="ten">
+
+                <IconButton onClick={() => setSubMenu(cliente.id_cliente)}>
+                  <MoreVertIcon
+                  />
+                </IconButton >
+                {subMenu === cliente.id_cliente && (
+                  <div className="sub_menu" onMouseLeave={ocultarSubMenu}>
+                    <div onClick={() => obtenerClientePorId(cliente.id_cliente)}>
+                      <IconButton size="small" color="success">
+                        <InfoIcon />
+                      </IconButton>
+                      <span>Detalles</span>
+                    </div>
+
+                    <div onClick={() => activarModoEdicion(cliente)}>
+                      <IconButton size="small" color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <span>Editar</span>
+                    </div>
+
+                    <div onClick={() => eliminarCliente(cliente.id_cliente, cliente.nombres)}>
+                      <IconButton size="small" color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                      <span>Eliminar</span>
+                    </div>
+                  </div>
+                )}
+
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
 
       <Modal
         open={formulario}
@@ -292,6 +441,8 @@ const Clientes = () => {
                 name="cedula"
                 onChange={cambiosInputs}
                 value={formData.cedula}
+                error={cedulaError}
+                helperText={cedulaError ? 'Solo se permiten números ' : ''}
                 required
               />
               <TextField
@@ -300,6 +451,8 @@ const Clientes = () => {
                 name="nombres"
                 onChange={cambiosInputs}
                 value={formData.nombres}
+                error={nombresError}
+                helperText={nombresError ? 'Solo se permiten letras de la (A) a la (Z)' : ''}
                 required
               />
               <TextField
@@ -308,6 +461,8 @@ const Clientes = () => {
                 name="correo_electronico"
                 onChange={cambiosInputs}
                 value={formData.correo_electronico}
+                error={correoError}
+                helperText={correoError ? 'El correo es invalido!' : ''}
                 required
 
               />
@@ -317,6 +472,8 @@ const Clientes = () => {
                 name="telefono"
                 onChange={cambiosInputs}
                 value={formData.telefono}
+                error={telefonoError}
+                helperText={telefonoError ? 'Solo números permitidos' : ''}
                 required
               />
               <TextField
@@ -325,13 +482,14 @@ const Clientes = () => {
                 name="direccion"
                 onChange={cambiosInputs}
                 value={formData.direccion}
+                error={false}
                 required
               />
             </div>
-            <Divider />
+
             <div className="contain-btns">
               <Button
-                variant="contained"
+                variant="outlined"
                 color="error"
                 onClick={ocultarFormulario}
               >
@@ -341,78 +499,13 @@ const Clientes = () => {
                 variant="contained"
                 color="success"
                 type="submit"
-              > {modoEditar ? 'Guardar cambios' : 'Agregar'}
+                disabled={!formularioValido}
+              > {modoEditar ? 'Guardar cambios' : 'Agregar Cliente'}
               </Button>
             </div>
           </form>
         </Box>
       </Modal>
-
-      <section className="caja-section">
-        <h2 className="title-tabla">Lista de Clientes</h2>
-        <IconButton
-          onClick={mostarFormulario}
-          style={{ background: 'var(--tercero)' }}>
-          <AddIcon style={{ color: 'var(--primer)' }} />
-        </IconButton>
-      </section>
-      <Divider />
-
-      <table className="tabla-items">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Cedula</th>
-            <th>Nombres</th>
-            <th>Correo Electrónico</th>
-            <th>Teléfono Movil</th>
-            <th>Dirección</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {clientes.map((cliente, index) => (
-            <tr className="fila" key={index}>
-              <td className="one"><strong>{index + 1}</strong></td>
-              <td className="two"><strong>{cliente.cedula}</strong></td>
-              <td className="three">{cliente.nombres}</td>
-              <td className="five">{cliente.correo_electronico}</td>
-              <td className="four"> {cliente.telefono}</td>
-              <td className="six">{cliente.direccion}</td>
-              <td className="acciones ten">
-                <IconButton size="small" color="success"
-                  onMouseEnter={() => mostrarSubMenu(index)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-                {subMenu === index && (
-                  <div className="sub_menu" onMouseLeave={quitarSubMenu}>
-                    <Tooltip title="Eliminar">
-                      <IconButton size="small" color="error"
-                        onClick={() => eliminarCliente(cliente.id_cliente, cliente.nombres)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Editar" onClick={() => activarModoEdicion(cliente)}>
-                      <IconButton size="small" color="primary">
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Detalles">
-                      <IconButton size="small" color="success"
-                        onClick={() => obtenerClientePorId(cliente.id_cliente)}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
 
       <Modal
         open={Boolean(detalleCliente)}
@@ -420,7 +513,6 @@ const Clientes = () => {
         aria-labelledby="parent-modal-title"
         aria-describedby="parent-modal-description"
       >
-
         <Box sx={{ ...style }}>
           {detalleCliente && (
             <div className="contenedor_detalle">
@@ -432,34 +524,46 @@ const Clientes = () => {
               </div>
               <div className="contenedor-detalles">
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Cédula:</strong>
-                  <span className="detalle_valor">{detalleCliente.cedula}</span>
+                  <BadgeOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Cedula</strong>
+                    <span className="detalle_valor">{detalleCliente.cedula}</span>
+                  </div>
                 </div>
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Nombres:</strong>
-                  <span className="detalle_valor">{detalleCliente.nombres}</span>
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Nombres</strong>
+                    <span className="detalle_valor">{capitalizeWords(detalleCliente.nombres)}</span>
+                  </div>
                 </div>
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Correo Electrónico:</strong>
-                  <span className="detalle_valor">{detalleCliente.correo_electronico}</span>
+                  <LocalPostOfficeOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Correo Electrónico</strong>
+                    <span className="detalle_valor">{detalleCliente.correo_electronico}</span>
+                  </div>
                 </div>
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Teléfono:</strong>
-                  <span className="detalle_valor">{detalleCliente.telefono}</span>
+                  <PhoneIphoneOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Teléfono</strong>
+                    <span className="detalle_valor">{detalleCliente.telefono}</span>
+                  </div>
                 </div>
-                <div className="detalle_item">
-                  <strong className="detalle_titulo">Dirección:</strong>
-                  <span className="detalle_valor">{detalleCliente.direccion}</span>
-
+                <div className="detalle_item google">
+                  <PlaceIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Dirección</strong>
+                    <span className="detalle_valor">{detalleCliente.direccion}</span>
+                  </div>
                 </div>
-
               </div>
-
             </div>
           )}
         </Box>
-
       </Modal>
+
     </section >
 
 

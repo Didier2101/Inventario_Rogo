@@ -1,23 +1,24 @@
-import { validarFormulario } from "../utils/validaciones";
 
-import "../css/empleados.css";
+import { Box, Button, Divider, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-
-import { Box, Button, Divider, IconButton, Modal, TextField, Tooltip, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
+import PersonOutlinedIcon from '@mui/icons-material/PeopleOutlined';
+import StoreIcon from '@mui/icons-material/Store';
+import PlaceIcon from '@mui/icons-material/Place';
+import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const PuntosVenta = () => {
   const [puntoVentaID, setPuntoVentaID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detallePuntoVenta, setDetallePuntoVenta] = useState(null)
-  const [subMenu, setSubMenu] = useState(null);
   const [puntosVentas, setPuntosVentas] = useState([]);
   const [formulario, setFormulario] = useState(false);
   const [empleados, setEmpleados] = useState([]);
@@ -83,6 +84,79 @@ const PuntosVenta = () => {
     obtenerEmpleados();
   }, []);
 
+
+
+  const enviarForm = async (e) => {
+    e.preventDefault();
+
+    try {
+      let url = 'http://localhost:4000/puntos_ventas';
+      let method = 'POST';
+      if (modoEditar) {
+        url += `/${puntoVentaID}`;
+        method = 'PUT';
+      }
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.status === 400) {
+        // const data = await response.json();
+        console.error('Error al agregar o actualizar el punto de venta');
+        return;
+      }
+
+      if (!response.ok) {
+        console.error('Error al agregar o actualizar el punto de venta');
+        return;
+      }
+
+      // const data = await response.json();
+
+      if (modoEditar) {
+        Swal.fire({
+          title: 'Punto de Venta Actualizado',
+          text: 'El punto de venta ha sido actualizado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          title: 'Punto de Venta Agregado',
+          text: 'El punto de venta ha sido agregado correctamente.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false
+        });
+      }
+      ocultarFormulario();
+      obtenerPuntosVentas();
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+    }
+
+  };
+
+  const obtenerPuntoVentaPorId = async (idPuntoVenta) => {
+    try {
+      const response = await fetch(`http://localhost:4000/puntos_ventas/${idPuntoVenta}`);
+      if (response.ok) {
+        const data = await response.json();
+        const encargado = empleados.find(emp => emp.id_empleado === data.encargado);
+        setDetallePuntoVenta({ ...data, encargado: encargado ? encargado.nombres : 'Desconocido' });
+      } else {
+        console.error("No se pudo obtener el punto de venta");
+      }
+    } catch (error) {
+      console.error('error al obtener el punto de venta', error);
+    }
+  };
   const eliminarPuntoVenta = async (puntoVentaId, puntoVentaNombre) => {
     try {
       const result = await Swal.fire({
@@ -127,88 +201,6 @@ const PuntosVenta = () => {
       });
     }
   };
-
-  const enviarForm = async (e) => {
-    e.preventDefault();
-    const { valido, mensaje } = validarFormulario(formData, 'puntoVenta');
-
-    if (!valido) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de validación',
-        text: mensaje,
-      });
-      return;
-    }
-    try {
-      let url = 'http://localhost:4000/puntos_ventas';
-      let method = 'POST';
-      if (modoEditar) {
-        url += `/${puntoVentaID}`;
-        method = 'PUT';
-      }
-
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.status === 400) {
-        const data = await response.json();
-        console.error('Error al agregar o actualizar el punto de venta');
-        return;
-      }
-
-      if (!response.ok) {
-        console.error('Error al agregar o actualizar el punto de venta');
-        return;
-      }
-
-      const data = await response.json();
-
-      if (modoEditar) {
-        Swal.fire({
-          title: 'Punto de Venta Actualizado',
-          text: 'El punto de venta ha sido actualizado correctamente.',
-          icon: 'success',
-          timer: 1000,
-          showConfirmButton: false
-        });
-      } else {
-        Swal.fire({
-          title: 'Punto de Venta Agregado',
-          text: 'El punto de venta ha sido agregado correctamente.',
-          icon: 'success',
-          timer: 1000,
-          showConfirmButton: false
-        });
-      }
-      ocultarFormulario();
-      obtenerPuntosVentas();
-    } catch (error) {
-      console.error('Error en la solicitud:', error);
-    }
-
-  };
-
-  const obtenerPuntoVentaPorId = async (idPuntoVenta) => {
-    try {
-      const response = await fetch(`http://localhost:4000/puntos_ventas/${idPuntoVenta}`);
-      if (response.ok) {
-        const data = await response.json();
-        const encargado = empleados.find(emp => emp.id_empleado === data.encargado);
-        setDetallePuntoVenta({ ...data, encargado: encargado ? encargado.nombres : 'Desconocido' });
-      } else {
-        console.error("No se pudo obtener el punto de venta");
-      }
-    } catch (error) {
-      console.error('error al obtener el punto de venta', error);
-    }
-  };
-
   const mostarFormulario = () => {
     setFormulario(true);
     setModoEditar(false);
@@ -229,13 +221,36 @@ const PuntosVenta = () => {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    width: '90%',
     transform: 'translate(-50%, -50%)',
+    width: 1100,
+    height: 'auto', // Establece una altura específica para permitir el desplazamiento
+    bgcolor: 'background.paper',
+    border: '2px solid #fff',
+    borderRadius: '6px',
+    boxShadow: 24,
+    pt: 2,
+    px: 4,
+    pb: 3,
+    overflowY: 'scroll', // Desplazamiento solo vertical
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative',
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+    },
+  };
+
+  const style = {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '400px',
+    height: '100vh',
     bgcolor: 'background.paper',
     overflow: 'auto',
-    borderRadius: 'none',
     overflowY: 'auto',
-    border: 'none',
     '@media (max-width: 600px)': {
       width: '100%',
       position: 'relative', // Corrige 'relativa' a 'relative'
@@ -244,36 +259,96 @@ const PuntosVenta = () => {
       transform: 'none',
     },
   };
-  const style = {
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-    top: '0',
-    right: '0',
-    width: '500px',
-    maxHeight: '100vh',
-    bgcolor: 'background.paper',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-    borderRadius: 'none',
-    height: '100vh',
-    overflowY: 'auto',
-    '@media (max-width: 600px)': {
-      width: '90%',
-      position: 'relative', // Corrige 'relativa' a 'relative'
-    },
+
+
+
+  const [subMenu, setSubMenu] = useState(false)
+  const ocultarSubMenu = () => {
+    setSubMenu(false)
   };
 
 
-  const mostrarSubMenu = (index) => {
-    setSubMenu(index);
-  };
-
-  const quitarSubMenu = () => {
-    setSubMenu(null);
-  };
 
   return (
     <section className="section-item">
+      <section className="witches">
+        <ul className="witches-list">
+          <li className="witches-item">
+            <span className="cantidad-empleados">{puntosVentas.length}</span>
+            Lista de los puntos de venta
+          </li>
+          <li>
+            <IconButton
+              onClick={mostarFormulario}
+              style={{ background: 'var(--tercero)' }}>
+              <AddIcon style={{ color: 'var(--primer)' }} />
+            </IconButton>
+          </li>
+        </ul>
+      </section>
+
+      <table className="tabla-items">
+        <tbody>
+          {puntosVentas.map((puntoVenta, index) => (
+            <tr className="fila" key={index}>
+
+              <td className="a4">
+                <div className="centered-content">
+                  <StoreIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {puntoVenta.nombre_punto_venta}
+                </div>
+              </td>
+              <td className="a3">
+                <div className="centered-content">
+                  <ContactsOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  <div className="contacto">
+                    <span>{puntoVenta.telefono}</span>
+                    <span style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#636363' }}> {puntoVenta.direccion}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td className="a4">
+                <div className="centered-content">
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                  {puntoVenta.encargado}
+                </div>
+              </td>
+              <td className="ten">
+                <IconButton onClick={() => setSubMenu(puntoVenta.id_punto_venta)}>
+                  <MoreVertIcon />
+                </IconButton>
+                {subMenu === puntoVenta.id_punto_venta && (
+                  <div className="sub_menu" onMouseLeave={ocultarSubMenu}>
+                    <div onClick={() => obtenerPuntoVentaPorId(puntoVenta.id_punto_venta)}>
+                      <IconButton size="small" color="success">
+                        <InfoIcon />
+                      </IconButton>
+                      <span>Detalles</span>
+                    </div>
+
+                    <div onClick={() => activarModoEdicion(puntoVenta)}>
+                      <IconButton size="small" color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <span>Editar</span>
+                    </div>
+
+                    <div onClick={() => eliminarPuntoVenta(puntoVenta.id_punto_venta, puntoVenta.nombre_punto_venta)}>
+                      <IconButton size="small" color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                      <span>Eliminar</span>
+                    </div>
+                  </div>
+                )}
+              </td>
+
+
+            </tr>
+          ))}
+        </tbody>
+      </table>
       <Modal
         open={formulario}
         onClose={ocultarFormulario}
@@ -328,10 +403,10 @@ const PuntosVenta = () => {
 
 
             </div>
-            <Divider />
+
             <div className="contain-btns">
               <Button
-                variant="contained"
+                variant="outlined"
                 color="error"
                 onClick={ocultarFormulario}
               >
@@ -347,69 +422,6 @@ const PuntosVenta = () => {
           </form>
         </Box>
       </Modal>
-
-      <section className="caja-section">
-        <h2 className="title-tabla">Lista de Puntos de Venta</h2>
-        <IconButton
-          onClick={mostarFormulario}
-          style={{ background: 'var(--tercero)' }}>
-          <AddIcon style={{ color: 'var(--primer)' }} />
-        </IconButton>
-      </section>
-      <Divider />
-
-      <table className="tabla-items">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Encargado</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {puntosVentas.map((puntoVenta, index) => (
-            <tr className="fila" key={index}>
-              <td className="one"><strong>{index + 1}</strong></td>
-              <td className="eight">{puntoVenta.nombre_punto_venta}</td>
-              <td className=""><strong>{puntoVenta.telefono}</strong></td>
-              <td className="six">{puntoVenta.direccion}</td>
-              <td className="five">{puntoVenta.encargado}</td>
-              <td className="acciones ten">
-                <IconButton size="small" color="success"
-                  onMouseEnter={() => mostrarSubMenu(index)}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-                {subMenu === index && (
-                  <div className="sub_menu" onMouseLeave={quitarSubMenu}>
-                    <Tooltip title="Eliminar">
-                      <IconButton size="small" color="error"
-                        onClick={() => eliminarPuntoVenta(puntoVenta.id_punto_venta, puntoVenta.nombres)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Editar" onClick={() => activarModoEdicion(puntoVenta)}>
-                      <IconButton size="small" color="primary">
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Detalles">
-                      <IconButton size="small" color="success"
-                        onClick={() => obtenerPuntoVentaPorId(puntoVenta.id_punto_venta)}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </div>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
 
       <Modal
         open={Boolean(detallePuntoVenta)}
@@ -427,22 +439,40 @@ const PuntosVenta = () => {
                 </IconButton>
               </div>
               <div className="contenedor-detalles">
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Nombre:</strong>
-                  <span className="detalle_valor">{detallePuntoVenta.nombre_punto_venta}</span>
+                  <StoreIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Nombres del punto de venta</strong>
+                    <span className="detalle_valor">{detallePuntoVenta.nombre_punto_venta}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Teléfono:</strong>
-                  <span className="detalle_valor">{detallePuntoVenta.telefono}</span>
+                  <PhoneIphoneOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Teléfono</strong>
+                    <span className="detalle_valor">{detallePuntoVenta.telefono}</span>
+                  </div>
                 </div>
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Dirección:</strong>
-                  <span className="detalle_valor">{detallePuntoVenta.direccion}</span>
+                  <PlaceIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Dirección</strong>
+                    <span className="detalle_valor">{detallePuntoVenta.direccion}</span>
+                  </div>
                 </div>
+
+
                 <div className="detalle_item">
-                  <strong className="detalle_titulo">Encargado:</strong>
-                  <span className="detalle_valor">{detallePuntoVenta.encargado}</span>
+                  <PersonOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Ecargado del punto</strong>
+                    <span className="detalle_valor">{detallePuntoVenta.encargado}</span>
+                  </div>
                 </div>
+
               </div>
 
             </div>
