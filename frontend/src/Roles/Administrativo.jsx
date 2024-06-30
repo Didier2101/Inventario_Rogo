@@ -11,11 +11,20 @@ import Clientes from '../componentes/Clientes';
 import Proveedores from '../componentes/Proveedores';
 import PuntosVenta from '../componentes/PuntosVenta';
 import Bodegas from '../componentes/Bodegas';
-import { useState } from "react";
+import { useState, useContext } from "react";
+import Context from "../contexto/Context";
 
-const Administrativo = ({ userRole }) => {
+
+const Administrativo = () => {
 
     const [menuVisible, setMenuVisible] = useState(false);
+    const { usuario, logueado } = useContext(Context);
+
+    if (!logueado) {
+        return <Navigate to="/" />;
+    }
+
+
 
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
@@ -23,7 +32,7 @@ const Administrativo = ({ userRole }) => {
 
     return (
         <div className="flex-1">
-            {menuVisible && <Menu userRole={userRole} />}
+            {menuVisible && <Menu userRole={usuario?.rol} />}
             <div className="flex-2">
                 <Header onMenuToggle={toggleMenu} />
                 <h2>administrativo</h2>

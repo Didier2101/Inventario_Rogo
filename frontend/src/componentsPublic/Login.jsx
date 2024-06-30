@@ -1,16 +1,17 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import Swal from 'sweetalert2';
 
-
+import Context from '../contexto/Context'
 
 
 
 
 function Login() {
+    const { loguearse } = useContext(Context)
     const navigate = useNavigate();
 
     const [usuario, setUsuario] = useState('');
@@ -40,11 +41,14 @@ function Login() {
 
     const handdleLogin = async (e) => {
         e.preventDefault();
+
+
         const data = {
-            usuario: usuario,
-            contrasena: contrasena,
+            usuario,
+            contrasena,
             cargo: cargoSeleccionado,
         };
+
         try {
             const response = await fetch('http://localhost:4000/ingresar', {
                 method: 'POST',
@@ -55,15 +59,17 @@ function Login() {
             });
             const result = await response.json();
             if (response.ok) {
-
+                loguearse('jab')
                 Swal.fire({
-                    title: "Éxito",
+                    title: "Ingresando...",
                     text: result.message,
                     icon: "success",
                     timer: 1000,
                     showConfirmButton: false
                 });
-
+                setTimeout(() => {
+                    navigate('/administrativo', { replace: true });
+                }, 1000)
                 navigate('/administrativo', { replace: true });
 
 

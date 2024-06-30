@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom"
 
-
+import PropTypes from 'prop-types';
 
 
 import HomeIcon from "@mui/icons-material/Home";
@@ -73,5 +73,7 @@ const Menu = ({ userRole }) => {
         </section>
     )
 }
-
+Menu.propTypes = {
+    userRole: PropTypes.func.isRequired,
+};
 export default Menu

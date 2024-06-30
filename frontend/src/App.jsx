@@ -8,27 +8,24 @@ import NotFound from './componentsPublic/NotFound'
 // import Bodeguero from './Roles/Bodeguero'
 // import Auxiliar from './Roles/Auxiliar'
 import Administrativo from './Roles/Administrativo'
-import { useState } from 'react'
-
-
-
-
 
 
 
 function App() {
 
-  const [userRole, setUserRole] = useState('administrador');
+
 
   return (
-    <div>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/administrativo/*" element={<Administrativo userRole={userRole} />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </div>
+
+
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/administrativo/*" element={<Administrativo />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+
+
   )
 }
 

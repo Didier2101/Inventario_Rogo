@@ -1,10 +1,12 @@
-
+import PropTypes from 'prop-types';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { IconButton } from "@mui/material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import Context from '../contexto/Context';
 
 
 
@@ -12,8 +14,10 @@ import { useNavigate } from 'react-router-dom';
 const Header = ({ onMenuToggle }) => {
     const navigate = useNavigate()
 
+    const { desloguearse } = useContext(Context)
 
     const CerrarSesion = () => {
+
         Swal.fire({
             title: '¿Estás seguro?',
             text: '¿Realmente quieres cerrar sesión?',
@@ -25,16 +29,7 @@ const Header = ({ onMenuToggle }) => {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-
-                // Aquí puedes añadir la lógica para cerrar sesión, por ejemplo, eliminar los datos del usuario en el estado
-                Swal.fire({
-                    title: "Terminaste",
-                    text: 'Sesion terminada',
-                    icon: "warning",
-                    timer: 2000,
-                    showConfirmButton: false,
-                });
-
+                desloguearse();
                 navigate("/", { replace: true });
             }
         });
@@ -46,7 +41,7 @@ const Header = ({ onMenuToggle }) => {
                 <div className="iconos-izquierda">
                     <ViewListIcon className='icono-menu' onClick={onMenuToggle} />
                     <AccountCircleIcon className='icono-usuario' />
-                    <h2>Didier</h2> {/* // aqui quiro mostrar el nombre del usuario */}
+                    <h2>Invitado</h2>
                 </div>
                 <div className='iconos-derecha'>
                     <IconButton
@@ -60,5 +55,9 @@ const Header = ({ onMenuToggle }) => {
 
     )
 }
+// Agregar validación de prop-types
+Header.propTypes = {
+    onMenuToggle: PropTypes.func.isRequired,
+};
 
 export default Header
