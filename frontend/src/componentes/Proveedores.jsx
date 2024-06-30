@@ -1,5 +1,5 @@
 import { Box, Button, IconButton, Modal, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 
@@ -17,9 +17,10 @@ import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutl
 import DnsIcon from '@mui/icons-material/Dns';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 
-
+import Context from "../contexto/Context";
 
 const Proveedores = () => {
+  const { usuario } = useContext(Context);
   const [proveedorID, setProveedorID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detalleProveedor, setDetalleProveedor] = useState(null)
@@ -217,6 +218,14 @@ const Proveedores = () => {
   }
 
   const eliminarProveedor = async (proveedorId, proveedorNombre) => {
+    if (usuario.cargo !== 'administrador') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso Denegado',
+        text: 'No tienes permisos para eliminar proveedores.',
+      });
+      return;
+    }
     try {
       const result = await Swal.fire({
         title: "Eliminar proveedor",

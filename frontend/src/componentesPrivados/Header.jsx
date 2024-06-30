@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { IconButton } from "@mui/material";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ import Context from '../contexto/Context';
 const Header = ({ onMenuToggle }) => {
     const navigate = useNavigate()
 
-    const { desloguearse } = useContext(Context)
+    const { desloguearse, usuario } = useContext(Context)
 
     const CerrarSesion = () => {
 
@@ -40,8 +40,8 @@ const Header = ({ onMenuToggle }) => {
             <header className="header">
                 <div className="iconos-izquierda">
                     <ViewListIcon className='icono-menu' onClick={onMenuToggle} />
-                    <AccountCircleIcon className='icono-usuario' />
-                    <h2>Invitado</h2>
+                    {/* <AccountCircleIcon className='icono-usuario' /> */}
+                    <h2 style={{ textTransform: 'uppercase' }}>{usuario.usuario}</h2>
                 </div>
                 <div className='iconos-derecha'>
                     <IconButton

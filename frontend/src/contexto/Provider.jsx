@@ -6,15 +6,18 @@ import types from './types';
 
 const valorInicial = {
     logueado: false,
+    usuario: null,
 };
 
 
 
 const Provider = ({ children }) => {
-    const loguearse = (user) => {
+    const [autentificacion, dispatch] = useReducer(miReducer, valorInicial);
+    const loguearse = (usuario) => {
+        console.log('Usuario en loguearse:', usuario); // Añadir este log
         const action = {
             type: types.login,
-            payload: user,
+            payload: usuario,
         };
         dispatch(action);
     };
@@ -26,7 +29,7 @@ const Provider = ({ children }) => {
         };
         dispatch(action);
     };
-    const [autentificacion, dispatch] = useReducer(miReducer, valorInicial);
+
 
     return (
         <Context.Provider value={{ ...autentificacion, loguearse, desloguearse }}>

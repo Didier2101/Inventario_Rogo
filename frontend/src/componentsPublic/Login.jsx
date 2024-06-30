@@ -21,6 +21,7 @@ function Login() {
 
 
 
+
     const obtenerCargos = async () => {
         try {
             const response = await fetch('http://localhost:4000/cargos');
@@ -42,6 +43,8 @@ function Login() {
     const handdleLogin = async (e) => {
         e.preventDefault();
 
+        const cargoSeleccionadoObjeto = cargos.find(cargo => cargo.id_cargo === cargoSeleccionado);
+        const nombreCargo = cargoSeleccionadoObjeto ? cargoSeleccionadoObjeto.nombre_cargo : '';
 
         const data = {
             usuario,
@@ -59,7 +62,11 @@ function Login() {
             });
             const result = await response.json();
             if (response.ok) {
-                loguearse('jab')
+                console.log('Usuario logueado:', { usuario: usuario, cargo: nombreCargo }); // Añadir este log
+                loguearse({
+                    usuario: usuario,
+                    cargo: nombreCargo, // Asegúrate de que este valor es el esperado
+                });
                 Swal.fire({
                     title: "Ingresando...",
                     text: result.message,

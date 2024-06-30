@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel, Switch, InputBase } from "@mui/material";
 
@@ -17,10 +17,11 @@ import PriceCheckOutlinedIcon from '@mui/icons-material/PriceCheckOutlined';
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
+import Context from "../contexto/Context";
 
 const Productos = () => {
 
-
+  const { usuario } = useContext(Context);
 
   const [busqueda, setBusqueda] = useState('');
   const [productoID, setProductoID] = useState(null);
@@ -215,6 +216,14 @@ const Productos = () => {
 
 
   const eliminarProducto = async (productoId, productoNombre) => {
+    if (usuario.cargo !== 'administrador') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso Denegado',
+        text: 'No tienes permisos para eliminar productos.',
+      });
+      return;
+    }
     try {
       const result = await Swal.fire({
         title: "Eliminar producto",

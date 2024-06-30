@@ -16,8 +16,6 @@ import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
 
 const Menu = ({ userRole }) => {
 
-    console.log('Rol del usuario en Menu:', userRole); // Para depuración
-
     return (
         <section className='section-menu'>
             <ul>
@@ -74,6 +72,6 @@ const Menu = ({ userRole }) => {
     )
 }
 Menu.propTypes = {
-    userRole: PropTypes.func.isRequired,
+    userRole: PropTypes.string.isRequired,
 };
 export default Menu

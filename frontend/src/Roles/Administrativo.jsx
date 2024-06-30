@@ -32,10 +32,9 @@ const Administrativo = () => {
 
     return (
         <div className="flex-1">
-            {menuVisible && <Menu userRole={usuario?.rol} />}
+            {menuVisible && <Menu userRole={usuario.cargo} />}
             <div className="flex-2">
                 <Header onMenuToggle={toggleMenu} />
-                <h2>administrativo</h2>
                 <Routes>
                     <Route path="inicio" element={<Inicio />} />
                     <Route path="productos" element={<Productos />} />

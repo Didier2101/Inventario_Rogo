@@ -1,5 +1,5 @@
 import { Box, Button, IconButton, Modal, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 
@@ -16,13 +16,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
 
-
+import Context from "../contexto/Context";
 
 
 
 
 const Clientes = () => {
-
+  const { usuario } = useContext(Context);
   const [clienteID, setClienteID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detalleCliente, setDetalleCliente] = useState(null)
@@ -215,6 +215,14 @@ const Clientes = () => {
 
   // Función para eliminar un empleado
   const eliminarCliente = async (clienteId, clienteNombre) => {
+    if (usuario.cargo !== 'administrador') {
+      Swal.fire({
+        icon: 'error',
+        title: 'Acceso Denegado',
+        text: 'No tienes permisos para eliminar clientes.',
+      });
+      return;
+    }
     try {
       const result = await Swal.fire({
         title: "Eliminar cliente",
