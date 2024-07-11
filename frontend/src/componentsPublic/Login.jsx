@@ -62,10 +62,10 @@ function Login() {
             });
             const result = await response.json();
             if (response.ok) {
-                console.log('Usuario logueado:', { usuario: usuario, cargo: nombreCargo }); // Añadir este log
+
                 loguearse({
                     usuario: usuario,
-                    cargo: nombreCargo, // Asegúrate de que este valor es el esperado
+                    cargo: nombreCargo,
                 });
                 Swal.fire({
                     title: "Ingresando...",
@@ -77,7 +77,6 @@ function Login() {
                 setTimeout(() => {
                     navigate('/administrativo', { replace: true });
                 }, 1000)
-                navigate('/administrativo', { replace: true });
 
 
             } else {

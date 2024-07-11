@@ -200,6 +200,42 @@ const actualizarEstadoProducto = async (idProducto, estado) => {
   }
 };
 
+// codigo para sumar cantidad a un producto
+const actualizarStockProducto = async (idProducto, nuevaCantidad) => {
+  try {
+    // Obtiene la cantidad actual del producto desde la base de datos
+    const [productoActual] = await pool.query(
+      "SELECT * FROM productos WHERE id_producto = ?",
+      [idProducto] // Parámetro para la consulta SQL
+    );
+    // Verifica si el producto existe en la base de datos
+    if (productoActual.length === 0) {
+      throw new Error("Producto no encontrado");
+    }
+
+    // Obtiene la cantidad actual del producto
+    const cantidadActual = productoActual[0].cantidad;
+    // Calcula la nueva cantidad sumando el nuevo stock al stock actual
+    const cantidadNueva = cantidadActual + nuevaCantidad;
+
+    // Actualiza la cantidad del producto en la base de datos
+    const [resultado] = await pool.query(
+      "UPDATE productos SET cantidad = ? WHERE id_producto = ?",
+      [cantidadNueva, idProducto]
+    );
+
+    // Verifica si se actualizó alguna fila en la base de datos
+    if (resultado.affectedRows === 0) {
+      throw new Error("Producto no encontrado"); // Lanza un error si no se actualizó ninguna fila
+    }
+
+    // Devuelve el resultado con el ID del producto y la nueva cantidad
+    return { idProducto, cantidadNueva };
+  } catch (error) {
+    throw new Error(`Error al insertar la nueva cantidad: ${error.message}`);
+  }
+};
+
 module.exports = {
   obtenerTodosProductos,
   agregarProducto,
@@ -207,4 +243,5 @@ module.exports = {
   obtenerProductoPorId,
   actualizarProducto,
   actualizarEstadoProducto,
+  actualizarStockProducto,
 };

@@ -16,7 +16,6 @@ const miReducer = (state, action) => {
         logueado: false,
         usuario: null,
       };
-
     default:
       return state;
   }

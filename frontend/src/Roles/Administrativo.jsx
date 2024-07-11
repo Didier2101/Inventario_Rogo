@@ -25,7 +25,6 @@ const Administrativo = () => {
     }
 
 
-
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
     };

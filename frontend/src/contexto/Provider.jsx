@@ -1,24 +1,30 @@
-import { useReducer } from 'react';
 import PropTypes from 'prop-types';
 import Context from './Context';
 import miReducer from './miReducer';
 import types from './types';
+import { useReducer } from 'react';
 
-const valorInicial = {
-    logueado: false,
-    usuario: null,
-};
+
+const init = () => {
+    const usuario = localStorage.getItem('valor');
+    return {
+        logueado: !!usuario,
+        usuario: usuario
+    }
+}
 
 
 
 const Provider = ({ children }) => {
-    const [autentificacion, dispatch] = useReducer(miReducer, valorInicial);
+    const [autentificacion, dispatch] = useReducer(miReducer, {}, init);
+
+
     const loguearse = (usuario) => {
-        console.log('Usuario en loguearse:', usuario); // Añadir este log
         const action = {
             type: types.login,
             payload: usuario,
         };
+        localStorage.setItem('valor', usuario);
         dispatch(action);
     };
 
@@ -27,6 +33,7 @@ const Provider = ({ children }) => {
             type: types.logout,
             payload: null,
         };
+        localStorage.removeItem('valor');
         dispatch(action);
     };
 

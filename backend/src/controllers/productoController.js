@@ -93,6 +93,23 @@ const actualizarEstadoProducto = async (req, res) => {
   }
 };
 
+// Controlador para actualizar el stock de un producto
+// Controlador para actualizar el stock de un producto
+const actualizarStockProducto = async (req, res) => {
+  const idProducto = req.params.id_producto;
+  const { nuevaCantidad } = req.body;
+
+  try {
+    await productoService.actualizarStockProducto(idProducto, nuevaCantidad);
+    res
+      .status(200)
+      .json({ message: "Stock del producto actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al sumar la cantidad", error);
+    res.status(500).json({ message: "Error al sumar la cantidad" });
+  }
+};
+
 module.exports = {
   agregarProducto,
   obtenerTodosProductos,
@@ -100,4 +117,5 @@ module.exports = {
   obtenerProductoPorId,
   actualizarProducto,
   actualizarEstadoProducto,
+  actualizarStockProducto,
 };

@@ -8,6 +8,7 @@ const {
   eliminarProducto,
   actualizarProducto,
   actualizarEstadoProducto,
+  actualizarStockProducto,
 } = require("../controllers/productoController");
 
 // Agregar un nuevo producto
@@ -25,5 +26,6 @@ router.put("/productos/:id_producto", actualizarProducto);
 // Eliminar un producto
 router.delete("/productos/:id_producto", eliminarProducto);
 router.patch("/productos/:id_producto", actualizarEstadoProducto);
+router.put("/productos/:id_producto/cantidad", actualizarStockProducto);
 
 module.exports = router;

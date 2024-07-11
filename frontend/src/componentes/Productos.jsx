@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel, Switch, InputBase } from "@mui/material";
 
-
+// import CheckIcon from '@mui/icons-material/Check';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,6 +23,9 @@ const Productos = () => {
 
   const { usuario } = useContext(Context);
 
+  const [nuevaCantidad, setNuevaCantidad] = useState('');
+  const [formStock, setFormStock] = useState(false)
+  const [subMenu, setSubMenu] = useState(false)
   const [busqueda, setBusqueda] = useState('');
   const [productoID, setProductoID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
@@ -42,8 +45,6 @@ const Productos = () => {
     cantidad: '',
     estado: 1, // Opcionalmente puedes establecer el valor inicial como `true` o `false`
   });
-
-
 
   // Activar el modo de edición y configurar el formulario con datos del producto seleccionado
   const activarModoEdicion = (producto) => {
@@ -69,6 +70,7 @@ const Productos = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
 
   const obtenerProductos = async () => {
     try {
@@ -313,6 +315,9 @@ const Productos = () => {
       console.error('Error al actualizar el estado del producto', error);
     }
   };
+
+  // codigo para añadir cantidad al un producto
+
   const mostrarEstadoTexto = (estado) => {
     return estado ? 'Activo' : 'Inactivo';
   };
@@ -361,7 +366,6 @@ const Productos = () => {
   };
 
 
-  const [subMenu, setSubMenu] = useState(false)
   const ocultarSubMenu = () => {
     setSubMenu(false)
   };
@@ -373,24 +377,72 @@ const Productos = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  // Codigo para actualizar o sumar stock a un producto
+
+
+
+  const handleNuevoStock = (e) => {
+    setNuevaCantidad(e.target.value);
+  };
+  const mostrarFormularioStock = (productoId) => {
+    setFormStock(productoId);
+  };
+  const ocultarFormularioStock = () => {
+    setFormStock(false);
+    setNuevaCantidad('');
+  };
+
+  const actualizarCantidad = async (id_producto, nuevaCantidad) => {
+    try {
+      // Llama a la API del backend para actualizar el stock
+      const response = await fetch(`http://localhost:4000/productos/${id_producto}/cantidad`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nuevaCantidad: parseInt(nuevaCantidad) }),
+      });
+
+      if (!response.ok) {
+        throw new Error('No se pudo actualizar la cantidad');
+      }
+
+      // Muestra el mensaje de éxito en la consola
+      Swal.fire({
+        title: 'Stock Actualizado',
+        text: 'La cantidad de stock ha sido actualizada correctamente.',
+        icon: 'success',
+        timer: 1000,
+        showConfirmButton: false
+      });
+
+      setNuevaCantidad('');
+      setFormStock(false);
+      obtenerProductos();
+
+    } catch (error) {
+      console.error('Error al actualizar el stock:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo actualizar el stock.',
+      });
+    }
+    ocultarFormularioStock()
+  };
+
+
   return (
     <>
-      <section className="contenedor_buscar">
 
-        <InputBase
-          style={{ fontSize: '1.6rem' }}
-          placeholder="Buscar productos"
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-
-        />
-
-
-
-
-      </section >
 
       <section className="section-item">
+        <section className="contenedor_buscar">
+          <InputBase
+            style={{ fontSize: '1.6rem' }}
+            placeholder="Buscar productos"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </section >
 
         <div className="witches">
           <ul className="witches-list">
@@ -447,7 +499,7 @@ const Productos = () => {
                       {capitalizeWords(producto.descripcion)}
                     </div>
                   </td>
-
+                  |
 
                   <td className="a4">
                     <div className="centered-content">
@@ -455,11 +507,35 @@ const Productos = () => {
                       {producto.precio_venta}
                     </div>
                   </td>
-                  <td className={producto.cantidad === 0 ? 'agotado' : 'a9'}>
-                    <div className="centered-content">
+                  <td
+                    className={producto.cantidad === 0 ? 'agotado' : 'a9 actualizarStock'}
+                  >
+                    <div
+                      onClick={() => mostrarFormularioStock(producto.id_producto)}
+                      className="centered-content">
                       <InventoryOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
-                      <strong>   {producto.cantidad === 0 ? 'Agotado' : producto.cantidad}</strong>
+                      <strong>   {producto.cantidad === 0 ? 'Agotado' : producto.cantidad} Uds</strong>
                     </div>
+                    {formStock === producto.id_producto && (
+                      <div className="formStock">
+                        <label htmlFor="">Insertar Cantidad</label>
+                        <TextField
+                          type="number"
+                          value={nuevaCantidad}
+                          onChange={handleNuevoStock}
+                        />
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="success"
+                          onClick={() => actualizarCantidad(producto.id_producto, nuevaCantidad)}
+                        >
+                          Listo
+                        </Button>
+
+                      </div>
+                    )}
+
                   </td>
 
                   <td className="estado a10">
@@ -698,13 +774,17 @@ const Productos = () => {
                       <span className="detalle_valor">{capitalizeWords(detalleProducto.descripcion)}</span>
                     </div>
                   </div>
-                  <div className="detalle_item">
-                    <AttachMoneyIcon style={{ color: '#949393', fontSize: '3rem' }} />
-                    <div className="centered-content-detalle">
-                      <strong className="detalle_titulo">Precio de Compra</strong>
-                      <span className="detalle_valor">{detalleProducto.precio_compra}</span>
+
+                  {usuario.cargo === "administrador" && (
+                    <div className="detalle_item">
+                      <AttachMoneyIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                      <div className="centered-content-detalle">
+                        <strong className="detalle_titulo">Precio de Compra</strong>
+                        <span className="detalle_valor">{detalleProducto.precio_compra}</span>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
                   <div className="detalle_item">
                     <PriceCheckOutlinedIcon style={{ color: '#949393', fontSize: '3rem' }} />
                     <div className="centered-content-detalle">

@@ -1,5 +1,6 @@
 const pool = require("../database");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const login = async (req, res) => {
   const { usuario, contrasena, cargo } = req.body;
@@ -39,7 +40,15 @@ const login = async (req, res) => {
         return res.status(401).json({ message: "Cargo incorrecto" });
       }
 
-      res.status(200).json({ message: "Usuario autenticado correctamente" });
+      // Generar el token JWT
+      const payload = { usuario };
+      const token = jwt.sign(payload, "Stack", {
+        expiresIn: "1m",
+      });
+
+      res
+        .status(200)
+        .json({ message: "Usuario autenticado correctamente", token: token });
     } else {
       res
         .status(401)
