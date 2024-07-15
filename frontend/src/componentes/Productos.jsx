@@ -486,6 +486,7 @@ const Productos = () => {
                       {capitalizeWords(producto.nombre)}
                     </div>
                   </td>
+
                   <td className="a4">
                     <div className="centered-content">
                       <QrCodeIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
@@ -507,6 +508,7 @@ const Productos = () => {
                       {producto.precio_venta}
                     </div>
                   </td>
+
                   <td
                     className={producto.cantidad === 0 ? 'agotado' : 'a9 actualizarStock'}
                   >

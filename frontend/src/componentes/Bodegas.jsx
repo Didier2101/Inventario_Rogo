@@ -1,5 +1,5 @@
-
-
+import DescriptionIcon from '@mui/icons-material/Description';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import InfoIcon from "@mui/icons-material/Info";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -11,13 +11,21 @@ import PersonOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import PlaceIcon from '@mui/icons-material/Place';
 import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
+import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 
 
-import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+
+
+import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel, InputBase } from "@mui/material";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 const Bodegas = () => {
+  const [busqueda, setBusqueda] = useState('');
+  const [productosCount, setProductosCount] = useState({});
+  const [modalProductos, setModalProductos] = useState(false)
+  const [listaProductos, setListaProductos] = useState([]);
   const [bodegaID, setBodegaID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detalleBodega, setDetalleBodega] = useState(null)
@@ -30,6 +38,7 @@ const Bodegas = () => {
     direccion: '',
     encargado: ''
   });
+
 
   useEffect(() => {
     obtenerBodegas();
@@ -67,6 +76,18 @@ const Bodegas = () => {
       if (response.ok) {
         const data_bodegas = await response.json();
         setBodegas(data_bodegas);
+        // Obtener productos para cada bodega
+        const counts = {};
+        for (const bodega of data_bodegas) {
+          const responseProductos = await fetch(`http://localhost:4000/bodegas/${bodega.id_bodega}/productos`);
+          if (responseProductos.ok) {
+            const data_productos = await responseProductos.json();
+            counts[bodega.id_bodega] = data_productos.length;
+          } else {
+            console.error(`No se pudo obtener los productos para la bodega ${bodega.id_bodega}`);
+          }
+        }
+        setProductosCount(counts);
       } else {
         console.error("No se pudo obtener las bodegas");
       }
@@ -88,7 +109,6 @@ const Bodegas = () => {
       console.error('error al obtener los empleados', error);
     }
   };
-
 
 
   const eliminarBodega = async (bodegaId, bodegaNombre) => {
@@ -207,6 +227,22 @@ const Bodegas = () => {
     }
   };
 
+  const obtenerProductosPorBodega = async (idBodega) => {
+    try {
+      const response = await fetch(`http://localhost:4000/bodegas/${idBodega}/productos`);
+      if (response.ok) {
+        const data_productos = await response.json();
+        setListaProductos(data_productos);
+      } else {
+        console.error("No se pudo obtener los productos de la bodega");
+      }
+    } catch (error) {
+      console.error('error al obtener los productos de la bodega', error);
+    }
+    setModalProductos(true);
+    setDetalleBodega(false);
+  };
+
 
   const mostarFormulario = () => {
     setFormulario(true);
@@ -214,6 +250,7 @@ const Bodegas = () => {
   };
 
   const ocultarFormulario = () => {
+    setModalProductos(false);
     setDetalleBodega(null);
     setFormulario(false);
     setFormData({
@@ -222,6 +259,8 @@ const Bodegas = () => {
       direccion: '',
       encargado: ''
     });
+    setListaProductos([]);
+    setBusqueda('');
   };
 
   const style_form = {
@@ -273,10 +312,41 @@ const Bodegas = () => {
     setSubMenu(false)
   };
 
+  const style_list = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '80%',
+    height: '80vh', // Establece una altura específica para permitir el desplazamiento
+    bgcolor: '#fff',
+    pt: 2,
+    px: 4,
+    pb: 3,
+    overflowY: 'auto', // Desplazamiento solo vertical
+    '@media (max-width: 600px)': {
+      width: '100%',
+      position: 'relative',
+      top: 'auto',
+      left: 'auto',
+      transform: 'none',
+      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+    },
+  };
+
+  const capitalizeWords = (str) => {
+    return str.split(' ').map(word => capitalize(word)).join(' ');
+  };
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  const filteredProductos = listaProductos.filter(producto =>
+    producto.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    producto.referencia.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   return (
     <section className="section-item">
-
 
       <section className="witches">
         <ul className="witches-list">
@@ -293,7 +363,6 @@ const Bodegas = () => {
           </li>
         </ul>
       </section>
-
 
       <table className="tabla-items">
         <tbody>
@@ -323,8 +392,33 @@ const Bodegas = () => {
                   {bodega.encargado}
                 </div>
               </td>
-              <td className="ten">
 
+              <td className="a3">
+                <div className="centered-content" onClick={() => obtenerProductosPorBodega(bodega.id_bodega)}>
+                  <div className="contacto">
+                    <span>Cantidad de productos</span>
+                    <Button
+                      style={{ width: 'auto', margin: '0 auto', fontSize: '1.1rem' }}
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                    >{productosCount[bodega.id_bodega] || 0}</Button>
+                  </div>
+                </div>
+              </td>
+              <td className="a2">
+                <Button
+                  style={{ width: 'auto', margin: '0 auto', fontSize: '1.1rem' }}
+                  variant="out"
+                  color="inherit"
+                  size="small"
+
+                >
+                </Button>
+
+              </td>
+
+              <td className="ten">
                 <IconButton onClick={() => setSubMenu(bodega.id_bodega)}>
                   <MoreVertIcon
 
@@ -332,6 +426,7 @@ const Bodegas = () => {
                 </IconButton >
                 {subMenu === bodega.id_bodega && (
                   <div className="sub_menu" onMouseLeave={ocultarSubMenu}>
+
                     <div onClick={() => obtenerBodegaPorId(bodega.id_bodega)}>
                       <IconButton size="small" color="success">
                         <InfoIcon />
@@ -361,6 +456,7 @@ const Bodegas = () => {
           ))}
         </tbody>
       </table>
+
       <Modal
         open={formulario}
         onClose={ocultarFormulario}
@@ -433,6 +529,7 @@ const Bodegas = () => {
           </form>
         </Box>
       </Modal>
+
       <Modal
         open={Boolean(detalleBodega)}
         onClose={ocultarFormulario}
@@ -448,7 +545,18 @@ const Bodegas = () => {
                   <CloseIcon />
                 </IconButton>
               </div>
+
+
               <div className="contenedor-detalles">
+                <div className="detalle_item">
+                  <WarehouseIcon style={{ color: '#949393', fontSize: '3rem' }} />
+                  <div className="centered-content-detalle">
+                    <strong className="detalle_titulo">Cantidad de productos en bodega {listaProductos[detalleBodega.nombres]}</strong>
+                    <span className="detalle_valor"> {productosCount[detalleBodega.id_bodega] || 0}</span>
+                  </div>
+                </div>
+
+
                 <div className="detalle_item">
                   <WarehouseIcon style={{ color: '#949393', fontSize: '3rem' }} />
                   <div className="centered-content-detalle">
@@ -482,7 +590,81 @@ const Bodegas = () => {
             </div>
           )}
         </Box>
+      </Modal >
+      <Modal
+        open={modalProductos}
+        onClose={ocultarFormulario}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
+      >
+        <Box sx={{ ...style_list }}>
+          <div className="cerrar-boton" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h6 style={{ fontSize: '1.4rem' }}>Cantidad de productos en bodega: {listaProductos.length}</h6>
+            <IconButton onClick={() => setModalProductos(false)}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+          <section className="contenedor_buscar" style={{ marginBottom: '20px' }}>
+            <InputBase
+              style={{ fontSize: '1.6rem' }}
+              placeholder="Buscar productos"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </section>
+          {listaProductos.length === 0 ? (
+            <p style={{ textAlign: 'center', fontSize: '3rem', marginTop: '120px' }}>No hay productos almacenados en esta bodega</p>
+          ) : (
+            filteredProductos.length === 0 ? (
+              <p style={{ textAlign: 'center', fontSize: '3rem', marginTop: '120px' }}>No se encontró el producto</p>
+            ) : (
+              <table className="tabla-items">
+                <tbody>
+                  {filteredProductos.map((producto) => (
+                    <tr className="fila" key={producto.id_producto}>
+                      <td className="a4">
+                        <div className="centered-content">
+                          <Inventory2OutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                          {capitalizeWords(producto.nombre)}
+                        </div>
+                      </td>
+                      <td className="a4">
+                        <div className="centered-content">
+                          <QrCodeIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                          {capitalizeWords(producto.referencia)}
+                        </div>
+                      </td>
+                      <td className="a4">
+                        <div className="centered-content">
+                          <DescriptionIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                          {capitalizeWords(producto.descripcion)}
+                        </div>
+                      </td>
+                      <td className={producto.cantidad === 0 ? 'agotado' : 'a9'}>
+                        <div className="centered-content">
+                          <InventoryOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
+                          <strong>{producto.cantidad === 0 ? 'Agotado' : `${producto.cantidad} Unidades`}</strong>
+                        </div>
+                      </td>
+                      <td className={producto.cantidad === 0 ? 'agotado' : 'a9'}>
+                        <div className="centered-content">
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            size="small"
+                          >Mover producto</Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+          )}
+        </Box>
       </Modal>
+
+
     </section >
   );
 

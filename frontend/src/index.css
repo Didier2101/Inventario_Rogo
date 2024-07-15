@@ -55,11 +55,12 @@ img {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--fondo); /* Color de fondo del track */
+  background-color: #fff; /* Color de fondo del track */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--azul-marino); /* Color del thumb (la parte movible) */
+  width: 6px;
+  background-color: #b9b9b9; /* Color del thumb (la parte movible) */
   border-radius: 5px; /* Radio de borde del thumb */
 }
 

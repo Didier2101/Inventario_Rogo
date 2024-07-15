@@ -62,10 +62,25 @@ const actualizarBodega = async (req, res) => {
   }
 };
 
+// Código para obtener productos por bodega
+const obtenerProductosPorBodega = async (req, res) => {
+  const idBodega = req.params.id_bodega;
+  try {
+    const productos = await bodegaService.obtenerProductosPorBodega(idBodega);
+    res.status(200).json(productos);
+  } catch (error) {
+    console.error("Error al obtener los productos de la bodega:", error);
+    res
+      .status(500)
+      .json({ message: "Error al obtener los productos de la bodega" });
+  }
+};
+
 module.exports = {
   crearBodegas,
   obtenerBodegas,
   eliminarBodega,
   obtenerBodegaPorId,
   actualizarBodega,
+  obtenerProductosPorBodega,
 };

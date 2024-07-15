@@ -13,12 +13,16 @@ import PuntosVenta from '../componentes/PuntosVenta';
 import Bodegas from '../componentes/Bodegas';
 import { useState, useContext } from "react";
 import Context from "../contexto/Context";
+import Ventas from "../componentes/Ventas";
 
 
 const Administrativo = () => {
 
     const [menuVisible, setMenuVisible] = useState(false);
     const { usuario, logueado } = useContext(Context);
+
+    console.log('usuario:', usuario); // Verifica si usuario está definido
+    console.log('cargo:', usuario?.cargo); // Verifica el valor de cargo
 
     if (!logueado) {
         return <Navigate to="/" />;
@@ -42,6 +46,7 @@ const Administrativo = () => {
                     <Route path="proveedores" element={<Proveedores />} />
                     <Route path="puntos" element={<PuntosVenta />} />
                     <Route path="bodegas" element={<Bodegas />} />
+                    <Route path="ventas" element={<Ventas />} />
                     <Route path="*" element={<Navigate to="inicio" />} />
                 </Routes>
 

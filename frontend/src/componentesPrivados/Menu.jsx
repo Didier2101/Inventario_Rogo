@@ -9,6 +9,8 @@ import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import MapsHomeWorkIcon from "@mui/icons-material/MapsHomeWork";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
 
 
 
@@ -65,7 +67,10 @@ const Menu = ({ userRole }) => {
 
                     </>
                 )}
-
+                <NavLink to="/administrativo/ventas" className="navlink-menu">
+                    <ShoppingCartIcon className="icon-menu" />
+                    <p className="text">Ventas</p>
+                </NavLink>
 
             </ul>
         </section>

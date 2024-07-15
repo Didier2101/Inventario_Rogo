@@ -114,10 +114,42 @@ const actualizarBodega = async (idBodega, nuevaBodega) => {
   }
 };
 
+const obtenerProductosPorBodega = async (idBodega) => {
+  try {
+    const query = `
+     SELECT 
+        p.id_producto,
+        pr.empresa AS proveedor,
+        b.nombres AS bodega,
+        p.nombre,
+        p.referencia,
+        p.descripcion,
+        p.precio_compra,
+        p.precio_venta,
+        p.cantidad,
+        p.estado
+      FROM 
+        productos p
+      LEFT JOIN 
+        proveedores pr ON p.proveedor = pr.id_proveedor
+      LEFT JOIN 
+        bodegas b ON p.bodega = b.id_bodega
+      WHERE
+        p.bodega = ?
+    `;
+    const [rows] = await pool.query(query, [idBodega]);
+    return rows;
+  } catch (error) {
+    console.error("Error al obtener los productos por bodega:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   agregarBodega,
   obtenerBodegas,
   eliminarBodega,
   obtenerBodegaPorId,
   actualizarBodega,
+  obtenerProductosPorBodega,
 };

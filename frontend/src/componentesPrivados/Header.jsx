@@ -41,7 +41,7 @@ const Header = ({ onMenuToggle }) => {
                 <div className="iconos-izquierda">
                     <ViewListIcon className='icono-menu' onClick={onMenuToggle} />
                     {/* <AccountCircleIcon className='icono-usuario' /> */}
-                    <h2>Estas Como: <span>{usuario.cargo}</span></h2>
+                    <h2>Estas Como: <span>{usuario.usuario}</span></h2>
                 </div>
                 <div className='iconos-derecha'>
                     <IconButton

@@ -7,6 +7,7 @@ const {
   obtenerBodegaPorId,
   actualizarBodega,
   eliminarBodega,
+  obtenerProductosPorBodega,
 } = require("../controllers/bodegaController");
 
 // Agregar un nuevo punto de venta
@@ -23,5 +24,7 @@ router.put("/bodegas/:id_bodega", actualizarBodega);
 
 // Eliminar un punto de venta
 router.delete("/bodegas/:id_bodega", eliminarBodega);
+
+router.get("/bodegas/:id_bodega/productos", obtenerProductosPorBodega);
 
 module.exports = router;
