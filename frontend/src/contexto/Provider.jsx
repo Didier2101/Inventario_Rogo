@@ -7,11 +7,21 @@ import { useReducer } from 'react';
 
 const init = () => {
     const usuario = localStorage.getItem('valor');
-    return {
-        logueado: !!usuario,
-        usuario: usuario
+    try {
+        return {
+            logueado: !!usuario,
+            usuario: usuario ? JSON.parse(usuario) : null
+        };
+    } catch (error) {
+        // Si el contenido de 'valor' no es un JSON válido, lo eliminamos y devolvemos null
+        localStorage.removeItem('valor');
+        return {
+            logueado: false,
+            usuario: null
+        };
     }
-}
+};
+
 
 
 
@@ -24,7 +34,9 @@ const Provider = ({ children }) => {
             type: types.login,
             payload: usuario,
         };
-        localStorage.setItem('valor', usuario);
+        localStorage.setItem('valor', JSON.stringify(usuario));
+        console.log('este es erl usuario en el provider', usuario.usuario);
+        console.log('este es erl cargo en el provider', usuario.cargo);
         dispatch(action);
     };
 

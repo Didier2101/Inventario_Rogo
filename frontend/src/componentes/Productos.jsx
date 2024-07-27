@@ -330,20 +330,20 @@ const Productos = () => {
     width: 1100,
     height: 'auto', // Establece una altura específica para permitir el desplazamiento
     bgcolor: 'background.paper',
-    border: '2px solid #fff',
-    borderRadius: '6px',
-    boxShadow: 24,
     pt: 2,
     px: 4,
     pb: 3,
-    overflowY: 'scroll', // Desplazamiento solo vertical
+    overflowY: 'auto', // Desplazamiento solo vertical
     '@media (max-width: 600px)': {
       width: '100%',
       position: 'relative',
       top: 'auto',
       left: 'auto',
       transform: 'none',
-      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+      pt: 0,
+      px: 0,
+      pb: 0,
+      minHeight: '100vh',
     },
   };
 
@@ -472,7 +472,7 @@ const Productos = () => {
               )
               .map((producto, index) => (
                 <tr className="fila" key={index}>
-                  <td className="a4">
+                  <td className="a1">
                     <div className="centered-content">
                       <LocationOnIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                       {producto.bodega}
@@ -480,29 +480,29 @@ const Productos = () => {
                   </td>
 
 
-                  <td className="a4">
+                  <td className="a2">
                     <div className="centered-content">
                       <Inventory2OutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                       {capitalizeWords(producto.nombre)}
                     </div>
                   </td>
 
-                  <td className="a4">
+                  <td className="a1">
                     <div className="centered-content">
                       <QrCodeIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                       {capitalizeWords(producto.referencia)}
                     </div>
                   </td>
 
-                  <td className="a4">
+                  <td className="a1">
                     <div className="centered-content">
                       <DescriptionIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                       {capitalizeWords(producto.descripcion)}
                     </div>
                   </td>
-                  |
 
-                  <td className="a4">
+
+                  <td className="a1">
                     <div className="centered-content">
                       <PriceCheckOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                       {producto.precio_venta}
@@ -510,7 +510,7 @@ const Productos = () => {
                   </td>
 
                   <td
-                    className={producto.cantidad === 0 ? 'agotado' : 'a9 actualizarStock'}
+                    className={producto.cantidad === 0 ? 'agotado' : 'a1 actualizarStock'}
                   >
                     <div
                       onClick={() => mostrarFormularioStock(producto.id_producto)}
@@ -520,7 +520,7 @@ const Productos = () => {
                     </div>
                     {formStock === producto.id_producto && (
                       <div className="formStock">
-                        <label htmlFor="">Insertar Cantidad</label>
+                        <label>Insertar Cantidad</label>
                         <TextField
                           type="number"
                           value={nuevaCantidad}
@@ -537,10 +537,9 @@ const Productos = () => {
 
                       </div>
                     )}
-
                   </td>
 
-                  <td className="estado a10">
+                  <td className="estado a1">
                     <Switch
                       size="small"
                       checked={!!producto.estado}
@@ -548,7 +547,7 @@ const Productos = () => {
                       onChange={() => toggleEstado(producto.id_producto, !producto.estado)}
                     />
                   </td>
-                  <td className="ten">
+                  <td className="a10">
                     <div className="centered-content">
                       <IconButton onClick={() => setSubMenu(producto.id_producto)}>
                         <MoreVertIcon />
@@ -591,6 +590,7 @@ const Productos = () => {
           onClose={ocultarFormulario}
           aria-labelledby="parent-modal-title"
           aria-describedby="parent-modal-description"
+          closeAfterTransition
         >
           <Box sx={{ ...style_form }}>
             <form className="grid-form" onSubmit={enviarForm}>

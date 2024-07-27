@@ -18,11 +18,8 @@ import Ventas from "../componentes/Ventas";
 
 const Administrativo = () => {
 
-    const [menuVisible, setMenuVisible] = useState(false);
+    const [menuVisible, setMenuVisible] = useState(true);
     const { usuario, logueado } = useContext(Context);
-
-    console.log('usuario:', usuario); // Verifica si usuario está definido
-    console.log('cargo:', usuario?.cargo); // Verifica el valor de cargo
 
     if (!logueado) {
         return <Navigate to="/" />;
@@ -30,7 +27,7 @@ const Administrativo = () => {
 
 
     const toggleMenu = () => {
-        setMenuVisible(!menuVisible);
+        setMenuVisible(menuVisible);
     };
 
     return (

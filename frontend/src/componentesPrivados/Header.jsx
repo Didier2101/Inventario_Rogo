@@ -10,11 +10,12 @@ import Context from '../contexto/Context';
 
 
 
-
 const Header = ({ onMenuToggle }) => {
     const navigate = useNavigate()
 
     const { desloguearse, usuario } = useContext(Context)
+    JSON.parse(localStorage.getItem('valor'));
+
 
     const CerrarSesion = () => {
 
@@ -41,7 +42,7 @@ const Header = ({ onMenuToggle }) => {
                 <div className="iconos-izquierda">
                     <ViewListIcon className='icono-menu' onClick={onMenuToggle} />
                     {/* <AccountCircleIcon className='icono-usuario' /> */}
-                    <h2>Estas Como: <span>{usuario.usuario}</span></h2>
+                    <h2>Estas como: <span>{usuario ? usuario.usuario : 'Invitado'}</span></h2>
                 </div>
                 <div className='iconos-derecha'>
                     <IconButton

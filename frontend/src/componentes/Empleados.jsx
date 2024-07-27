@@ -335,20 +335,20 @@ const Empleados = () => {
     width: 1100,
     height: 'auto', // Establece una altura específica para permitir el desplazamiento
     bgcolor: 'background.paper',
-    border: '2px solid #fff',
-    borderRadius: '6px',
-    boxShadow: 24,
     pt: 2,
     px: 4,
     pb: 3,
-    overflowY: 'scroll', // Desplazamiento solo vertical
+    overflowY: 'auto', // Desplazamiento solo vertical
     '@media (max-width: 600px)': {
       width: '100%',
       position: 'relative',
       top: 'auto',
       left: 'auto',
       transform: 'none',
-      minHeight: '100vh', // Ajusta la altura para pantallas pequeñas
+      pt: 0,
+      px: 0,
+      pb: 0,
+      height: '100vh',
     },
   };
 
@@ -408,7 +408,7 @@ const Empleados = () => {
           {empleados.map((empleado, index) => (
             <tr className="fila" key={index}>
               {/* <td className="one"><strong>{index + 1}</strong></td> */}
-              <td className="a4">
+              <td className="a2">
                 <div className="centered-content">
                   <PersonOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                   {capitalizeWords(empleado.nombres)}
@@ -420,13 +420,13 @@ const Empleados = () => {
                   {empleado.cedula}
                 </div>
               </td>
-              <td className="a2">
+              <td className="a1">
                 <div className="centered-content">
                   <LocalPostOfficeOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                   {empleado.correo_electronico}
                 </div>
               </td>
-              <td className="a3">
+              <td className="a1">
                 <div className="centered-content">
                   <ContactsOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                   <div className="contacto">
@@ -436,21 +436,21 @@ const Empleados = () => {
                 </div>
               </td>
 
-              <td className="a5">
+              <td className="a1">
                 <div className="centered-content">
                   <PeopleOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                   {empleado.nombre_cargo}
                 </div>
 
               </td>
-              <td className="a6">
+              <td className="a1">
                 <div className="centered-content">
                   <AttachMoneyOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                   {empleado.salario}
                 </div>
 
               </td>
-              <td className="ten">
+              <td className="a10">
 
                 <IconButton onClick={() => setSubMenu(empleado.id_empleado)}>
                   <MoreVertIcon />
