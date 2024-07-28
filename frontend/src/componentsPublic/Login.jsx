@@ -11,6 +11,9 @@ import Context from '../contexto/Context'
 
 
 function Login() {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     const { loguearse } = useContext(Context)
     const navigate = useNavigate();
 
@@ -24,7 +27,7 @@ function Login() {
 
     const obtenerCargos = async () => {
         try {
-            const response = await fetch('http://proyecto-sena-enb7.onrender.com/cargos');
+            const response = await fetch(`${apiUrl}/cargos`);
             if (response.ok) {
                 const data = await response.json();
                 setCargos(data);
@@ -53,7 +56,7 @@ function Login() {
         };
 
         try {
-            const response = await fetch('http://proyecto-sena-enb7.onrender.com/ingresar', {
+            const response = await fetch(`${apiUrl}/ingresar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
