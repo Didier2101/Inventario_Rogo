@@ -1,4 +1,4 @@
-const { Pool } = require("pg");
+const mysql2 = require("mysql2/promise");
 require("dotenv").config();
 
 const pool = new Pool({
@@ -7,13 +7,16 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 (async () => {
   try {
-    const client = await pool.connect();
+    const connection = await pool.getConnection();
     console.log("Conexión a la base de datos exitosa");
-    client.release();
+    connection.release();
   } catch (err) {
     console.error("Error al conectar a la base de datos:", err);
   }
