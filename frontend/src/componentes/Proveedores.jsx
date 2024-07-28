@@ -20,6 +20,9 @@ import ApartmentIcon from '@mui/icons-material/Apartment';
 import Context from "../contexto/Context";
 
 const Proveedores = () => {
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const { usuario } = useContext(Context);
   const [proveedorID, setProveedorID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
@@ -102,7 +105,7 @@ const Proveedores = () => {
 
   const obtenerProveedores = async () => {
     try {
-      const response = await fetch("http://localhost:4000/proveedores");
+      const response = await fetch(`${apiUrl}/proveedores`);
       if (response.ok) {
         const data = await response.json();
         setProveedores(data);
@@ -140,7 +143,7 @@ const Proveedores = () => {
     }
 
     try {
-      let url = 'http://localhost:4000/proveedores';
+      let url = `${apiUrl}/proveedores`;
       let method = 'POST';
       if (modoEditar) {
         url += `/${proveedorID}`;
@@ -205,7 +208,7 @@ const Proveedores = () => {
 
   const obtenerProveedorPorId = async (idProveedor) => {
     try {
-      const response = await fetch(`http://localhost:4000/proveedores/${idProveedor}`);
+      const response = await fetch(`${apiUrl}/proveedores/${idProveedor}`);
       if (response.ok) {
         const data = await response.json();
         setDetalleProveedor(data);
@@ -239,7 +242,7 @@ const Proveedores = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await fetch(`http://localhost:4000/proveedores/${proveedorId}`, {
+        const response = await fetch(`${apiUrl}/proveedores/${proveedorId}`, {
           method: 'DELETE',
         });
 

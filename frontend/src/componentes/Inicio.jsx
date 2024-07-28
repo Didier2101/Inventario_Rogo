@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { TextField, Typography, Grid, Card, CardContent, CardActions, Button, } from "@mui/material";
 
 const Inicio = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const [productos, setProductos] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [resultados, setResultados] = useState([]);
@@ -12,7 +14,7 @@ const Inicio = () => {
 
   const obtenerProductos = async () => {
     try {
-      const response = await fetch("http://localhost:4000/productos");
+      const response = await fetch(`${apiUrl}/productos`);
       if (response.ok) {
         const data_productos = await response.json();
         setProductos(data_productos);

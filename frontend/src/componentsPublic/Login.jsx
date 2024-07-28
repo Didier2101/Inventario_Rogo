@@ -24,7 +24,7 @@ function Login() {
 
     const obtenerCargos = async () => {
         try {
-            const response = await fetch('http://localhost:4000/cargos');
+            const response = await fetch('http://proyecto-sena-enb7.onrender.com/cargos');
             if (response.ok) {
                 const data = await response.json();
                 setCargos(data);
@@ -53,7 +53,7 @@ function Login() {
         };
 
         try {
-            const response = await fetch('http://localhost:4000/ingresar', {
+            const response = await fetch('http://proyecto-sena-enb7.onrender.com/ingresar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

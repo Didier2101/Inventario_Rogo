@@ -21,6 +21,8 @@ import Context from "../contexto/Context";
 
 const Productos = () => {
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const { usuario } = useContext(Context);
 
   const [nuevaCantidad, setNuevaCantidad] = useState('');
@@ -74,7 +76,7 @@ const Productos = () => {
 
   const obtenerProductos = async () => {
     try {
-      const response = await fetch("http://localhost:4000/productos");
+      const response = await fetch(`${apiUrl}/productos`);
       if (response.ok) {
         const data_productos = await response.json();
         setProductos(data_productos);
@@ -88,7 +90,7 @@ const Productos = () => {
 
   const obtenerProveedores = async () => {
     try {
-      const response = await fetch("http://localhost:4000/proveedores");
+      const response = await fetch(`${apiUrl}/proveedores`);
       if (response.ok) {
         const data_proveedores = await response.json();
         setProveedores(data_proveedores);
@@ -102,7 +104,7 @@ const Productos = () => {
 
   const obtenerBodegas = async () => {
     try {
-      const response = await fetch("http://localhost:4000/bodegas");
+      const response = await fetch(`${apiUrl}/bodegas`);
       if (response.ok) {
         const data_bodegas = await response.json();
         setBodegas(data_bodegas);
@@ -125,7 +127,7 @@ const Productos = () => {
   const enviarForm = async (e) => {
     e.preventDefault();
     try {
-      let url = 'http://localhost:4000/productos';
+      let url = `${apiUrl}/productos`;
       let method = 'POST';
 
 
@@ -194,7 +196,7 @@ const Productos = () => {
 
   const obtenerProductoPorId = async (idProducto) => {
     try {
-      const response = await fetch(`http://localhost:4000/productos/${idProducto}`);
+      const response = await fetch(`${apiUrl}/productos/${idProducto}`);
       if (response.ok) {
         const data = await response.json();
 
@@ -239,7 +241,7 @@ const Productos = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await fetch(`http://localhost:4000/productos/${productoId}`, {
+        const response = await fetch(`${apiUrl}/productos/${productoId}`, {
           method: 'DELETE',
         });
 
@@ -295,7 +297,7 @@ const Productos = () => {
 
   const toggleEstado = async (id_producto, nuevoEstado) => {
     try {
-      const response = await fetch(`http://localhost:4000/productos/${id_producto}`, {
+      const response = await fetch(`${apiUrl}/productos/${id_producto}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -395,7 +397,7 @@ const Productos = () => {
   const actualizarCantidad = async (id_producto, nuevaCantidad) => {
     try {
       // Llama a la API del backend para actualizar el stock
-      const response = await fetch(`http://localhost:4000/productos/${id_producto}/cantidad`, {
+      const response = await fetch(`${apiUrl}/productos/${id_producto}/cantidad`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nuevaCantidad: parseInt(nuevaCantidad) }),

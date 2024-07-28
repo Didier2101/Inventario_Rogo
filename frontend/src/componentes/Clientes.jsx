@@ -22,6 +22,7 @@ import Context from "../contexto/Context";
 
 
 const Clientes = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
   const { usuario } = useContext(Context);
   const [clienteID, setClienteID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
@@ -98,7 +99,7 @@ const Clientes = () => {
 
   const obtenerClientes = async () => {
     try {
-      const response = await fetch("http://localhost:4000/clientes");
+      const response = await fetch(`${apiUrl}/clientes`);
       if (response.ok) {
         const data = await response.json();
         setClientes(data);
@@ -136,7 +137,7 @@ const Clientes = () => {
     }
 
     try {
-      let url = 'http://localhost:4000/clientes';
+      let url = `${apiUrl}/clientes`;
       let method = 'POST';
       if (modoEditar) {
         url += `/${clienteID}`;
@@ -201,7 +202,7 @@ const Clientes = () => {
 
   const obtenerClientePorId = async (idCliente) => {
     try {
-      const response = await fetch(`http://localhost:4000/clientes/${idCliente}`);
+      const response = await fetch(`${apiUrl}/clientes/${idCliente}`);
       if (response.ok) {
         const data = await response.json();
         setDetalleCliente(data);
@@ -236,7 +237,7 @@ const Clientes = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await fetch(`http://localhost:4000/clientes/${clienteId}`, {
+        const response = await fetch(`${apiUrl}/clientes/${clienteId}`, {
           method: 'DELETE',
         });
 

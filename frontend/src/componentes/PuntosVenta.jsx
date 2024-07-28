@@ -16,6 +16,9 @@ import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 const PuntosVenta = () => {
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const [puntoVentaID, setPuntoVentaID] = useState(null);
   const [modoEditar, setModoEditar] = useState(false);
   const [detallePuntoVenta, setDetallePuntoVenta] = useState(null)
@@ -53,7 +56,7 @@ const PuntosVenta = () => {
 
   const obtenerPuntosVentas = async () => {
     try {
-      const response = await fetch("http://localhost:4000/puntos_ventas");
+      const response = await fetch(`${apiUrl}/puntos_ventas`);
       if (response.ok) {
         const data_ventas = await response.json();
         setPuntosVentas(data_ventas);
@@ -67,7 +70,7 @@ const PuntosVenta = () => {
 
   const obtenerEmpleados = async () => {
     try {
-      const response = await fetch("http://localhost:4000/empleados");
+      const response = await fetch(`${apiUrl}/empleados`);
       if (response.ok) {
         const data_empleados = await response.json();
         setEmpleados(data_empleados);
@@ -90,7 +93,7 @@ const PuntosVenta = () => {
     e.preventDefault();
 
     try {
-      let url = 'http://localhost:4000/puntos_ventas';
+      let url = `${apiUrl}/puntos_ventas`;
       let method = 'POST';
       if (modoEditar) {
         url += `/${puntoVentaID}`;
@@ -145,7 +148,7 @@ const PuntosVenta = () => {
 
   const obtenerPuntoVentaPorId = async (idPuntoVenta) => {
     try {
-      const response = await fetch(`http://localhost:4000/puntos_ventas/${idPuntoVenta}`);
+      const response = await fetch(`${apiUrl}/puntos_ventas/${idPuntoVenta}`);
       if (response.ok) {
         const data = await response.json();
         const encargado = empleados.find(emp => emp.id_empleado === data.encargado);
@@ -171,7 +174,7 @@ const PuntosVenta = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await fetch(`http://localhost:4000/puntos_ventas/${puntoVentaId}`, {
+        const response = await fetch(`${apiUrl}/puntos_ventas/${puntoVentaId}`, {
           method: 'DELETE',
         });
 

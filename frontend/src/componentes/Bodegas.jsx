@@ -22,6 +22,9 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 const Bodegas = () => {
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const [busqueda, setBusqueda] = useState('');
   const [productosCount, setProductosCount] = useState({});
   const [modalProductos, setModalProductos] = useState(false)
@@ -72,14 +75,14 @@ const Bodegas = () => {
 
   const obtenerBodegas = async () => {
     try {
-      const response = await fetch("http://localhost:4000/bodegas");
+      const response = await fetch(`${apiUrl}/bodegas`);
       if (response.ok) {
         const data_bodegas = await response.json();
         setBodegas(data_bodegas);
         // Obtener productos para cada bodega
         const counts = {};
         for (const bodega of data_bodegas) {
-          const responseProductos = await fetch(`http://localhost:4000/bodegas/${bodega.id_bodega}/productos`);
+          const responseProductos = await fetch(`${apiUrl}/bodegas/${bodega.id_bodega}/productos`);
           if (responseProductos.ok) {
             const data_productos = await responseProductos.json();
             counts[bodega.id_bodega] = data_productos.length;
@@ -98,7 +101,7 @@ const Bodegas = () => {
 
   const obtenerEmpleados = async () => {
     try {
-      const response = await fetch("http://localhost:4000/empleados");
+      const response = await fetch(`${apiUrl}/empleados`);
       if (response.ok) {
         const data_empleados = await response.json();
         setEmpleados(data_empleados);
@@ -125,7 +128,7 @@ const Bodegas = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await fetch(`http://localhost:4000/bodegas/${bodegaId}`, {
+        const response = await fetch(`${apiUrl}/bodegas/${bodegaId}`, {
           method: 'DELETE',
         });
 
@@ -158,7 +161,7 @@ const Bodegas = () => {
   const enviarForm = async (e) => {
     e.preventDefault();
     try {
-      let url = 'http://localhost:4000/bodegas';
+      let url = `${apiUrl}/bodegas`;
       let method = 'POST';
       if (modoEditar) {
         url += `/${bodegaID}`;
@@ -214,7 +217,7 @@ const Bodegas = () => {
 
   const obtenerBodegaPorId = async (idBodega) => {
     try {
-      const response = await fetch(`http://localhost:4000/bodegas/${idBodega}`);
+      const response = await fetch(`${apiUrl}/bodegas/${idBodega}`);
       if (response.ok) {
         const data = await response.json();
         const encargado = empleados.find(emp => emp.id_empleado === data.encargado);
@@ -229,7 +232,7 @@ const Bodegas = () => {
 
   const obtenerProductosPorBodega = async (idBodega) => {
     try {
-      const response = await fetch(`http://localhost:4000/bodegas/${idBodega}/productos`);
+      const response = await fetch(`${apiUrl}/bodegas/${idBodega}/productos`);
       if (response.ok) {
         const data_productos = await response.json();
         setListaProductos(data_productos);

@@ -1,3 +1,5 @@
+
+
 import { Box, Button, IconButton, Modal, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
@@ -20,6 +22,8 @@ import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
 
 const Empleados = () => {
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
 
   // Agrega un nuevo estado para almacenar el ID del empleado seleccionado para editar
@@ -134,7 +138,7 @@ const Empleados = () => {
 
   const obtenerEmpleados = async () => {
     try {
-      const response = await fetch("http://localhost:4000/empleados");
+      const response = await fetch(`${apiUrl}/empleados`);
       if (response.ok) {
         const data = await response.json();
         setEmpleados(data.map(empleado => ({
@@ -157,7 +161,7 @@ const Empleados = () => {
 
   const obtenerEmpleadoPorId = async (idEmpleado) => {
     try {
-      const response = await fetch(`http://localhost:4000/empleados/${idEmpleado}`);
+      const response = await fetch(`${apiUrl}/empleados/${idEmpleado}`);
       const data = await response.json();
 
       const empleadoFormateado = {
@@ -191,7 +195,7 @@ const Empleados = () => {
 
 
     try {
-      let url = 'http://localhost:4000/empleados';
+      let url = `${apiUrl}/empleados`;
       let method = 'POST';
       if (modoEditar) {
         url += `/${empleadoID}`;
@@ -271,7 +275,7 @@ const Empleados = () => {
       });
 
       if (result.isConfirmed) {
-        const response = await fetch(`http://localhost:4000/empleados/${empleadoId}`, {
+        const response = await fetch(`${apiUrl}/empleados/${empleadoId}`, {
           method: 'DELETE',
         });
 
