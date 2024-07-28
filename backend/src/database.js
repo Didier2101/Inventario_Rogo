@@ -1,4 +1,4 @@
-const { pool } = require("pg");
+const { Pool } = require("pg");
 require("dotenv").config();
 
 const pool = new Pool({
@@ -11,7 +11,6 @@ const pool = new Pool({
 
 (async () => {
   try {
-    // Realizar una consulta de prueba para verificar la conexión
     const client = await pool.connect();
     console.log("Conexión a la base de datos exitosa");
     client.release();
