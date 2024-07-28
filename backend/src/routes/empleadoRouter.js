@@ -9,10 +9,19 @@ const {
 } = require("../controllers/empleadoController");
 
 // Obtener todos los empleados
-router.post("/empleados", crearEmpleado);
-router.get("/empleados", obtenerTodosEmpleados);
-router.put("/empleados/:id_empleado", actualizarEmpleado);
-router.delete("/empleados/:id_empleado", eliminarEmpleado);
-router.get("/empleados/:id_empleado", obtenerEmpleadoPorId);
+// Crear empleado
+router.post("/", crearEmpleado);
+
+// Obtener todos los empleados
+router.get("/", obtenerTodosEmpleados);
+
+// Actualizar empleado por ID
+router.put("/:id_empleado", actualizarEmpleado);
+
+// Eliminar empleado por ID
+router.delete("/:id_empleado", eliminarEmpleado);
+
+// Obtener empleado por ID
+router.get("/:id_empleado", obtenerEmpleadoPorId);
 
 module.exports = router;

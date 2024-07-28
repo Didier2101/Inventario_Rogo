@@ -18,15 +18,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(empleadosRouter);
-app.use(usuariosRouter);
-app.use(clientesRouter);
-app.use(proveedoresRouter);
-app.use(puntosVentasRouter);
-app.use(bodegasRouter);
-app.use(productosRouter);
-app.use(cargosRouter);
-
+// Prefijos de ruta correctos
+app.use("/empleados", empleadosRouter);
+app.use("/usuarios", usuariosRouter);
+app.use("/clientes", clientesRouter);
+app.use("/proveedores", proveedoresRouter);
+app.use("/puntosVentas", puntosVentasRouter);
+app.use("/bodegas", bodegasRouter);
+app.use("/productos", productosRouter);
+app.use("/cargos", cargosRouter);
 app.listen(port, async () => {
   console.log(`Servidor backend corriendo en http://localhost:${port}`);
 });
