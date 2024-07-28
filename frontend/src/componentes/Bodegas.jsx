@@ -15,7 +15,7 @@ import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 
 
-
+// aqui esta tu codigo
 
 import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel, InputBase } from "@mui/material";
 import { useEffect, useState } from "react";
