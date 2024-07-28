@@ -1,22 +1,20 @@
-const mysql2 = require("mysql2/promise");
+const { pool } = require("pg");
 require("dotenv").config();
 
-const pool = mysql2.createPool({
+const pool = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+  port: process.env.DB_PORT,
 });
 
 (async () => {
   try {
     // Realizar una consulta de prueba para verificar la conexión
-    const connection = await pool.getConnection();
+    const client = await pool.connect();
     console.log("Conexión a la base de datos exitosa");
-    connection.release();
+    client.release();
   } catch (err) {
     console.error("Error al conectar a la base de datos:", err);
   }
