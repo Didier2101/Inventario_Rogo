@@ -29,11 +29,11 @@ app.use(productosRouter);
 app.use(cargosRouter);
 
 // Servir archivos estáticos del frontend
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
 // Ruta catch-all para servir index.html en caso de una ruta desconocida
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  res.sendFile(path.join(__dirname, "../../frontend/dist", "index.html"));
 });
 
 app.listen(port, async () => {
