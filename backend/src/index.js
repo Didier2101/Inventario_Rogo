@@ -1,16 +1,16 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./src/database"); // Asegúrate de que la ruta a database.js sea correcta
+const pool = require("./database");
 const path = require("path");
 
-const empleadosRouter = require("./src/routes/empleadoRouter");
-const usuariosRouter = require("./src/routes/usuarioRouter");
-const clientesRouter = require("./src/routes/clientesRouter");
-const proveedoresRouter = require("./src/routes/proveedorRouter");
-const puntosVentasRouter = require("./src/routes/puntoVentaRouter");
-const bodegasRouter = require("./src/routes/bodegaRouter");
-const productosRouter = require("./src/routes/productoRouter");
-const cargosRouter = require("./src/routes/cargoRouter");
+const empleadosRouter = require("./routes/empleadoRouter");
+const usuariosRouter = require("./routes/usuarioRouter");
+const clientesRouter = require("./routes/clientesRouter");
+const proveedoresRouter = require("./routes/proveedorRouter");
+const puntosVentasRouter = require("./routes/puntoVentaRouter");
+const bodegasRouter = require("./routes/bodegaRouter");
+const productosRouter = require("./routes/productoRouter");
+const cargosRouter = require("./routes/cargoRouter");
 
 const app = express();
 const port = 4000;
