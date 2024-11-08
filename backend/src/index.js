@@ -13,7 +13,9 @@ const cargosRouter = require("./routes/cargoRouter");
 // const ventasRouter = require("./")
 
 const corsOptions = {
-  origin: "https://tu-frontend-url.com", // Sustituye con la URL de tu frontend
+  origin: "https://inventario-rogo-1.onrender.com", // Aquí debes poner la URL de tu frontend
+  methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
+  allowedHeaders: ["Content-Type", "Authorization"], // Cabeceras permitidas
 };
 
 const app = express();
