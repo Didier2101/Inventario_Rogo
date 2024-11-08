@@ -26,14 +26,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === "production") {
-  const buildPath =
-    process.env.BUILD_PATH || path.join(__dirname, "..", "build");
-  app.use(express.static(buildPath));
+  app.use(express.static(path.join(__dirname, "..", "build"))); // Suponiendo que "build" es tu directorio de salida
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(buildPath, "index.html"));
+    res.sendFile(path.resolve(__dirname, "..", "build", "index.html"));
   });
 }
+
 app.use(empleadosRouter);
 app.use(usuariosRouter);
 app.use(clientesRouter);
