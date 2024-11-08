@@ -12,10 +12,14 @@ const productosRouter = require("./routes/productoRouter");
 const cargosRouter = require("./routes/cargoRouter");
 // const ventasRouter = require("./")
 
+const corsOptions = {
+  origin: "https://tu-frontend-url.com", // Sustituye con la URL de tu frontend
+};
+
 const app = express();
 const port = process.env.PORT || 4000;
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
