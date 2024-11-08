@@ -27,11 +27,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Si el ambiente es de producción, sirve los archivos estáticos de React
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "frontend/dist")));
+  // Cambiar la ruta para que apunte al directorio correcto
+  app.use(express.static(path.join(__dirname, "..", "frontend", "dist")));
 
-  // Si la ruta no es una API, servir index.html
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    res.sendFile(
+      path.resolve(__dirname, "..", "frontend", "dist", "index.html")
+    );
   });
 }
 
