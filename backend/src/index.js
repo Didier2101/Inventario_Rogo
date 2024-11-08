@@ -25,16 +25,15 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Si el ambiente es de producción, sirve los archivos estáticos de React
 if (process.env.NODE_ENV === "production") {
-  // Cambiar la ruta para que apunte al directorio correcto
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  const buildPath =
+    process.env.BUILD_PATH || path.join(__dirname, "..", "build");
+  app.use(express.static(buildPath));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/dist", "index.html"));
+    res.sendFile(path.resolve(buildPath, "index.html"));
   });
 }
-
 app.use(empleadosRouter);
 app.use(usuariosRouter);
 app.use(clientesRouter);
