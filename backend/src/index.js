@@ -26,10 +26,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist"))); // Cambiado a ../frontend/dist
+  // Cambiado a ../frontend/dist para que se ajusten a la estructura del repo
+  app.use(express.static(path.join(__dirname, "dist"))); // Aquí apunta al directorio correcto
 
+  // Asegúrate de que la ruta sea la correcta
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/dist", "index.html")); // Cambiado a ../frontend/dist/index.html
+    res.sendFile(path.resolve(__dirname, "dist", "index.html"));
   });
 }
 
