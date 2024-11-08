@@ -26,10 +26,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "..", "frontend", "dist"))); // Suponiendo que "build" es tu directorio de salida
+  app.use(express.static(path.join(__dirname, "../frontend/dist"))); // Cambiado a ../frontend/dist
 
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "..", "dist", "index.html"));
+    res.sendFile(path.resolve(__dirname, "../frontend/dist", "index.html")); // Cambiado a ../frontend/dist/index.html
   });
 }
 
