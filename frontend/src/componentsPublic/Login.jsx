@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 
 import { useEffect, useState, useContext } from 'react';
@@ -38,7 +38,7 @@ function Login() {
     }
     useEffect(() => {
         obtenerCargos();
-    }, []);
+    });
 
 
 
@@ -101,16 +101,14 @@ function Login() {
     return (
         <>
             <div className='container-all'>
-                <div className='img'>
-                    <p>todo a su lado</p>
-                </div>
+
                 <div className="container-login">
 
 
                     <section className='contain-form-login'>
 
-                        <h2>¡Bienvenido de nuevo!</h2>
-                        <p>¡Nos alegra mucho que hayas regresado!</p>
+                        <h2>Rogo - Inventario</h2>
+                        <p>¡Ingresa tus datos!</p>
                         <form className='form-login' onSubmit={handdleLogin}>
                             <FormControl required sx={{ width: '100%' }}>
                                 <InputLabel>Ingrese su cargo</InputLabel>
@@ -162,10 +160,7 @@ function Login() {
                             </Button>
 
                         </form>
-                        <NavLink
-                            style={{ marginBottom: '10px', fontSize: '1.2rem', color: 'var(--tercero)' }}
-                            to="/forgot-password"
-                        >¿Olvidaste tu contraseña?</NavLink>
+
                     </section>
                 </div>
             </div >

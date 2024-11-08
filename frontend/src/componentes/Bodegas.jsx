@@ -13,11 +13,12 @@ import PlaceIcon from '@mui/icons-material/Place';
 import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
 import QrCodeIcon from '@mui/icons-material/QrCode';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 // aqui esta tu codigo
 
-import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel, InputBase } from "@mui/material";
+import { Box, Button, IconButton, Modal, TextField, Select, MenuItem, FormControl, InputLabel, InputBase, InputAdornment } from "@mui/material";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
@@ -48,8 +49,6 @@ const Bodegas = () => {
     obtenerEmpleados();
   }, []);
 
-
-
   const activarModoEdicion = (bodega) => {
     setModoEditar(true);
     setFormulario(true);
@@ -65,8 +64,6 @@ const Bodegas = () => {
 
     setBodegaID(bodega.id_bodega);
   };
-
-
 
   const cambiosInputs = (e) => {
     const { name, value } = e.target;
@@ -87,15 +84,27 @@ const Bodegas = () => {
             const data_productos = await responseProductos.json();
             counts[bodega.id_bodega] = data_productos.length;
           } else {
-            console.error(`No se pudo obtener los productos para la bodega ${bodega.id_bodega}`);
+            Swal.fire({
+              title: `Error al Cargar Productos`,
+              text: `No se pudo obtener los productos para la bodega ${bodega.id_bodega}.`,
+              icon: 'error',
+            });
           }
         }
         setProductosCount(counts);
       } else {
-        console.error("No se pudo obtener las bodegas");
+        Swal.fire({
+          title: 'Error al Cargar Bodegas',
+          text: 'No se pudo obtener la lista de bodegas.',
+          icon: 'error',
+        });
       }
     } catch (error) {
-      console.error('error al obtener las bodegas', error);
+      Swal.fire({
+        title: 'Error de Conexión',
+        text: 'Hubo un problema al intentar obtener las bodegas. Por favor, intenta nuevamente.',
+        icon: 'error',
+      });
     }
   };
 
@@ -105,14 +114,28 @@ const Bodegas = () => {
       if (response.ok) {
         const data_empleados = await response.json();
         setEmpleados(data_empleados);
+        Swal.fire({
+          title: 'Empleados Cargados',
+          text: 'La lista de empleados se ha cargado correctamente.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false,
+        });
       } else {
-        console.error("No se pudo obtener los empleados");
+        Swal.fire({
+          title: 'Error al Cargar Empleados',
+          text: 'No se pudo obtener la lista de empleados.',
+          icon: 'error',
+        });
       }
     } catch (error) {
-      console.error('error al obtener los empleados', error);
+      Swal.fire({
+        title: 'Error de Conexión',
+        text: 'Hubo un problema al intentar obtener los empleados. Por favor, intenta nuevamente.',
+        icon: 'error',
+      });
     }
   };
-
 
   const eliminarBodega = async (bodegaId, bodegaNombre) => {
     try {
@@ -176,18 +199,25 @@ const Bodegas = () => {
         body: JSON.stringify(formData),
       });
 
+      // Verifica si hubo un error en la solicitud
       if (response.status === 400) {
-        // const data = await response.json();
-        console.error('Error al agregar o actualizar la bodega');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Datos incorrectos o incompletos. Por favor revisa el formulario.',
+        });
         return;
       }
 
       if (!response.ok) {
-        console.error('Error al agregar o actualizar la bodega');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al procesar la solicitud. Inténtalo de nuevo.',
+        });
         return;
       }
 
-      // const data = await response.json();
 
       if (modoEditar) {
         Swal.fire({
@@ -209,12 +239,26 @@ const Bodegas = () => {
       ocultarFormulario();
       obtenerBodegas();
     } catch (error) {
-      console.error('Error en la solicitud:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en la solicitud',
+        text: 'Ocurrió un error al intentar conectar con el servidor. Por favor, inténtalo de nuevo más tarde.',
+      });
     }
 
   };
 
 
+  /**
+ * Obtiene los detalles de una bodega específica por su ID.
+ * @param {number} idBodega - ID de la bodega que se desea consultar.
+ * @returns {Promise<void>}
+ *
+ * Realiza una petición GET a la API para obtener la información de una bodega
+ * específica y actualiza el estado 'detalleBodega' con la información recibida.
+ * En caso de éxito, incluye el nombre del encargado si está disponible en la lista
+ * de empleados. Si ocurre un error, se notifica al usuario mediante un mensaje de alerta.
+ */
   const obtenerBodegaPorId = async (idBodega) => {
     try {
       const response = await fetch(`${apiUrl}/bodegas/${idBodega}`);
@@ -223,28 +267,63 @@ const Bodegas = () => {
         const encargado = empleados.find(emp => emp.id_empleado === data.encargado);
         setDetalleBodega({ ...data, encargado: encargado ? encargado.nombres : 'Desconocido' });
       } else {
-        console.error("No se pudo obtener la bodega");
+        // Si la respuesta no es exitosa, muestra una alerta de error al usuario
+        Swal.fire({
+          icon: "error",
+          title: "Error al obtener la bodega",
+          text: "No se pudo obtener la información de la bodega. Por favor, intenta nuevamente.",
+        });
       }
     } catch (error) {
-      console.error('error al obtener la bodega', error);
+      // Manejo de errores de conexión u otros problemas no anticipados
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de conexión',
+        text: 'Ocurrió un error al intentar conectar con el servidor. Inténtalo de nuevo más tarde.',
+      });
     }
   };
 
+
+  /**
+ * Obtiene los productos asociados a una bodega específica y actualiza el estado de la lista de productos.
+ * @param {number} idBodega - ID de la bodega de la cual se quieren obtener los productos.
+ * @returns {Promise<void>}
+ *
+ * Realiza una petición GET a la API para obtener los productos de una bodega específica.
+ * Si la solicitud es exitosa, actualiza el estado `listaProductos` con los datos de los productos.
+ * Muestra mensajes de alerta al usuario en caso de errores.
+ */
   const obtenerProductosPorBodega = async (idBodega) => {
     try {
       const response = await fetch(`${apiUrl}/bodegas/${idBodega}/productos`);
+
       if (response.ok) {
+        // La solicitud fue exitosa, obtenemos la lista de productos
         const data_productos = await response.json();
         setListaProductos(data_productos);
       } else {
-        console.error("No se pudo obtener los productos de la bodega");
+        // Si la respuesta no es exitosa, muestra un mensaje de error al usuario
+        Swal.fire({
+          icon: "error",
+          title: "Error al obtener productos",
+          text: `No se pudo obtener la lista de productos para la bodega con ID: ${idBodega}. Por favor, intenta nuevamente.`,
+        });
       }
     } catch (error) {
-      console.error('error al obtener los productos de la bodega', error);
+      // Manejo de errores en la conexión o problemas no anticipados
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de conexión',
+        text: 'Ocurrió un error al intentar conectar con el servidor. Inténtalo de nuevo más tarde.',
+      });
+    } finally {
+      // Establece el estado para mostrar el modal de productos y oculta el detalle de la bodega
+      setModalProductos(true);
+      setDetalleBodega(false);
     }
-    setModalProductos(true);
-    setDetalleBodega(false);
   };
+
 
 
   const mostarFormulario = () => {
@@ -321,9 +400,10 @@ const Bodegas = () => {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
+    borderRadius: '10px',
     width: '80%',
     height: '80vh', // Establece una altura específica para permitir el desplazamiento
-    bgcolor: '#fff',
+    bgcolor: '#ebf0f4',
     pt: 2,
     px: 4,
     pb: 3,
@@ -352,21 +432,22 @@ const Bodegas = () => {
   return (
     <section className="section-item">
 
-      <section className="witches">
-        <ul className="witches-list">
-          <li className="witches-item">
-            <span className="cantidad-empleados">{bodegas.length}</span>
-            Lista de los puntos de almacenamiento
-          </li>
-          <li>
-            <IconButton
-              onClick={mostarFormulario}
-              style={{ background: 'var(--tercero)' }}>
-              <AddIcon style={{ color: 'var(--primer)' }} />
-            </IconButton>
-          </li>
-        </ul>
-      </section>
+      <div className=" contenedor_buscar">
+        <div className="witches">
+          <ul className="witches-list ">
+            <li className="witches-item">
+              <span className="cantidad-empleados">{bodegas.length}</span>
+              Lista de Bodegas
+            </li>
+
+          </ul>
+        </div>
+        <IconButton
+          onClick={mostarFormulario}
+          style={{ background: 'var(--tercero)' }}>
+          <AddIcon style={{ color: 'var(--primer)' }} />
+        </IconButton>
+      </div>
 
       <table className="tabla-items">
         <tbody>
@@ -399,28 +480,28 @@ const Bodegas = () => {
 
               <td className="a1">
                 <div className="centered-content" onClick={() => obtenerProductosPorBodega(bodega.id_bodega)}>
+
+                  <InventoryOutlinedIcon style={{ color: '#949393', fontSize: '2rem' }} />
+                  <strong>{productosCount[bodega.id_bodega] || 0}</strong>
+                  <span>Productos</span>
+                </div>
+              </td>
+
+              <td className="">
+                <div className="centered-content" onClick={() => obtenerProductosPorBodega(bodega.id_bodega)}>
                   <div className="contacto">
-                    <span>Cantidad de productos</span>
                     <Button
                       style={{ width: 'auto', margin: '0 auto', fontSize: '1.1rem' }}
                       variant="outlined"
                       color="primary"
                       size="small"
-                    >{productosCount[bodega.id_bodega] || 0}</Button>
+                      position="endright"
+                    >ver mas
+                    </Button>
                   </div>
                 </div>
               </td>
-              <td>
-                <Button
-                  style={{ width: 'auto', margin: '0 auto', fontSize: '1.1rem' }}
-                  variant="out"
-                  color="inherit"
-                  size="small"
 
-                >
-                </Button>
-
-              </td>
 
               <td className="a10">
                 <IconButton onClick={() => setSubMenu(bodega.id_bodega)}>
@@ -603,19 +684,32 @@ const Bodegas = () => {
       >
         <Box sx={{ ...style_list }}>
           <div className="cerrar-boton" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h6 style={{ fontSize: '1.4rem' }}>Cantidad de productos en bodega: {listaProductos.length}</h6>
+
+            <InputBase
+              style={{
+                width: 'auto',
+                borderRadius: '14px',
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                paddingLeft: '10px',
+                fontSize: '1.2rem',
+                marginRight: '10px',
+              }}
+              placeholder="Buscar productos"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              startAdornment={
+                <InputAdornment position="start">
+                  <SearchIcon style={{ color: '#949393', fontSize: '1.5rem', }} />
+                </InputAdornment>
+              }
+            />
+
             <IconButton onClick={() => setModalProductos(false)}>
               <CloseIcon />
             </IconButton>
           </div>
-          <section className="contenedor_buscar" style={{ marginBottom: '20px' }}>
-            <InputBase
-              style={{ fontSize: '1.6rem' }}
-              placeholder="Buscar productos"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </section>
+
           {listaProductos.length === 0 ? (
             <p style={{ textAlign: 'center', fontSize: '3rem', marginTop: '120px' }}>No hay productos almacenados en esta bodega</p>
           ) : (
@@ -626,38 +720,38 @@ const Bodegas = () => {
                 <tbody>
                   {filteredProductos.map((producto) => (
                     <tr className="fila" key={producto.id_producto}>
-                      <td className="a4">
+                      <td className="a2">
                         <div className="centered-content">
                           <Inventory2OutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                           {capitalizeWords(producto.nombre)}
                         </div>
                       </td>
-                      <td className="a4">
+                      <td className="a1">
                         <div className="centered-content">
                           <QrCodeIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                           {capitalizeWords(producto.referencia)}
                         </div>
                       </td>
-                      <td className="a4">
+                      <td className="a1">
                         <div className="centered-content">
                           <DescriptionIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
                           {capitalizeWords(producto.descripcion)}
+
                         </div>
                       </td>
                       <td className={producto.cantidad === 0 ? 'agotado' : 'a9'}>
                         <div className="centered-content">
                           <InventoryOutlinedIcon style={{ color: '#949393', fontSize: '2.5rem' }} />
-                          <strong>{producto.cantidad === 0 ? 'Agotado' : `${producto.cantidad} Unidades`}</strong>
+                          <strong>{producto.cantidad}</strong>
+                          <span>Unidades</span>
                         </div>
                       </td>
-                      <td className={producto.cantidad === 0 ? 'agotado' : 'a9'}>
-                        <div className="centered-content">
-                          <Button
-                            variant="outlined"
-                            color="primary"
-                            size="small"
-                          >Mover producto</Button>
-                        </div>
+                      <td className='a10'>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          size="small"
+                        >Mover</Button>
                       </td>
                     </tr>
                   ))}

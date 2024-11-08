@@ -1,8 +1,8 @@
 .encabezado-header {
   width: 100%;
   padding: 10px 8px;
-  background-color: rgba(255, 255, 255, 0.685);
-  position: sticky;
+  background-color: #ebf0f4;
+  /* position: sticky; */
   top: 0;
   backdrop-filter: blur(5px);
   z-index: 1;
@@ -20,8 +20,9 @@
 }
 .encabezado-header .iconos-izquierda .icono-menu {
   color: var(--tercero);
-  font-size: 2rem;
+  font-size: 3rem;
   transition: color 0.2s ease-in;
+  margin-left: 4px;
 }
 .encabezado-header .iconos-izquierda .icono-menu:hover,
 .encabezado-header .iconos-derecha .icono:hover {

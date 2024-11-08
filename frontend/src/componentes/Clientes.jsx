@@ -40,7 +40,7 @@ const Clientes = () => {
   const [telefonoError, setTelefonoError] = useState(false);
   const [nombresError, setNombresError] = useState(false);
   const [correoError, setCorreoError] = useState(false);
-  const [formularioValido, setFormularioValido] = useState(false);
+
 
   const activarModoEdicion = (cliente) => {
     setModoEditar(true);
@@ -91,10 +91,6 @@ const Clientes = () => {
       default:
         break;
     }
-    // Verificar si todos los campos obligatorios están llenos y no hay errores
-    const camposLlenos = Object.values(formData).every(val => val !== '');
-    const noHayErrores = !(cedulaError || telefonoError || nombresError || correoError);
-    setFormularioValido(camposLlenos && noHayErrores);
   };
 
   const obtenerClientes = async () => {
@@ -112,7 +108,7 @@ const Clientes = () => {
   }
   useEffect(() => {
     obtenerClientes();
-  }, []);
+  });
 
 
 
@@ -126,7 +122,6 @@ const Clientes = () => {
       telefonoError ||
       nombresError ||
       correoError ||
-      !formData.empresa ||
       !formData.cedula ||
       !formData.nombres ||
       !formData.correo_electronico ||
@@ -293,6 +288,7 @@ const Clientes = () => {
     width: 1100,
     height: 'auto', // Establece una altura específica para permitir el desplazamiento
     bgcolor: 'background.paper',
+    borderRadius: '10px',
     pt: 2,
     px: 4,
     pb: 3,
@@ -347,20 +343,21 @@ const Clientes = () => {
 
 
 
-      <div className="witches">
-        <ul className="witches-list">
-          <li className="witches-item">
-            <span className="cantidad-clientes">{clientes.length}</span>
-            Lista de clientes
-          </li>
-          <li>
-            <IconButton
-              onClick={mostarFormulario}
-              style={{ background: 'var(--tercero)' }}>
-              <AddIcon style={{ color: 'var(--primer)' }} />
-            </IconButton>
-          </li>
-        </ul>
+      <div className=" contenedor_buscar">
+        <div className="witches">
+          <ul className="witches-list ">
+            <li className="witches-item">
+              <span className="cantidad-empleados">{clientes.length}</span>
+              Lista de Clientes
+            </li>
+
+          </ul>
+        </div>
+        <IconButton
+          onClick={mostarFormulario}
+          style={{ background: 'var(--tercero)' }}>
+          <AddIcon style={{ color: 'var(--primer)' }} />
+        </IconButton>
       </div>
 
 
@@ -509,7 +506,6 @@ const Clientes = () => {
                 variant="contained"
                 color="success"
                 type="submit"
-                disabled={!formularioValido}
               > {modoEditar ? 'Guardar cambios' : 'Agregar Cliente'}
               </Button>
             </div>

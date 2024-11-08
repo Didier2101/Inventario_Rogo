@@ -2,7 +2,6 @@
 @import url("./css/login.css");
 @import url("./css/menu.css");
 @import url("./css/header.css");
-@import url("./css/inicio.css");
 @import url("./css/global.css");
 
 * {
@@ -14,7 +13,7 @@ html,
 body {
   font-family: "Montserrat", sans-serif;
   font-size: 68.5%;
-  background-color: #fff;
+  background-color: #ebf0f4;
 }
 
 img {

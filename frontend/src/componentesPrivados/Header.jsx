@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { IconButton } from "@mui/material";
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ViewListIcon from '@mui/icons-material/ViewList';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
@@ -10,7 +9,7 @@ import Context from '../contexto/Context';
 
 
 
-const Header = ({ onMenuToggle }) => {
+const Header = ({ onMenuToggle, userRole }) => {
     const navigate = useNavigate()
 
     const { desloguearse, usuario } = useContext(Context)
@@ -40,9 +39,9 @@ const Header = ({ onMenuToggle }) => {
         <div className='encabezado-header'>
             <header className="header">
                 <div className="iconos-izquierda">
-                    <ViewListIcon className='icono-menu' onClick={onMenuToggle} />
+                    {(userRole === 'administrador') && (<DragHandleIcon className='icono-menu' onClick={onMenuToggle} />)}
                     {/* <AccountCircleIcon className='icono-usuario' /> */}
-                    <h2>Estas como: <span>{usuario ? usuario.usuario : 'Invitado'}</span></h2>
+                    <h2><span style={{ textTransform: 'uppercase', marginLeft: '4px' }}>{usuario.cargo} : {usuario.usuario}</span></h2>
                 </div>
                 <div className='iconos-derecha'>
                     <IconButton
@@ -58,7 +57,7 @@ const Header = ({ onMenuToggle }) => {
 }
 // Agregar validación de prop-types
 Header.propTypes = {
-    onMenuToggle: PropTypes.func.isRequired,
+    onMenuToggle: PropTypes.func.isRequired, userRole: PropTypes.string.isRequired,
 };
 
 export default Header

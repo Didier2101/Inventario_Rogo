@@ -15,11 +15,8 @@ const pool = mysql2.createPool({
 (async () => {
   try {
     const connection = await pool.getConnection();
-    console.log("Conexión a la base de datos exitosa");
     connection.release();
-  } catch (err) {
-    console.error("Error al conectar a la base de datos:", err);
-  }
+  } catch (err) {}
 })();
 
 module.exports = pool;

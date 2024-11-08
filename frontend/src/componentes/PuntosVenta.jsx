@@ -85,7 +85,7 @@ const PuntosVenta = () => {
   useEffect(() => {
     obtenerPuntosVentas();
     obtenerEmpleados();
-  }, []);
+  });
 
 
 
@@ -275,21 +275,23 @@ const PuntosVenta = () => {
 
   return (
     <section className="section-item">
-      <section className="witches">
-        <ul className="witches-list">
-          <li className="witches-item">
-            <span className="cantidad-empleados">{puntosVentas.length}</span>
-            Lista de los puntos de venta
-          </li>
-          <li>
-            <IconButton
-              onClick={mostarFormulario}
-              style={{ background: 'var(--tercero)' }}>
-              <AddIcon style={{ color: 'var(--primer)' }} />
-            </IconButton>
-          </li>
-        </ul>
-      </section>
+      <div className=" contenedor_buscar">
+        <div className="witches">
+          <ul className="witches-list ">
+            <li className="witches-item">
+              <span className="cantidad-empleados">{puntosVentas.length}</span>
+              Lista de los puntos de venta
+
+            </li>
+
+          </ul>
+        </div>
+        <IconButton
+          onClick={mostarFormulario}
+          style={{ background: 'var(--tercero)' }}>
+          <AddIcon style={{ color: 'var(--primer)' }} />
+        </IconButton>
+      </div>
 
       <table className="tabla-items">
         <tbody>

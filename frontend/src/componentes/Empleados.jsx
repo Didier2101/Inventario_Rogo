@@ -51,7 +51,7 @@ const Empleados = () => {
   const [telefonoError, setTelefonoError] = useState(false);
   const [nombresError, setNombresError] = useState(false);
   const [correoError, setCorreoError] = useState(false);
-  const [formularioValido, setFormularioValido] = useState(false);
+
 
   const formatearFecha = (fechaISO) => {
     const fecha = new Date(fechaISO);
@@ -130,10 +130,8 @@ const Empleados = () => {
       default:
         break;
     }
-    // Verificar si todos los campos obligatorios están llenos y no hay errores
-    const camposLlenos = Object.values(formularioInformacion).every(val => val !== '');
-    const noHayErrores = !(cedulaError || salarioError || telefonoError || nombresError || correoError);
-    setFormularioValido(camposLlenos && noHayErrores);
+
+
   };
 
   const obtenerEmpleados = async () => {
@@ -339,6 +337,9 @@ const Empleados = () => {
     width: 1100,
     height: 'auto', // Establece una altura específica para permitir el desplazamiento
     bgcolor: 'background.paper',
+
+    borderRadius: '10px',
+
     pt: 2,
     px: 4,
     pb: 3,
@@ -391,20 +392,21 @@ const Empleados = () => {
 
   return (
     <section className="section-item">
-      <div className="witches">
-        <ul className="witches-list">
-          <li className="witches-item">
-            <span className="cantidad-empleados">{empleados.length}</span>
-            Lista de empleados
-          </li>
-          <li>
-            <IconButton
-              onClick={mostarFormulario}
-              style={{ background: 'var(--tercero)' }}>
-              <AddIcon style={{ color: 'var(--primer)' }} />
-            </IconButton>
-          </li>
-        </ul>
+      <div className=" contenedor_buscar">
+        <div className="witches">
+          <ul className="witches-list ">
+            <li className="witches-item">
+              <span className="cantidad-empleados">{empleados.length}</span>
+              Lista de empleados
+            </li>
+
+          </ul>
+        </div>
+        <IconButton
+          onClick={mostarFormulario}
+          style={{ background: 'var(--tercero)' }}>
+          <AddIcon style={{ color: 'var(--primer)' }} />
+        </IconButton>
       </div>
 
       <table className="tabla-items">
@@ -642,7 +644,7 @@ const Empleados = () => {
                 variant="contained"
                 color="success"
                 type="submit"
-                disabled={!formularioValido}
+
               >
                 {modoEditar ? 'Guardar cambios' : 'Agregar empleado'}
               </Button>
